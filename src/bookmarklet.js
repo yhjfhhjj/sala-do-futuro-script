@@ -1,7 +1,7 @@
 (function() {
     const GEMINI_API_KEY = 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY';
     const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743169504/ui.js';
+    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743167666/ui.js';
 
     fetch(UI_SCRIPT_URL)
         .then(response => response.text())
@@ -28,9 +28,11 @@
             }
 
             async function analyzeContent(content, question = '') {
-                const prompt = question.trim()
-                    ? `Responda à seguinte pergunta com base no conteúdo da página:\n\nPergunta:\n${question}\n\nConteúdo:\nTexto: ${content.text}\nImagens: ${content.images.join(', ')}\n\nResposta:`
-                    : `Resuma o conteúdo da página de forma clara e concisa:\n\nTexto: ${content.text}\nImagens: ${content.images.join(', ')}\n\nResposta:`;
+                if (!question.trim()) {
+                    return 'Por favor, cole uma pergunta com alternativas para analisar.';
+                }
+
+                const prompt = `Responda à seguinte pergunta com base no conteúdo da página:\n\nPergunta:\n${question}\n\nConteúdo:\nTexto: ${content.text}\nImagens: ${content.images.join(', ')}\n\nResposta:`;
 
                 try {
                     const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
@@ -59,19 +61,23 @@
 
             // Ação de analisar
             analyzeOption.addEventListener('click', async () => {
+                const question = input.value.trim();
+                if (!question) {
+                    window.showResponse(responsePanel, 'Por favor, cole uma pergunta com alternativas.');
+                    return;
+                }
+
                 analyzeOption.disabled = true;
-                analyzeOption.innerHTML = '⏳ Analisando...';
+                analyzeOption.innerHTML = 'Analisando...';
                 analyzeOption.style.opacity = '0.7';
-                input.style.display = 'block';
 
                 const content = extractPageContent();
-                const question = input.value.trim();
                 const answer = await analyzeContent(content, question);
 
                 window.showResponse(responsePanel, answer);
 
                 analyzeOption.disabled = false;
-                analyzeOption.innerHTML = '🔍 Analisar';
+                analyzeOption.innerHTML = 'Analisar';
                 analyzeOption.style.opacity = '1';
                 document.getElementById('gemini-menu').style.display = 'none';
             });
@@ -86,7 +92,6 @@
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('#gemini-helper-container')) {
                     responsePanel.style.display = 'none';
-                    input.style.display = 'none';
                     document.getElementById('gemini-menu').style.display = 'none';
                 }
             });
