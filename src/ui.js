@@ -1,4 +1,3 @@
-// Funções de interface de usuário
 function createUI() {
     const existingUI = document.getElementById('gemini-helper-container');
     if (existingUI) existingUI.remove();
@@ -12,43 +11,75 @@ function createUI() {
         zIndex: '999999',
         display: 'flex',
         flexDirection: 'column',
-        gap: '10px'
+        gap: '12px',
+        fontFamily: 'Arial, sans-serif'
     });
 
     const actionBtn = document.createElement('button');
     actionBtn.id = 'gemini-helper-btn';
-    actionBtn.textContent = '🔍 Analisar Página';
+    actionBtn.innerHTML = '🔍 Analisar Página';
     Object.assign(actionBtn.style, {
-        padding: '12px 20px',
-        backgroundColor: '#4285f4',
+        padding: '12px 24px',
+        background: 'linear-gradient(135deg, #4285f4, #357abd)',
         color: 'white',
         border: 'none',
-        borderRadius: '24px',
+        borderRadius: '30px',
         cursor: 'pointer',
-        fontWeight: 'bold',
-        boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
+        fontWeight: '600',
+        fontSize: '16px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+        transition: 'transform 0.2s, box-shadow 0.2s'
     });
+    actionBtn.onmouseover = () => {
+        actionBtn.style.transform = 'scale(1.05)';
+        actionBtn.style.boxShadow = '0 6px 16px rgba(0,0,0,0.3)';
+    };
+    actionBtn.onmouseout = () => {
+        actionBtn.style.transform = 'scale(1)';
+        actionBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+    };
 
     const input = document.createElement('input');
     input.id = 'gemini-question-input';
-    input.placeholder = 'Digite sua pergunta (opcional)';
+    input.placeholder = 'Faça uma pergunta ou deixe em branco';
     Object.assign(input.style, {
-        padding: '10px',
-        borderRadius: '8px',
-        border: '1px solid #ccc',
-        display: 'none'
+        padding: '12px 16px',
+        borderRadius: '12px',
+        border: '1px solid #e0e0e0',
+        background: '#f9f9f9',
+        fontSize: '14px',
+        outline: 'none',
+        boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+        display: 'none',
+        transition: 'border-color 0.2s'
     });
+    input.onfocus = () => input.style.borderColor = '#4285f4';
+    input.onblur = () => input.style.borderColor = '#e0e0e0';
 
     const responsePanel = document.createElement('div');
     responsePanel.id = 'gemini-response-panel';
     Object.assign(responsePanel.style, {
         display: 'none',
-        backgroundColor: 'white',
-        borderRadius: '12px',
-        padding: '15px',
-        boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
-        maxWidth: '350px'
+        background: 'white',
+        borderRadius: '16px',
+        padding: '20px',
+        boxShadow: '0 6px 20px rgba(0,0,0,0.15)',
+        maxWidth: '400px',
+        maxHeight: '300px',
+        overflowY: 'auto',
+        border: '1px solid #eee',
+        animation: 'fadeIn 0.3s ease'
     });
+
+    // Adicionar estilo de animação
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    `;
+    document.head.appendChild(style);
 
     container.appendChild(actionBtn);
     container.appendChild(input);
@@ -60,16 +91,15 @@ function createUI() {
 
 function showResponse(panel, answer) {
     panel.innerHTML = `
-        <div style="padding:12px; background:#34a853; color:white; border-radius:6px; text-align:center; font-size:18px;">
+        <div style="padding: 14px; background: linear-gradient(135deg, #34a853, #2d9046); color: white; border-radius: 8px; text-align: center; font-size: 16px; line-height: 1.4;">
             <strong>${answer}</strong>
         </div>
-        <div style="margin-top:12px; font-size:12px; color:#666; text-align:center;">
+        <div style="margin-top: 12px; font-size: 12px; color: #888; text-align: center;">
             Clique fora para fechar
         </div>
     `;
     panel.style.display = 'block';
 }
 
-// Exportar funções para uso em bookmarklet.js
 window.createUI = createUI;
 window.showResponse = showResponse;
