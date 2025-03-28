@@ -1,7 +1,7 @@
 (function() {
     const GEMINI_API_KEY = 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY';
     const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-    const UI_SCRIPT_URL = 'https://raw.githubusercontent.com/hackermoon1/Gemini-Page-Analyzer/refs/heads/main/src/ui.js';
+    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743167666/ui.js'; // URL atualizada do ui.js
 
     fetch(UI_SCRIPT_URL)
         .then(response => response.text())
@@ -9,19 +9,10 @@
             eval(script);
 
             function extractPageContent() {
-                // Clonar o DOM de forma segura para qualquer estrutura
-                let bodyClone;
-                try {
-                    bodyClone = document.documentElement.cloneNode(true);
-                } catch (e) {
-                    console.error('Erro ao clonar DOM:', e);
-                    bodyClone = document.createElement('div');
-                    bodyClone.textContent = document.body?.textContent || '';
-                }
-
+                let contentArea = document.querySelector('body') || document.documentElement;
                 const unwantedTags = ['script', 'style', 'noscript', 'svg', 'iframe', 'head'];
                 unwantedTags.forEach(tag => {
-                    bodyClone.querySelectorAll(tag).forEach(el => el.remove());
+                    contentArea.querySelectorAll(tag).forEach(el => el.remove());
                 });
 
                 const images = Array.from(document.querySelectorAll('img'))
@@ -29,7 +20,7 @@
                     .filter(src => src && src.startsWith('http'))
                     .slice(0, 5);
 
-                const text = (bodyClone.textContent || '')
+                const text = (contentArea.textContent || '')
                     .replace(/\s+/g, ' ')
                     .substring(0, 15000);
 
