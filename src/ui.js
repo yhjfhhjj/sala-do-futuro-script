@@ -112,6 +112,7 @@ function createUI() {
 
     // Opções do menu
     const analyzeOption = document.createElement('button');
+    analyzeOption.id = 'gemini-analyze-btn';
     analyzeOption.innerHTML = '<span style="margin-right: 8px;">🔍</span>Analisar';
     Object.assign(analyzeOption.style, {
         padding: '8px 12px',
@@ -251,9 +252,13 @@ function showResponse(panel, answer, correctAlternative) {
     }, 6000);
 }
 
-function clearUI(input, responsePanel) {
+function clearUI(input, responsePanel, analyzeOption, setIsAnalyzing) {
     input.value = '';
     responsePanel.style.display = 'none';
+    analyzeOption.disabled = false; // Reativa o botão "Analisar"
+    analyzeOption.innerHTML = '<span style="margin-right: 8px;">🔍</span>Analisar';
+    analyzeOption.style.opacity = '1';
+    setIsAnalyzing(false); // Reseta o estado de análise
 }
 
 window.createUI = createUI;
