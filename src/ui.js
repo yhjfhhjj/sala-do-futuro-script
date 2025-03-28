@@ -17,7 +17,7 @@ function createUI() {
 
     const actionBtn = document.createElement('button');
     actionBtn.id = 'gemini-helper-btn';
-    actionBtn.innerHTML = '🔍 Analisar Página';
+    actionBtn.innerHTML = '🔍 Analisar';
     Object.assign(actionBtn.style, {
         padding: '12px 24px',
         background: 'linear-gradient(135deg, #4285f4, #357abd)',
@@ -28,7 +28,7 @@ function createUI() {
         fontWeight: '600',
         fontSize: '16px',
         boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-        transition: 'transform 0.2s, box-shadow 0.2s'
+        transition: 'all 0.3s ease'
     });
     actionBtn.onmouseover = () => {
         actionBtn.style.transform = 'scale(1.05)';
@@ -39,9 +39,9 @@ function createUI() {
         actionBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
     };
 
-    const input = document.createElement('input');
+    const input = document.createElement('textarea');
     input.id = 'gemini-question-input';
-    input.placeholder = 'Faça uma pergunta ou deixe em branco';
+    input.placeholder = 'Cole sua pergunta com alternativas aqui\nExemplo:\nQual é a capital do Brasil?\na) Rio de Janeiro\nb) São Paulo\nc) Brasília';
     Object.assign(input.style, {
         padding: '12px 16px',
         borderRadius: '12px',
@@ -50,11 +50,35 @@ function createUI() {
         fontSize: '14px',
         outline: 'none',
         boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-        display: 'none',
-        transition: 'border-color 0.2s'
+        resize: 'vertical',
+        minHeight: '80px',
+        width: '300px',
+        transition: 'all 0.3s ease'
     });
     input.onfocus = () => input.style.borderColor = '#4285f4';
     input.onblur = () => input.style.borderColor = '#e0e0e0';
+
+    const clearBtn = document.createElement('button');
+    clearBtn.innerHTML = '🗑️ Limpar';
+    Object.assign(clearBtn.style, {
+        padding: '8px 16px',
+        background: 'linear-gradient(135deg, #ff4444, #cc3333)',
+        color: 'white',
+        border: 'none',
+        borderRadius: '20px',
+        cursor: 'pointer',
+        fontSize: '14px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+        transition: 'all 0.3s ease'
+    });
+    clearBtn.onmouseover = () => {
+        clearBtn.style.transform = 'scale(1.05)';
+        clearBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+    };
+    clearBtn.onmouseout = () => {
+        clearBtn.style.transform = 'scale(1)';
+        clearBtn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+    };
 
     const responsePanel = document.createElement('div');
     responsePanel.id = 'gemini-response-panel';
@@ -68,14 +92,13 @@ function createUI() {
         maxHeight: '300px',
         overflowY: 'auto',
         border: '1px solid #eee',
-        animation: 'fadeIn 0.3s ease'
+        animation: 'slideIn 0.3s ease'
     });
 
-    // Adicionar estilo de animação
     const style = document.createElement('style');
     style.textContent = `
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
     `;
@@ -83,10 +106,11 @@ function createUI() {
 
     container.appendChild(actionBtn);
     container.appendChild(input);
+    container.appendChild(clearBtn);
     container.appendChild(responsePanel);
     document.body.appendChild(container);
 
-    return { actionBtn, input, responsePanel };
+    return { actionBtn, input, clearBtn, responsePanel };
 }
 
 function showResponse(panel, answer) {
@@ -101,5 +125,11 @@ function showResponse(panel, answer) {
     panel.style.display = 'block';
 }
 
+function clearUI(input, responsePanel) {
+    input.value = '';
+    responsePanel.style.display = 'none';
+}
+
 window.createUI = createUI;
 window.showResponse = showResponse;
+window.clearUI = clearUI;
