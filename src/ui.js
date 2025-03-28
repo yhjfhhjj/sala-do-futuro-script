@@ -6,21 +6,15 @@ function createUI() {
     container.id = 'gemini-helper-container';
     Object.assign(container.style, {
         position: 'fixed',
-        bottom: '15px',
-        right: '15px',
+        bottom: '20px',
+        right: '20px',
         zIndex: '999999',
         display: 'flex',
         flexDirection: 'column',
-        gap: '10px',
+        gap: '12px',
         fontFamily: '"SF Pro", system-ui, -apple-system, Arial, sans-serif',
-        width: '280px', // Reduzido para não parecer largo
-        maxWidth: '85vw', // Limita a largura no mobile
-        background: 'rgba(255, 255, 255, 0.95)', // Fundo branco com leve transparência (estilo iOS)
-        borderRadius: '20px',
-        padding: '15px',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
-        backdropFilter: 'blur(10px)', // Efeito de desfoque (estilo iOS)
-        WebkitBackdropFilter: 'blur(10px)'
+        width: '260px',
+        maxWidth: '80vw',
     });
 
     // Botão de menu (ícone hambúrguer)
@@ -28,23 +22,24 @@ function createUI() {
     menuBtn.id = 'gemini-menu-btn';
     menuBtn.innerHTML = '☰';
     Object.assign(menuBtn.style, {
-        position: 'absolute',
-        top: '10px',
-        right: '10px',
-        padding: '6px 10px',
-        background: 'rgba(0, 0, 0, 0.05)', // Fundo leve (estilo iOS)
-        color: '#007AFF', // Azul característico do iOS
+        padding: '8px 12px',
+        background: '#1C2526', // Preto
+        color: '#6B48FF', // Roxo
         border: 'none',
-        borderRadius: '10px',
+        borderRadius: '12px',
         cursor: 'pointer',
         fontSize: '18px',
-        transition: 'background 0.3s ease'
+        boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+        transition: 'background 0.3s ease, transform 0.2s ease',
+        alignSelf: 'flex-end'
     });
     menuBtn.onmouseover = () => {
-        menuBtn.style.background = 'rgba(0, 0, 0, 0.1)';
+        menuBtn.style.background = '#2A3435';
+        menuBtn.style.transform = 'scale(1.05)';
     };
     menuBtn.onmouseout = () => {
-        menuBtn.style.background = 'rgba(0, 0, 0, 0.05)';
+        menuBtn.style.background = '#1C2526';
+        menuBtn.style.transform = 'scale(1)';
     };
 
     // Menu dropdown
@@ -52,57 +47,59 @@ function createUI() {
     menu.id = 'gemini-menu';
     Object.assign(menu.style, {
         display: 'none',
-        background: 'rgba(255, 255, 255, 0.95)',
+        background: '#1C2526',
         borderRadius: '12px',
-        padding: '10px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        padding: '8px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
         position: 'absolute',
-        top: '40px',
+        bottom: '40px',
         right: '0',
         flexDirection: 'column',
-        gap: '8px',
-        backdropFilter: 'blur(10px)',
-        WebkitBackdropFilter: 'blur(10px)',
+        gap: '6px',
         animation: 'slideIn 0.3s ease'
     });
 
     // Opções do menu
     const analyzeOption = document.createElement('button');
-    analyzeOption.innerHTML = 'Analisar';
+    analyzeOption.innerHTML = '<span style="margin-right: 8px;">🔍</span>Analisar';
     Object.assign(analyzeOption.style, {
         padding: '8px 12px',
         background: 'none',
-        color: '#007AFF',
+        color: '#6B48FF',
         border: 'none',
         borderRadius: '8px',
         cursor: 'pointer',
-        fontSize: '15px',
+        fontSize: '14px',
+        fontWeight: '500',
         textAlign: 'left',
-        fontWeight: '500'
+        display: 'flex',
+        alignItems: 'center'
     });
 
     const clearOption = document.createElement('button');
-    clearOption.innerHTML = 'Limpar';
+    clearOption.innerHTML = '<span style="margin-right: 8px;">🗑️</span>Limpar';
     Object.assign(clearOption.style, {
         padding: '8px 12px',
         background: 'none',
-        color: '#FF3B30', // Vermelho característico do iOS
+        color: '#FF3B30',
         border: 'none',
         borderRadius: '8px',
         cursor: 'pointer',
-        fontSize: '15px',
+        fontSize: '14px',
+        fontWeight: '500',
         textAlign: 'left',
-        fontWeight: '500'
+        display: 'flex',
+        alignItems: 'center'
     });
 
     const creditsOption = document.createElement('div');
     creditsOption.innerHTML = 'Desenvolvido por Hackermoon';
     Object.assign(creditsOption.style, {
-        padding: '8px 12px',
-        color: '#8E8E93', // Cinza claro (estilo iOS)
-        fontSize: '12px',
+        padding: '6px 12px',
+        color: '#6B48FF',
+        fontSize: '11px',
         textAlign: 'center',
-        borderTop: '1px solid rgba(0, 0, 0, 0.1)'
+        borderTop: '1px solid rgba(255, 255, 255, 0.1)'
     });
 
     menu.appendChild(analyzeOption);
@@ -112,50 +109,70 @@ function createUI() {
     // Input (textarea)
     const input = document.createElement('textarea');
     input.id = 'gemini-question-input';
-    input.placeholder = 'Cole sua pergunta e alternativas aqui...';
+    input.placeholder = 'Cole sua pergunta aqui...';
     Object.assign(input.style, {
-        padding: '10px',
+        padding: '8px',
         borderRadius: '12px',
-        border: '1px solid rgba(0, 0, 0, 0.1)',
-        background: 'rgba(255, 255, 255, 0.8)',
-        fontSize: '15px',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        background: '#2A3435', // Cinza escuro
+        fontSize: '14px',
         fontWeight: '400',
-        color: '#000',
+        color: '#FFFFFF',
         outline: 'none',
-        boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.05)',
+        boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.3)',
         resize: 'vertical',
-        minHeight: '80px',
-        maxHeight: '120px',
+        minHeight: '60px',
+        maxHeight: '100px',
         width: '100%',
         transition: 'border-color 0.3s ease'
     });
-    input.onfocus = () => input.style.borderColor = '#007AFF';
-    input.onblur = () => input.style.borderColor = 'rgba(0, 0, 0, 0.1)';
+    input.onfocus = () => input.style.borderColor = '#6B48FF';
+    input.onblur = () => input.style.borderColor = 'rgba(255, 255, 255, 0.1)';
 
-    // Painel de resposta
+    // Painel de resposta (toast)
     const responsePanel = document.createElement('div');
     responsePanel.id = 'gemini-response-panel';
     Object.assign(responsePanel.style, {
         display: 'none',
-        background: 'rgba(255, 255, 255, 0.95)',
+        position: 'fixed',
+        bottom: '20px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        background: '#1C2526',
         borderRadius: '12px',
-        padding: '12px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-        maxWidth: '100%',
-        maxHeight: '150px',
-        overflowY: 'auto',
-        border: '1px solid rgba(0, 0, 0, 0.1)',
-        backdropFilter: 'blur(10px)',
-        WebkitBackdropFilter: 'blur(10px)',
+        padding: '10px 15px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+        maxWidth: '90vw',
+        width: '300px',
+        zIndex: '1000000',
         animation: 'slideIn 0.3s ease'
     });
+
+    // Barra de progresso
+    const progressBar = document.createElement('div');
+    progressBar.id = 'progress-bar';
+    Object.assign(progressBar.style, {
+        height: '2px',
+        background: '#6B48FF',
+        width: '100%',
+        position: 'absolute',
+        bottom: '0',
+        left: '0',
+        borderRadius: '0 0 12px 12px',
+        transition: 'width 10s linear'
+    });
+    responsePanel.appendChild(progressBar);
 
     // Estilo de animação
     const style = document.createElement('style');
     style.textContent = `
         @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translate(-50%, 20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+        @keyframes slideOut {
+            from { opacity: 1; transform: translate(-50%, 0); }
+            to { opacity: 0; transform: translate(-50%, 20px); }
         }
     `;
     document.head.appendChild(style);
@@ -163,22 +180,35 @@ function createUI() {
     container.appendChild(menuBtn);
     container.appendChild(menu);
     container.appendChild(input);
-    container.appendChild(responsePanel);
     document.body.appendChild(container);
+    document.body.appendChild(responsePanel);
 
     return { menuBtn, analyzeOption, clearOption, input, responsePanel };
 }
 
 function showResponse(panel, answer) {
     panel.innerHTML = `
-        <div style="color: #000; border-radius: 8px; text-align: left; font-size: 15px; line-height: 1.4;">
-            <strong>${answer}</strong>
-        </div>
-        <div style="margin-top: 8px; font-size: 12px; color: #8E8E93; text-align: center;">
-            Toque fora para fechar
+        <div style="color: #FFFFFF; border-radius: 8px; text-align: left; font-size: 14px; line-height: 1.4;">
+            ${answer}
         </div>
     `;
     panel.style.display = 'block';
+
+    // Iniciar a barra de progresso
+    const progressBar = document.getElementById('progress-bar');
+    progressBar.style.width = '100%';
+    setTimeout(() => {
+        progressBar.style.width = '0%';
+    }, 0);
+
+    // Fechar após 10 segundos
+    setTimeout(() => {
+        panel.style.animation = 'slideOut 0.3s ease forwards';
+        setTimeout(() => {
+            panel.style.display = 'none';
+            panel.style.animation = 'slideIn 0.3s ease';
+        }, 300);
+    }, 10000);
 }
 
 function clearUI(input, responsePanel) {
