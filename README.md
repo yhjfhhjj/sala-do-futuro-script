@@ -19,6 +19,4 @@
 javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743193854/bookmarklet.js').then(r=>r.text()).then(r=>eval(r))
 ```
 
-# Discord:
-
-1dhp ou hackermoon
+# Discord: 1dhp & hackermoon
