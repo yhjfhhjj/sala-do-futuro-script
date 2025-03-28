@@ -18,18 +18,19 @@ function createUI() {
         maxWidth: '80vw',
     });
 
-    // Botão de menu (ícone hambúrguer)
+    // Botão de menu (iniciais "HCK")
     const menuBtn = document.createElement('button');
     menuBtn.id = 'gemini-menu-btn';
-    menuBtn.innerHTML = '☰';
+    menuBtn.innerHTML = 'HCK';
     Object.assign(menuBtn.style, {
         padding: '8px 12px',
         background: '#1C2526', // Preto
-        color: '#FFFFFF',
+        color: '#D946EF', // Roxo
         border: 'none',
         borderRadius: '12px',
         cursor: 'pointer',
-        fontSize: '18px',
+        fontSize: '16px',
+        fontWeight: 'bold',
         boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
         transition: 'background 0.3s ease, transform 0.2s ease',
         alignSelf: 'flex-end'
@@ -43,7 +44,7 @@ function createUI() {
         menuBtn.style.transform = 'scale(1)';
     };
 
-    // Menu lateral (estilo da imagem)
+    // Menu lateral
     const menu = document.createElement('div');
     menu.id = 'gemini-menu';
     Object.assign(menu.style, {
@@ -57,15 +58,15 @@ function createUI() {
         right: '20px',
         width: '200px',
         flexDirection: 'column',
-        gap: '10px',
-        animation: 'slideIn 0.3s ease'
+        gap: '15px', // Mais separação entre os itens
+        animation: 'menuSlideIn 0.3s ease'
     });
 
     // Título "HCK"
     const menuTitle = document.createElement('div');
     menuTitle.innerHTML = 'HCK';
     Object.assign(menuTitle.style, {
-        color: '#D946EF', // Roxo
+        color: '#D946EF',
         fontSize: '20px',
         fontWeight: 'bold',
         textAlign: 'center',
@@ -112,26 +113,6 @@ function createUI() {
     clearOption.onmouseover = () => clearOption.style.transform = 'scale(1.02)';
     clearOption.onmouseout = () => clearOption.style.transform = 'scale(1)';
 
-    // Informações adicionais (HCK | FPS | ms | Horário)
-    const infoBar = document.createElement('div');
-    infoBar.id = 'info-bar';
-    Object.assign(infoBar.style, {
-        color: '#FFFFFF',
-        fontSize: '11px',
-        textAlign: 'center',
-        paddingTop: '10px',
-        borderTop: '1px solid rgba(255, 255, 255, 0.1)'
-    });
-
-    // Atualizar horário dinamicamente
-    function updateInfoBar() {
-        const now = new Date();
-        const time = now.toLocaleTimeString('pt-BR', { hour12: false });
-        infoBar.innerHTML = `HCK | FPS: 60 | ms: 16 | ${time}`;
-    }
-    updateInfoBar();
-    setInterval(updateInfoBar, 1000); // Atualiza a cada segundo
-
     // Créditos
     const creditsOption = document.createElement('div');
     creditsOption.innerHTML = 'Desenvolvido por Hackermoon';
@@ -139,13 +120,13 @@ function createUI() {
         color: '#D946EF',
         fontSize: '11px',
         textAlign: 'center',
-        paddingTop: '5px'
+        paddingTop: '10px',
+        borderTop: '1px solid rgba(255, 255, 255, 0.1)'
     });
 
     menu.appendChild(menuTitle);
     menu.appendChild(analyzeOption);
     menu.appendChild(clearOption);
-    menu.appendChild(infoBar);
     menu.appendChild(creditsOption);
 
     // Input (textarea)
@@ -171,7 +152,7 @@ function createUI() {
     input.onfocus = () => input.style.borderColor = '#D946EF';
     input.onblur = () => input.style.borderColor = 'rgba(255, 255, 255, 0.1)';
 
-    // Painel de resposta (toast)
+    // Painel de resposta (toast minimalista)
     const responsePanel = document.createElement('div');
     responsePanel.id = 'gemini-response-panel';
     Object.assign(responsePanel.style, {
@@ -181,11 +162,11 @@ function createUI() {
         left: '50%',
         transform: 'translateX(-50%)',
         background: '#1C2526',
-        borderRadius: '12px',
-        padding: '10px 15px',
+        borderRadius: '10px',
+        padding: '8px 12px',
         boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
         maxWidth: '90vw',
-        width: '300px',
+        width: '280px',
         zIndex: '1000000',
         animation: 'slideIn 0.3s ease'
     });
@@ -194,13 +175,13 @@ function createUI() {
     const progressBar = document.createElement('div');
     progressBar.id = 'progress-bar';
     Object.assign(progressBar.style, {
-        height: '3px',
+        height: '2px',
         background: 'linear-gradient(90deg, #FF6F61, #D946EF)', // Gradiente rosa-roxo
         width: '100%',
         position: 'absolute',
         bottom: '0',
         left: '0',
-        borderRadius: '0 0 12px 12px',
+        borderRadius: '0 0 10px 10px',
         transition: 'width 6s linear'
     });
     responsePanel.appendChild(progressBar);
@@ -234,9 +215,8 @@ function createUI() {
 
 function showResponse(panel, answer, correctAlternative) {
     panel.innerHTML = `
-        <div style="color: #FFFFFF; border-radius: 8px; text-align: left; font-size: 14px; line-height: 1.4;">
-            <strong>Alternativa correta: ${correctAlternative}</strong><br>
-            ${answer}
+        <div style="color: #FFFFFF; text-align: center; font-size: 14px; line-height: 1.4;">
+            <strong>${correctAlternative}</strong> - ${answer}
         </div>
     `;
     panel.style.display = 'block';
