@@ -14,8 +14,6 @@ function createUI() {
         flexDirection: 'column',
         gap: '12px',
         fontFamily: '"SF Pro", system-ui, -apple-system, Arial, sans-serif',
-        width: '260px',
-        maxWidth: '80vw',
     });
 
     // Botão de menu (iniciais "HCK")
@@ -56,11 +54,23 @@ function createUI() {
         position: 'fixed',
         bottom: '60px',
         right: '20px',
-        width: '200px',
         flexDirection: 'column',
-        gap: '15px', // Mais separação entre os itens
-        animation: 'menuSlideIn 0.3s ease'
+        gap: '15px',
+        animation: 'menuSlideIn 0.3s ease',
+        backdropFilter: 'blur(10px)', // Efeito de blur
+        WebkitBackdropFilter: 'blur(10px)',
+        width: '200px', // Compacto para celular
+        maxWidth: '80vw',
+        padding: '10px', // Menos padding no celular
     });
+
+    // Ajustes para PC (resolução maior)
+    if (window.innerWidth > 600) {
+        Object.assign(menu.style, {
+            width: '300px', // Maior no PC
+            padding: '15px', // Mais padding no PC
+        });
+    }
 
     // Título "HCK"
     const menuTitle = document.createElement('div');
@@ -73,6 +83,32 @@ function createUI() {
         paddingBottom: '10px',
         borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
     });
+
+    // Input (textarea) dentro do menu
+    const input = document.createElement('textarea');
+    input.id = 'gemini-question-input';
+    input.placeholder = 'Cole sua pergunta aqui...';
+    Object.assign(input.style, {
+        padding: '8px',
+        borderRadius: '8px',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        background: '#2A3435',
+        fontSize: '14px',
+        fontWeight: '400',
+        color: '#FFFFFF',
+        outline: 'none',
+        boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.3)',
+        resize: 'vertical',
+        minHeight: '60px',
+        maxHeight: '80px', // Compacto para celular
+        width: '100%',
+        transition: 'border-color 0.3s ease'
+    });
+    if (window.innerWidth > 600) {
+        input.style.maxHeight = '100px'; // Maior no PC
+    }
+    input.onfocus = () => input.style.borderColor = '#D946EF';
+    input.onblur = () => input.style.borderColor = 'rgba(255, 255, 255, 0.1)';
 
     // Opções do menu
     const analyzeOption = document.createElement('button');
@@ -125,32 +161,10 @@ function createUI() {
     });
 
     menu.appendChild(menuTitle);
+    menu.appendChild(input);
     menu.appendChild(analyzeOption);
     menu.appendChild(clearOption);
     menu.appendChild(creditsOption);
-
-    // Input (textarea)
-    const input = document.createElement('textarea');
-    input.id = 'gemini-question-input';
-    input.placeholder = 'Cole sua pergunta aqui...';
-    Object.assign(input.style, {
-        padding: '8px',
-        borderRadius: '12px',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        background: '#2A3435',
-        fontSize: '14px',
-        fontWeight: '400',
-        color: '#FFFFFF',
-        outline: 'none',
-        boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.3)',
-        resize: 'vertical',
-        minHeight: '60px',
-        maxHeight: '100px',
-        width: '100%',
-        transition: 'border-color 0.3s ease'
-    });
-    input.onfocus = () => input.style.borderColor = '#D946EF';
-    input.onblur = () => input.style.borderColor = 'rgba(255, 255, 255, 0.1)';
 
     // Painel de resposta (toast minimalista)
     const responsePanel = document.createElement('div');
@@ -206,7 +220,6 @@ function createUI() {
 
     container.appendChild(menuBtn);
     container.appendChild(menu);
-    container.appendChild(input);
     document.body.appendChild(container);
     document.body.appendChild(responsePanel);
 
