@@ -1,16 +1,13 @@
-// Código principal do bookmarklet
 (function() {
     const GEMINI_API_KEY = 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY';
     const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
     const UI_SCRIPT_URL = 'https://raw.githubusercontent.com/hackermoon1/Gemini-Page-Analyzer/refs/heads/main/src/ui.js';
 
-    // Carregar ui.js dinamicamente
     fetch(UI_SCRIPT_URL)
         .then(response => response.text())
         .then(script => {
-            eval(script); // Executa ui.js no escopo global
+            eval(script);
 
-            // Funções principais
             function extractPageContent() {
                 const bodyClone = document.cloneNode(true);
                 const unwantedTags = ['script', 'style', 'noscript', 'svg', 'iframe', 'head'];
@@ -27,12 +24,17 @@
                     .replace(/\s+/g, ' ')
                     .substring(0, 15000);
 
-                return { text, images };
+                // Detectar perguntas no texto
+                const questions = text.match(/[^.!?]*\?\s*/g)?.filter(q => q.trim().length > 5) || [];
+                const detectedQuestion = questions.length > 0 ? questions[0].trim() : '';
+
+                return { text, images, detectedQuestion };
             }
 
             async function analyzeContent(content, question = '') {
-                const prompt = question 
-                    ? `Analise este conteúdo e responda à pergunta: "${question}"\n\nTexto: ${content.text}\nImagens: ${content.images.join(', ')}\n\nResposta:`
+                const finalQuestion = question || content.detectedQuestion || '';
+                const prompt = finalQuestion 
+                    ? `Analise este conteúdo e responda à pergunta: "${finalQuestion}"\n\nTexto: ${content.text}\nImagens: ${content.images.join(', ')}\n\nResposta:`
                     : `Resuma este conteúdo de forma direta:\n\nTexto: ${content.text}\nImagens: ${content.images.join(', ')}\n\nResposta:`;
 
                 try {
@@ -52,12 +54,11 @@
                 }
             }
 
-            // Iniciar UI e lógica
             const { actionBtn, input, responsePanel } = window.createUI();
 
             actionBtn.addEventListener('click', async () => {
                 actionBtn.disabled = true;
-                actionBtn.textContent = 'Analisando...';
+                actionBtn.innerHTML = '⏳ Analisando...';
                 actionBtn.style.opacity = '0.7';
                 input.style.display = 'block';
 
@@ -68,7 +69,7 @@
                 window.showResponse(responsePanel, answer);
 
                 actionBtn.disabled = false;
-                actionBtn.textContent = '🔍 Analisar Página';
+                actionBtn.innerHTML = '🔍 Analisar Página';
                 actionBtn.style.opacity = '1';
             });
 
