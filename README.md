@@ -16,7 +16,7 @@
 2. Crie um novo favorito/bookmark
 3. No campo URL, cole:
 ```js
-javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743193854/bookmarklet.js').then(r=>r.text()).then(r=>eval(r))
+javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743195862/bookmarklet.js').then(r=>r.text()).then(r=>eval(r))
 ```
 
 # Discord: 1dhp & hackermoon
