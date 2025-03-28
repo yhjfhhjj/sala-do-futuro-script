@@ -1,7 +1,7 @@
 (function() {
     const GEMINI_API_KEY = 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY';
     const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743174488/ui.js';
+    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743167666/ui.js';
 
     fetch(UI_SCRIPT_URL)
         .then(response => response.text())
@@ -23,9 +23,9 @@
             }
 
             async function analyzeContent(content, question) {
-                if (!question.trim()) return 'Por favor, cole uma pergunta com alternativas.';
+                if (!question.trim()) return { answer: 'Por favor, cole uma pergunta com alternativas.', correctAlternative: '' };
 
-                const prompt = `Responda à seguinte pergunta com base no conteúdo da página:\n\nPergunta:\n${question}\n\nConteúdo:\nTexto: ${content.text}\nImagens: ${content.images.join(', ')}\n\nResposta:`;
+                const prompt = `Responda à seguinte pergunta com base no conteúdo da página e indique a alternativa correta (ex.: "A resposta correta é: B").\n\nPergunta:\n${question}\n\nConteúdo:\nTexto: ${content.text}\nImagens: ${content.images.join(', ')}\n\nResposta:`;
 
                 try {
                     const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
@@ -37,10 +37,17 @@
                         })
                     });
                     const data = await response.json();
-                    return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || 'Resposta não encontrada';
+                    const fullAnswer = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || 'Resposta não encontrada';
+
+                    // Extrair a alternativa correta
+                    const match = fullAnswer.match(/A resposta correta é: ([A-E])/i);
+                    const correctAlternative = match ? match[1] : 'Não identificada';
+                    const answerText = fullAnswer.replace(/A resposta correta é: [A-E]/i, '').trim();
+
+                    return { answer: answerText, correctAlternative };
                 } catch (error) {
                     console.error('Erro na API:', error);
-                    return 'Erro ao analisar o conteúdo';
+                    return { answer: 'Erro ao analisar o conteúdo', correctAlternative: '' };
                 }
             }
 
@@ -54,7 +61,7 @@
             analyzeOption.addEventListener('click', async () => {
                 const question = input.value.trim();
                 if (!question) {
-                    window.showResponse(responsePanel, 'Por favor, cole uma pergunta com alternativas.');
+                    window.showResponse(responsePanel, 'Por favor, cole uma pergunta com alternativas.', '');
                     return;
                 }
 
@@ -63,9 +70,9 @@
                 analyzeOption.style.opacity = '0.7';
 
                 const content = extractPageContent();
-                const answer = await analyzeContent(content, question);
+                const { answer, correctAlternative } = await analyzeContent(content, question);
 
-                window.showResponse(responsePanel, answer);
+                window.showResponse(responsePanel, answer, correctAlternative);
 
                 analyzeOption.disabled = false;
                 analyzeOption.innerHTML = '<span style="margin-right: 8px;">🔍</span>Analisar';
@@ -79,8 +86,7 @@
             });
 
             document.addEventListener('click', e => {
-                if (!e.target.closest('#gemini-helper-container')) {
-                    responsePanel.style.display = 'none';
+                if (!e.target.closest('#gemini-helper-container') && !e.target.closest('#gemini-response-panel')) {
                     document.getElementById('gemini-menu').style.display = 'none';
                 }
             });
