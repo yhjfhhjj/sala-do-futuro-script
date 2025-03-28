@@ -23,7 +23,7 @@ Dê o nome de "HCK" e salve.
 
 4. Clique no botão "HCK" pra abrir o menu. Cole a pergunta e as alternativas (ex.: "Qual a capital do Brasil? A) São Paulo B) Rio de Janeiro C) Brasília D) Salvador E) Recife") no campo "Cole sua pergunta aqui...".
 
-5. Clique em "Analisar". A resposta vai aparecer numa notificação no centro inferior da tela (ex.: "C - A capital do Brasil é Brasília") e some em 6 segundos.
+5. Clique em "Analisar". A resposta vai aparecer numa notificação no centro inferior da tela (ex.: "C - A capital do Brasil é Brasília").
 
 6. Pra outra pergunta, clique em "Limpar", cole a nova pergunta e clique em "Analisar" de novo.
 
