@@ -6,18 +6,21 @@ function createUI() {
     container.id = 'gemini-helper-container';
     Object.assign(container.style, {
         position: 'fixed',
-        bottom: '10px',
-        right: '10px',
+        bottom: '15px',
+        right: '15px',
         zIndex: '999999',
         display: 'flex',
         flexDirection: 'column',
-        gap: '8px',
-        fontFamily: '"Roboto", Arial, sans-serif',
-        maxWidth: '90vw', // Limita a largura no mobile
-        width: '300px', // Tamanho padrão para PC
-        '@media (max-width: 600px)': {
-            width: '80vw', // Ajusta para mobile
-        }
+        gap: '10px',
+        fontFamily: '"SF Pro", system-ui, -apple-system, Arial, sans-serif',
+        width: '280px', // Reduzido para não parecer largo
+        maxWidth: '85vw', // Limita a largura no mobile
+        background: 'rgba(255, 255, 255, 0.95)', // Fundo branco com leve transparência (estilo iOS)
+        borderRadius: '20px',
+        padding: '15px',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+        backdropFilter: 'blur(10px)', // Efeito de desfoque (estilo iOS)
+        WebkitBackdropFilter: 'blur(10px)'
     });
 
     // Botão de menu (ícone hambúrguer)
@@ -25,23 +28,23 @@ function createUI() {
     menuBtn.id = 'gemini-menu-btn';
     menuBtn.innerHTML = '☰';
     Object.assign(menuBtn.style, {
-        padding: '8px 12px',
-        background: 'linear-gradient(135deg, #4285f4, #357abd)',
-        color: 'white',
+        position: 'absolute',
+        top: '10px',
+        right: '10px',
+        padding: '6px 10px',
+        background: 'rgba(0, 0, 0, 0.05)', // Fundo leve (estilo iOS)
+        color: '#007AFF', // Azul característico do iOS
         border: 'none',
-        borderRadius: '20px',
+        borderRadius: '10px',
         cursor: 'pointer',
         fontSize: '18px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-        transition: 'all 0.3s ease'
+        transition: 'background 0.3s ease'
     });
     menuBtn.onmouseover = () => {
-        menuBtn.style.transform = 'scale(1.05)';
-        menuBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+        menuBtn.style.background = 'rgba(0, 0, 0, 0.1)';
     };
     menuBtn.onmouseout = () => {
-        menuBtn.style.transform = 'scale(1)';
-        menuBtn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+        menuBtn.style.background = 'rgba(0, 0, 0, 0.05)';
     };
 
     // Menu dropdown
@@ -49,53 +52,57 @@ function createUI() {
     menu.id = 'gemini-menu';
     Object.assign(menu.style, {
         display: 'none',
-        background: 'white',
+        background: 'rgba(255, 255, 255, 0.95)',
         borderRadius: '12px',
         padding: '10px',
         boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
         position: 'absolute',
-        bottom: '40px',
+        top: '40px',
         right: '0',
         flexDirection: 'column',
         gap: '8px',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
         animation: 'slideIn 0.3s ease'
     });
 
     // Opções do menu
     const analyzeOption = document.createElement('button');
-    analyzeOption.innerHTML = '🔍 Analisar';
+    analyzeOption.innerHTML = 'Analisar';
     Object.assign(analyzeOption.style, {
         padding: '8px 12px',
-        background: 'linear-gradient(135deg, #34a853, #2d9046)',
-        color: 'white',
+        background: 'none',
+        color: '#007AFF',
         border: 'none',
         borderRadius: '8px',
         cursor: 'pointer',
-        fontSize: '14px',
-        textAlign: 'left'
+        fontSize: '15px',
+        textAlign: 'left',
+        fontWeight: '500'
     });
 
     const clearOption = document.createElement('button');
-    clearOption.innerHTML = '🗑️ Limpar';
+    clearOption.innerHTML = 'Limpar';
     Object.assign(clearOption.style, {
         padding: '8px 12px',
-        background: 'linear-gradient(135deg, #ff4444, #cc3333)',
-        color: 'white',
+        background: 'none',
+        color: '#FF3B30', // Vermelho característico do iOS
         border: 'none',
         borderRadius: '8px',
         cursor: 'pointer',
-        fontSize: '14px',
-        textAlign: 'left'
+        fontSize: '15px',
+        textAlign: 'left',
+        fontWeight: '500'
     });
 
     const creditsOption = document.createElement('div');
     creditsOption.innerHTML = 'Desenvolvido por Hackermoon';
     Object.assign(creditsOption.style, {
         padding: '8px 12px',
-        color: '#666',
+        color: '#8E8E93', // Cinza claro (estilo iOS)
         fontSize: '12px',
         textAlign: 'center',
-        borderTop: '1px solid #eee'
+        borderTop: '1px solid rgba(0, 0, 0, 0.1)'
     });
 
     menu.appendChild(analyzeOption);
@@ -105,38 +112,41 @@ function createUI() {
     // Input (textarea)
     const input = document.createElement('textarea');
     input.id = 'gemini-question-input';
-    input.placeholder = 'Cole sua pergunta com alternativas aqui\nExemplo:\nQual é a capital do Brasil?\na) Rio de Janeiro\nb) São Paulo\nc) Brasília';
+    input.placeholder = 'Cole sua pergunta e alternativas aqui...';
     Object.assign(input.style, {
         padding: '10px',
         borderRadius: '12px',
-        border: '1px solid #e0e0e0',
-        background: '#f9f9f9',
-        fontSize: '14px',
+        border: '1px solid rgba(0, 0, 0, 0.1)',
+        background: 'rgba(255, 255, 255, 0.8)',
+        fontSize: '15px',
+        fontWeight: '400',
+        color: '#000',
         outline: 'none',
-        boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+        boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.05)',
         resize: 'vertical',
-        minHeight: '60px',
-        maxHeight: '150px',
+        minHeight: '80px',
+        maxHeight: '120px',
         width: '100%',
-        display: 'none',
-        transition: 'all 0.3s ease'
+        transition: 'border-color 0.3s ease'
     });
-    input.onfocus = () => input.style.borderColor = '#4285f4';
-    input.onblur = () => input.style.borderColor = '#e0e0e0';
+    input.onfocus = () => input.style.borderColor = '#007AFF';
+    input.onblur = () => input.style.borderColor = 'rgba(0, 0, 0, 0.1)';
 
     // Painel de resposta
     const responsePanel = document.createElement('div');
     responsePanel.id = 'gemini-response-panel';
     Object.assign(responsePanel.style, {
         display: 'none',
-        background: 'white',
+        background: 'rgba(255, 255, 255, 0.95)',
         borderRadius: '12px',
-        padding: '15px',
+        padding: '12px',
         boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
         maxWidth: '100%',
-        maxHeight: '200px',
+        maxHeight: '150px',
         overflowY: 'auto',
-        border: '1px solid #eee',
+        border: '1px solid rgba(0, 0, 0, 0.1)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
         animation: 'slideIn 0.3s ease'
     });
 
@@ -161,11 +171,11 @@ function createUI() {
 
 function showResponse(panel, answer) {
     panel.innerHTML = `
-        <div style="padding: 10px; background: linear-gradient(135deg, #34a853, #2d9046); color: white; border-radius: 8px; text-align: center; font-size: 14px; line-height: 1.4;">
+        <div style="color: #000; border-radius: 8px; text-align: left; font-size: 15px; line-height: 1.4;">
             <strong>${answer}</strong>
         </div>
-        <div style="margin-top: 8px; font-size: 11px; color: #888; text-align: center;">
-            Clique fora para fechar
+        <div style="margin-top: 8px; font-size: 12px; color: #8E8E93; text-align: center;">
+            Toque fora para fechar
         </div>
     `;
     panel.style.display = 'block';
@@ -174,7 +184,6 @@ function showResponse(panel, answer) {
 function clearUI(input, responsePanel) {
     input.value = '';
     responsePanel.style.display = 'none';
-    input.style.display = 'none';
 }
 
 window.createUI = createUI;
