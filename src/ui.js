@@ -49,26 +49,25 @@ function createUI() {
         display: 'none',
         background: '#1C2526',
         borderRadius: '12px',
-        padding: '15px',
+        padding: '8px', // Reduzido para ser mais compacto
         boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
         position: 'fixed',
         bottom: '60px',
         right: '20px',
         flexDirection: 'column',
-        gap: '15px',
+        gap: '10px', // Reduzido para maior compactação
         animation: 'menuSlideIn 0.3s ease',
         backdropFilter: 'blur(10px)', // Efeito de blur
         WebkitBackdropFilter: 'blur(10px)',
         width: '200px', // Compacto para celular
         maxWidth: '80vw',
-        padding: '10px', // Menos padding no celular
     });
 
     // Ajustes para PC (resolução maior)
     if (window.innerWidth > 600) {
         Object.assign(menu.style, {
             width: '300px', // Maior no PC
-            padding: '15px', // Mais padding no PC
+            padding: '12px', // Mais padding no PC
         });
     }
 
@@ -80,7 +79,7 @@ function createUI() {
         fontSize: '20px',
         fontWeight: 'bold',
         textAlign: 'center',
-        paddingBottom: '10px',
+        paddingBottom: '8px',
         borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
     });
 
@@ -91,7 +90,7 @@ function createUI() {
     Object.assign(input.style, {
         padding: '8px',
         borderRadius: '8px',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
+        border: '1px solid rgba(255, 255, 255, 0.2)', // Borda mais visível
         background: '#2A3435',
         fontSize: '14px',
         fontWeight: '400',
@@ -108,7 +107,7 @@ function createUI() {
         input.style.maxHeight = '100px'; // Maior no PC
     }
     input.onfocus = () => input.style.borderColor = '#D946EF';
-    input.onblur = () => input.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+    input.onblur = () => input.style.borderColor = 'rgba(255, 255, 255, 0.2)';
 
     // Opções do menu
     const analyzeOption = document.createElement('button');
@@ -118,7 +117,7 @@ function createUI() {
         padding: '8px 12px',
         background: 'linear-gradient(90deg, #FF6F61, #D946EF)', // Gradiente rosa-roxo
         color: '#FFFFFF',
-        border: 'none',
+        border: '1px solid rgba(255, 255, 255, 0.2)', // Borda sutil
         borderRadius: '8px',
         cursor: 'pointer',
         fontSize: '14px',
@@ -126,10 +125,16 @@ function createUI() {
         textAlign: 'left',
         display: 'flex',
         alignItems: 'center',
-        transition: 'transform 0.2s ease'
+        transition: 'transform 0.2s ease, background 0.3s ease, box-shadow 0.3s ease'
     });
-    analyzeOption.onmouseover = () => analyzeOption.style.transform = 'scale(1.02)';
-    analyzeOption.onmouseout = () => analyzeOption.style.transform = 'scale(1)';
+    analyzeOption.onmouseover = () => {
+        analyzeOption.style.transform = 'scale(1.02)';
+        analyzeOption.style.boxShadow = '0 2px 8px rgba(217, 70, 239, 0.5)'; // Sombra roxa no hover
+    };
+    analyzeOption.onmouseout = () => {
+        analyzeOption.style.transform = 'scale(1)';
+        analyzeOption.style.boxShadow = 'none';
+    };
 
     const clearOption = document.createElement('button');
     clearOption.innerHTML = '<span style="margin-right: 8px;">🗑️</span>Limpar';
@@ -137,7 +142,7 @@ function createUI() {
         padding: '8px 12px',
         background: 'linear-gradient(90deg, #FF6F61, #D946EF)',
         color: '#FFFFFF',
-        border: 'none',
+        border: '1px solid rgba(255, 255, 255, 0.2)', // Borda sutil
         borderRadius: '8px',
         cursor: 'pointer',
         fontSize: '14px',
@@ -145,10 +150,16 @@ function createUI() {
         textAlign: 'left',
         display: 'flex',
         alignItems: 'center',
-        transition: 'transform 0.2s ease'
+        transition: 'transform 0.2s ease, background 0.3s ease, box-shadow 0.3s ease'
     });
-    clearOption.onmouseover = () => clearOption.style.transform = 'scale(1.02)';
-    clearOption.onmouseout = () => clearOption.style.transform = 'scale(1)';
+    clearOption.onmouseover = () => {
+        clearOption.style.transform = 'scale(1.02)';
+        clearOption.style.boxShadow = '0 2px 8px rgba(217, 70, 239, 0.5)';
+    };
+    clearOption.onmouseout = () => {
+        clearOption.style.transform = 'scale(1)';
+        clearOption.style.boxShadow = 'none';
+    };
 
     // Créditos
     const creditsOption = document.createElement('div');
@@ -157,7 +168,7 @@ function createUI() {
         color: '#D946EF',
         fontSize: '11px',
         textAlign: 'center',
-        paddingTop: '10px',
+        paddingTop: '8px',
         borderTop: '1px solid rgba(255, 255, 255, 0.1)'
     });
 
@@ -181,10 +192,13 @@ function createUI() {
         padding: '8px 12px',
         boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
         maxWidth: '90vw',
-        width: '280px',
+        width: '220px', // Reduzido para ser mais compacto no celular
         zIndex: '1000000',
         animation: 'slideIn 0.3s ease'
     });
+    if (window.innerWidth > 600) {
+        responsePanel.style.width = '260px'; // Um pouco maior no PC
+    }
 
     // Barra de progresso
     const progressBar = document.createElement('div');
