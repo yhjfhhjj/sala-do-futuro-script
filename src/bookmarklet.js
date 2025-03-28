@@ -1,7 +1,7 @@
 (function() {
     const GEMINI_API_KEY = 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY';
     const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743173090/ui.js';
+    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743167666/ui.js';
 
     fetch(UI_SCRIPT_URL)
         .then(response => response.text())
@@ -9,28 +9,21 @@
             eval(script);
 
             function extractPageContent() {
-                let contentArea = document.querySelector('body') || document.documentElement;
+                const contentArea = document.querySelector('body') || document.documentElement;
                 const unwantedTags = ['script', 'style', 'noscript', 'svg', 'iframe', 'head'];
-                unwantedTags.forEach(tag => {
-                    contentArea.querySelectorAll(tag).forEach(el => el.remove());
-                });
+                unwantedTags.forEach(tag => contentArea.querySelectorAll(tag).forEach(el => el.remove()));
 
                 const images = Array.from(document.querySelectorAll('img'))
                     .map(img => img.src)
                     .filter(src => src && src.startsWith('http'))
                     .slice(0, 5);
 
-                const text = (contentArea.textContent || '')
-                    .replace(/\s+/g, ' ')
-                    .substring(0, 15000);
-
+                const text = (contentArea.textContent || '').replace(/\s+/g, ' ').substring(0, 15000);
                 return { text, images };
             }
 
-            async function analyzeContent(content, question = '') {
-                if (!question.trim()) {
-                    return 'Por favor, cole uma pergunta com alternativas para analisar.';
-                }
+            async function analyzeContent(content, question) {
+                if (!question.trim()) return 'Por favor, cole uma pergunta com alternativas.';
 
                 const prompt = `Responda à seguinte pergunta com base no conteúdo da página:\n\nPergunta:\n${question}\n\nConteúdo:\nTexto: ${content.text}\nImagens: ${content.images.join(', ')}\n\nResposta:`;
 
@@ -53,13 +46,11 @@
 
             const { menuBtn, analyzeOption, clearOption, input, responsePanel } = window.createUI();
 
-            // Toggle do menu
             menuBtn.addEventListener('click', () => {
                 const menu = document.getElementById('gemini-menu');
                 menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
             });
 
-            // Ação de analisar
             analyzeOption.addEventListener('click', async () => {
                 const question = input.value.trim();
                 if (!question) {
@@ -68,7 +59,7 @@
                 }
 
                 analyzeOption.disabled = true;
-                analyzeOption.innerHTML = 'Analisando...';
+                analyzeOption.innerHTML = '<span style="margin-right: 8px;">⏳</span>Analisando...';
                 analyzeOption.style.opacity = '0.7';
 
                 const content = extractPageContent();
@@ -77,21 +68,18 @@
                 window.showResponse(responsePanel, answer);
 
                 analyzeOption.disabled = false;
-                analyzeOption.innerHTML = 'Analisar';
+                analyzeOption.innerHTML = '<span style="margin-right: 8px;">🔍</span>Analisar';
                 analyzeOption.style.opacity = '1';
                 document.getElementById('gemini-menu').style.display = 'none';
             });
 
-            // Ação de limpar
             clearOption.addEventListener('click', () => {
                 window.clearUI(input, responsePanel);
                 document.getElementById('gemini-menu').style.display = 'none';
             });
 
-            // Fechar o menu e o painel ao clicar fora
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('#gemini-helper-container')) {
-                    responsePanel.style.display = 'none';
+            document.addEventListener('click', e => {
+                if (!e.target.closest('#gemini-helper-container') && !e.target.closest('#gemini-response-panel')) {
                     document.getElementById('gemini-menu').style.display = 'none';
                 }
             });
