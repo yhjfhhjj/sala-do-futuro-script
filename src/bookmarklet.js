@@ -1,7 +1,7 @@
 (function() {
     const GEMINI_API_KEY = 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY';
     const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743167666/ui.js'; // URL atualizada do ui.js
+    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743167666/ui.js';
 
     fetch(UI_SCRIPT_URL)
         .then(response => response.text())
@@ -24,7 +24,23 @@
                     .replace(/\s+/g, ' ')
                     .substring(0, 15000);
 
-                return { text, images };
+                // Capturar perguntas e alternativas
+                const questions = [];
+                const questionElements = document.querySelectorAll('div[class*="question"]'); // Ajuste o seletor conforme a estrutura do site
+                questionElements.forEach((q, index) => {
+                    const questionText = q.querySelector('p')?.textContent.trim() || `Pergunta ${index + 1}`;
+                    const alternatives = Array.from(q.querySelectorAll('label'))
+                        .map(label => label.textContent.trim())
+                        .filter(alt => alt);
+                    if (questionText && alternatives.length > 0) {
+                        questions.push({
+                            question: questionText,
+                            alternatives: alternatives
+                        });
+                    }
+                });
+
+                return { text, images, questions };
             }
 
             async function analyzeContent(content, question = '') {
@@ -50,6 +66,16 @@
             }
 
             const { actionBtn, input, clearBtn, responsePanel } = window.createUI();
+
+            // Preencher o textarea com as perguntas e alternativas capturadas
+            const content = extractPageContent();
+            if (content.questions && content.questions.length > 0) {
+                const formattedQuestions = content.questions.map(q => {
+                    return `${q.question}\n${q.alternatives.map((alt, idx) => `${String.fromCharCode(97 + idx)}) ${alt}`).join('\n')}`;
+                }).join('\n\n');
+                input.value = formattedQuestions;
+                input.style.display = 'block';
+            }
 
             actionBtn.addEventListener('click', async () => {
                 actionBtn.disabled = true;
