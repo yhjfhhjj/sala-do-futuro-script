@@ -24,7 +24,7 @@ function createUI() {
     Object.assign(menuBtn.style, {
         padding: '8px 12px',
         background: '#1C2526', // Preto
-        color: '#6B48FF', // Roxo
+        color: '#FFFFFF',
         border: 'none',
         borderRadius: '12px',
         cursor: 'pointer',
@@ -49,13 +49,13 @@ function createUI() {
         display: 'none',
         background: '#1C2526',
         borderRadius: '12px',
-        padding: '8px',
+        padding: '10px',
         boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
         position: 'absolute',
         bottom: '40px',
         right: '0',
         flexDirection: 'column',
-        gap: '6px',
+        gap: '8px',
         animation: 'slideIn 0.3s ease'
     });
 
@@ -64,8 +64,8 @@ function createUI() {
     analyzeOption.innerHTML = '<span style="margin-right: 8px;">🔍</span>Analisar';
     Object.assign(analyzeOption.style, {
         padding: '8px 12px',
-        background: 'none',
-        color: '#6B48FF',
+        background: 'linear-gradient(90deg, #FF6F61, #D946EF)', // Gradiente rosa-roxo
+        color: '#FFFFFF',
         border: 'none',
         borderRadius: '8px',
         cursor: 'pointer',
@@ -73,15 +73,18 @@ function createUI() {
         fontWeight: '500',
         textAlign: 'left',
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
+        transition: 'transform 0.2s ease'
     });
+    analyzeOption.onmouseover = () => analyzeOption.style.transform = 'scale(1.02)';
+    analyzeOption.onmouseout = () => analyzeOption.style.transform = 'scale(1)';
 
     const clearOption = document.createElement('button');
     clearOption.innerHTML = '<span style="margin-right: 8px;">🗑️</span>Limpar';
     Object.assign(clearOption.style, {
         padding: '8px 12px',
-        background: 'none',
-        color: '#FF3B30',
+        background: 'linear-gradient(90deg, #FF6F61, #D946EF)',
+        color: '#FFFFFF',
         border: 'none',
         borderRadius: '8px',
         cursor: 'pointer',
@@ -89,14 +92,17 @@ function createUI() {
         fontWeight: '500',
         textAlign: 'left',
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
+        transition: 'transform 0.2s ease'
     });
+    clearOption.onmouseover = () => clearOption.style.transform = 'scale(1.02)';
+    clearOption.onmouseout = () => clearOption.style.transform = 'scale(1)';
 
     const creditsOption = document.createElement('div');
     creditsOption.innerHTML = 'Desenvolvido por Hackermoon';
     Object.assign(creditsOption.style, {
         padding: '6px 12px',
-        color: '#6B48FF',
+        color: '#D946EF',
         fontSize: '11px',
         textAlign: 'center',
         borderTop: '1px solid rgba(255, 255, 255, 0.1)'
@@ -114,7 +120,7 @@ function createUI() {
         padding: '8px',
         borderRadius: '12px',
         border: '1px solid rgba(255, 255, 255, 0.1)',
-        background: '#2A3435', // Cinza escuro
+        background: '#2A3435',
         fontSize: '14px',
         fontWeight: '400',
         color: '#FFFFFF',
@@ -126,7 +132,7 @@ function createUI() {
         width: '100%',
         transition: 'border-color 0.3s ease'
     });
-    input.onfocus = () => input.style.borderColor = '#6B48FF';
+    input.onfocus = () => input.style.borderColor = '#D946EF';
     input.onblur = () => input.style.borderColor = 'rgba(255, 255, 255, 0.1)';
 
     // Painel de resposta (toast)
@@ -152,14 +158,14 @@ function createUI() {
     const progressBar = document.createElement('div');
     progressBar.id = 'progress-bar';
     Object.assign(progressBar.style, {
-        height: '2px',
-        background: '#6B48FF',
+        height: '3px',
+        background: 'linear-gradient(90deg, #FF6F61, #D946EF)', // Gradiente rosa-roxo
         width: '100%',
         position: 'absolute',
         bottom: '0',
         left: '0',
         borderRadius: '0 0 12px 12px',
-        transition: 'width 10s linear'
+        transition: 'width 6s linear'
     });
     responsePanel.appendChild(progressBar);
 
@@ -186,9 +192,10 @@ function createUI() {
     return { menuBtn, analyzeOption, clearOption, input, responsePanel };
 }
 
-function showResponse(panel, answer) {
+function showResponse(panel, answer, correctAlternative) {
     panel.innerHTML = `
         <div style="color: #FFFFFF; border-radius: 8px; text-align: left; font-size: 14px; line-height: 1.4;">
+            <strong>Alternativa correta: ${correctAlternative}</strong><br>
             ${answer}
         </div>
     `;
@@ -201,14 +208,14 @@ function showResponse(panel, answer) {
         progressBar.style.width = '0%';
     }, 0);
 
-    // Fechar após 10 segundos
+    // Fechar após 6 segundos
     setTimeout(() => {
         panel.style.animation = 'slideOut 0.3s ease forwards';
         setTimeout(() => {
             panel.style.display = 'none';
             panel.style.animation = 'slideIn 0.3s ease';
         }, 300);
-    }, 10000);
+    }, 6000);
 }
 
 function clearUI(input, responsePanel) {
