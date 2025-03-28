@@ -70,4 +70,6 @@ function showResponse(panel, answer) {
     panel.style.display = 'block';
 }
 
-export { createUI, showResponse };
+// Exportar funções para uso em bookmarklet.js
+window.createUI = createUI;
+window.showResponse = showResponse;
