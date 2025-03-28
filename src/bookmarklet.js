@@ -24,23 +24,7 @@
                     .replace(/\s+/g, ' ')
                     .substring(0, 15000);
 
-                // Capturar perguntas e alternativas
-                const questions = [];
-                const questionElements = document.querySelectorAll('div[class*="question"]'); // Ajuste o seletor conforme a estrutura do site
-                questionElements.forEach((q, index) => {
-                    const questionText = q.querySelector('p')?.textContent.trim() || `Pergunta ${index + 1}`;
-                    const alternatives = Array.from(q.querySelectorAll('label'))
-                        .map(label => label.textContent.trim())
-                        .filter(alt => alt);
-                    if (questionText && alternatives.length > 0) {
-                        questions.push({
-                            question: questionText,
-                            alternatives: alternatives
-                        });
-                    }
-                });
-
-                return { text, images, questions };
+                return { text, images };
             }
 
             async function analyzeContent(content, question = '') {
@@ -65,22 +49,19 @@
                 }
             }
 
-            const { actionBtn, input, clearBtn, responsePanel } = window.createUI();
+            const { menuBtn, analyzeOption, clearOption, input, responsePanel } = window.createUI();
 
-            // Preencher o textarea com as perguntas e alternativas capturadas
-            const content = extractPageContent();
-            if (content.questions && content.questions.length > 0) {
-                const formattedQuestions = content.questions.map(q => {
-                    return `${q.question}\n${q.alternatives.map((alt, idx) => `${String.fromCharCode(97 + idx)}) ${alt}`).join('\n')}`;
-                }).join('\n\n');
-                input.value = formattedQuestions;
-                input.style.display = 'block';
-            }
+            // Toggle do menu
+            menuBtn.addEventListener('click', () => {
+                const menu = document.getElementById('gemini-menu');
+                menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+            });
 
-            actionBtn.addEventListener('click', async () => {
-                actionBtn.disabled = true;
-                actionBtn.innerHTML = '⏳ Analisando...';
-                actionBtn.style.opacity = '0.7';
+            // Ação de analisar
+            analyzeOption.addEventListener('click', async () => {
+                analyzeOption.disabled = true;
+                analyzeOption.innerHTML = '⏳ Analisando...';
+                analyzeOption.style.opacity = '0.7';
                 input.style.display = 'block';
 
                 const content = extractPageContent();
@@ -89,19 +70,24 @@
 
                 window.showResponse(responsePanel, answer);
 
-                actionBtn.disabled = false;
-                actionBtn.innerHTML = '🔍 Analisar';
-                actionBtn.style.opacity = '1';
+                analyzeOption.disabled = false;
+                analyzeOption.innerHTML = '🔍 Analisar';
+                analyzeOption.style.opacity = '1';
+                document.getElementById('gemini-menu').style.display = 'none';
             });
 
-            clearBtn.addEventListener('click', () => {
+            // Ação de limpar
+            clearOption.addEventListener('click', () => {
                 window.clearUI(input, responsePanel);
+                document.getElementById('gemini-menu').style.display = 'none';
             });
 
+            // Fechar o menu e o painel ao clicar fora
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('#gemini-helper-container')) {
                     responsePanel.style.display = 'none';
                     input.style.display = 'none';
+                    document.getElementById('gemini-menu').style.display = 'none';
                 }
             });
         })
