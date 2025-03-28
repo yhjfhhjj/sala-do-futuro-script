@@ -1,12 +1,14 @@
 (function() {
     const GEMINI_API_KEY = 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY';
     const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743192438/ui.js';
+    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743167666/ui.js';
 
     fetch(UI_SCRIPT_URL)
         .then(response => response.text())
         .then(script => {
             eval(script);
+
+            let isAnalyzing = false; // Controle para evitar múltiplas análises
 
             function extractPageContent() {
                 const contentArea = document.querySelector('body') || document.documentElement;
@@ -59,12 +61,15 @@
             });
 
             analyzeOption.addEventListener('click', async () => {
+                if (isAnalyzing) return; // Impede múltiplas análises
+
                 const question = input.value.trim();
                 if (!question) {
                     window.showResponse(responsePanel, 'Por favor, cole uma pergunta com alternativas.', '');
                     return;
                 }
 
+                isAnalyzing = true;
                 analyzeOption.disabled = true;
                 analyzeOption.innerHTML = '<span style="margin-right: 8px;">⏳</span>Analisando...';
                 analyzeOption.style.opacity = '0.7';
@@ -74,6 +79,7 @@
 
                 window.showResponse(responsePanel, answer, correctAlternative);
 
+                isAnalyzing = false;
                 analyzeOption.disabled = false;
                 analyzeOption.innerHTML = '<span style="margin-right: 8px;">🔍</span>Analisar';
                 analyzeOption.style.opacity = '1';
