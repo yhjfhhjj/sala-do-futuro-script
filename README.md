@@ -1,21 +1,24 @@
-# Gemini Page Analyzer
+# 🌟 HCK Bookmarklet - Respostas Automáticas para Sala do Futuro e Mais! 🌟
 
-Um bookmarklet que analisa o conteúdo de páginas web (texto e imagens) usando a API Gemini.
+---
 
-## Como Usar
-1. Crie um bookmark no seu navegador.
-2. Copie o conteúdo de `bookmarklet.js` e cole como URL do bookmark.
-3. Clique no bookmark em qualquer página para ativar.
+## 📋 O que é o HCK Bookmarklet?
 
-## Funcionalidades
-- Extrai texto e URLs de imagens da página.
-- Permite perguntas personalizadas via campo de entrada.
-- Usa a API Gemini para gerar respostas.
+O **HCK Bookmarklet** é uma ferramenta prática e elegante que te ajuda a responder perguntas de múltipla escolha automaticamente! Ele analisa o conteúdo da página e encontra a resposta certa pra você. 💡
 
-## Instalação
-1. Clone o repositório: `git clone https://github.com/SEU_USUARIO/Gemini-Page-Analyzer.git`
-2. Abra `bookmarklet.js` e substitua `uiCode` pelo conteúdo de `ui.js`.
-3. Minimize o código (opcional) e use como bookmarklet.
+Foi feito especialmente para o site **Sala do Futuro** (`saladofuturo.educacao.sp.gov.br`), mas também funciona em outros sites com perguntas no formato padrão (A, B, C, D, E). Você cola a pergunta, ele analisa e te mostra a resposta em uma notificação minimalista que some em 6 segundos. 🚀
 
-## Licença
-MIT
+---
+
+## 🎯 Para Quem Foi Feito?
+
+- **🏫 Sala do Futuro**: Perfeito para a plataforma educacional `saladofuturo.educacao.sp.gov.br`, onde alunos respondem perguntas de múltipla escolha em atividades e provas.
+- **🌐 Outros Sites**: Funciona em qualquer site que tenha perguntas de múltipla escolha visíveis no conteúdo, desde que as alternativas sejam A, B, C, D, E.
+
+---
+
+## 🚀 Como Usar?
+
+### 1. Adicione o Bookmarklet ao Navegador
+- Crie um novo favorito/bookmark no seu navegador.
+- No campo de URL, cole este código:
