@@ -1,7 +1,7 @@
 (function() {
     const GEMINI_API_KEY = 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY';
     const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743173825/ui.js';
+    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743174488/ui.js';
 
     fetch(UI_SCRIPT_URL)
         .then(response => response.text())
@@ -79,7 +79,8 @@
             });
 
             document.addEventListener('click', e => {
-                if (!e.target.closest('#gemini-helper-container') && !e.target.closest('#gemini-response-panel')) {
+                if (!e.target.closest('#gemini-helper-container')) {
+                    responsePanel.style.display = 'none';
                     document.getElementById('gemini-menu').style.display = 'none';
                 }
             });
