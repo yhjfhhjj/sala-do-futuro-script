@@ -11,8 +11,7 @@ Foi feito pro site Sala do Futuro (saladofuturo.educacao.sp.gov.br), mas também
 1. Crie um favorito no seu navegador e cole esse código no campo de URL:
 
 # Url #
-```javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743193854/bookmarklet.js').then(r=>r.text()).then(r=>eval(r))
-```
+```javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743193854/bookmarklet.js').then(r=>r.text()).then(r=>eval(r))```
 
 Dê o nome de "HCK" e salve.
 
