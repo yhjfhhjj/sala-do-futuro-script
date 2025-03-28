@@ -6,7 +6,7 @@ Ferramenta automatizada para auxiliar na resolução de questões de múltipla e
 
 - 🔍 Análise automática de questões objetivas (A/B/C/D/E)
 - 📱 Design responsivo para desktop e mobile
-- 🔔 Notificações temporizadas (6 segundos)
+- 🔔 Notificações
 - 🎨 Interface minimalista com efeitos visuais
 - 🧹 Botão de limpeza para nova consulta
 
@@ -16,5 +16,4 @@ Ferramenta automatizada para auxiliar na resolução de questões de múltipla e
 2. Crie um novo favorito/bookmark
 3. No campo URL, cole:
 ```js
-javascript
 javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743193854/bookmarklet.js').then(r=>r.text()).then(r=>eval(r))
