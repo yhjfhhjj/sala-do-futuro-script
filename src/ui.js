@@ -2,6 +2,7 @@ function createUI() {
     const existingUI = document.getElementById('gemini-helper-container');
     if (existingUI) existingUI.remove();
 
+    // Container principal (fixo no canto inferior direito)
     const container = document.createElement('div');
     container.id = 'gemini-helper-container';
     Object.assign(container.style, {
@@ -42,21 +43,34 @@ function createUI() {
         menuBtn.style.transform = 'scale(1)';
     };
 
-    // Menu dropdown
+    // Menu lateral (estilo da imagem)
     const menu = document.createElement('div');
     menu.id = 'gemini-menu';
     Object.assign(menu.style, {
         display: 'none',
         background: '#1C2526',
         borderRadius: '12px',
-        padding: '10px',
+        padding: '15px',
         boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-        position: 'absolute',
-        bottom: '40px',
-        right: '0',
+        position: 'fixed',
+        bottom: '60px',
+        right: '20px',
+        width: '200px',
         flexDirection: 'column',
-        gap: '8px',
+        gap: '10px',
         animation: 'slideIn 0.3s ease'
+    });
+
+    // Título "HCK"
+    const menuTitle = document.createElement('div');
+    menuTitle.innerHTML = 'HCK';
+    Object.assign(menuTitle.style, {
+        color: '#D946EF', // Roxo
+        fontSize: '20px',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        paddingBottom: '10px',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
     });
 
     // Opções do menu
@@ -98,18 +112,40 @@ function createUI() {
     clearOption.onmouseover = () => clearOption.style.transform = 'scale(1.02)';
     clearOption.onmouseout = () => clearOption.style.transform = 'scale(1)';
 
-    const creditsOption = document.createElement('div');
-    creditsOption.innerHTML = 'Desenvolvido por Hackermoon';
-    Object.assign(creditsOption.style, {
-        padding: '6px 12px',
-        color: '#D946EF',
+    // Informações adicionais (HCK | FPS | ms | Horário)
+    const infoBar = document.createElement('div');
+    infoBar.id = 'info-bar';
+    Object.assign(infoBar.style, {
+        color: '#FFFFFF',
         fontSize: '11px',
         textAlign: 'center',
+        paddingTop: '10px',
         borderTop: '1px solid rgba(255, 255, 255, 0.1)'
     });
 
+    // Atualizar horário dinamicamente
+    function updateInfoBar() {
+        const now = new Date();
+        const time = now.toLocaleTimeString('pt-BR', { hour12: false });
+        infoBar.innerHTML = `HCK | FPS: 60 | ms: 16 | ${time}`;
+    }
+    updateInfoBar();
+    setInterval(updateInfoBar, 1000); // Atualiza a cada segundo
+
+    // Créditos
+    const creditsOption = document.createElement('div');
+    creditsOption.innerHTML = 'Desenvolvido por Hackermoon';
+    Object.assign(creditsOption.style, {
+        color: '#D946EF',
+        fontSize: '11px',
+        textAlign: 'center',
+        paddingTop: '5px'
+    });
+
+    menu.appendChild(menuTitle);
     menu.appendChild(analyzeOption);
     menu.appendChild(clearOption);
+    menu.appendChild(infoBar);
     menu.appendChild(creditsOption);
 
     // Input (textarea)
@@ -179,6 +215,10 @@ function createUI() {
         @keyframes slideOut {
             from { opacity: 1; transform: translate(-50%, 0); }
             to { opacity: 0; transform: translate(-50%, 20px); }
+        }
+        @keyframes menuSlideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
     `;
     document.head.appendChild(style);
