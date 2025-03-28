@@ -1,4 +1,4 @@
-# HCK Bookmarklet
+# HCK - Sala do Futuro
 
 ## O que é?
 
