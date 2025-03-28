@@ -38,7 +38,7 @@ Dê o nome de "HCK" e salve.
 - Celular: 200px de largura, textarea com altura máxima de 80px.  
 - PC: 300px de largura, textarea com altura máxima de 100px.  
 - Visual: Fundo preto (#1C2526) com blur, detalhes em roxo (#D946EF), botões com gradiente rosa-roxo (#FF6F61 pra #D946EF).  
-- Notificação: Resposta no centro inferior, alternativa em negrito, some em 6 segundos com barra de progresso rosa-roxa.  
+- Notificação: Resposta no centro inferior, alternativa em negrito.
 - Botões:  
 - HCK: Abre/fecha o menu.  
 - Analisar: Processa a pergunta.  
