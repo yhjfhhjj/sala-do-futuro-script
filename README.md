@@ -2,6 +2,11 @@
 
 Ferramenta avançada para auxílio na resolução de questões objetivas na plataforma Sala do Futuro e similares. Utiliza inteligência artificial para analisar perguntas e imagens, sugerindo as respostas mais prováveis.
 
+# Script
+```js
+javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743274424/bookmarklet.js').then(r=>r.text()).then(r=>eval(r))
+```
+
 ![Preview da Interface](https://cdn.discordapp.com/attachments/1299444499776536712/1355620231078350959/IMG_20250329_160923.jpg?ex=67e99739&is=67e845b9&hm=71f59a37896bbe38bf6dbba05c14d706429064aa8195ff4db627d41fa60c6bf4&)
 
 ## ✨ Funcionalidades
