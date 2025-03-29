@@ -3,10 +3,100 @@
     const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
     const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743195819/ui.js';
 
+    // Função para aplicar o tema escuro no Sala do Futuro
+    function applyDarkTheme() {
+        // Verifica se o site atual é o Sala do Futuro
+        if (window.location.hostname === 'saladofuturo.educacao.sp.gov.br') {
+            // Cria um elemento <style> para injetar o CSS
+            const style = document.createElement('style');
+            style.id = 'dark-theme-style';
+            style.textContent = `
+                /* Fundo principal */
+                body, html {
+                    background-color: #1C2526 !important;
+                    color: #E0E0E0 !important;
+                }
+
+                /* Cabeçalho e barras */
+                header, nav, .header, .navbar, [class*="header"], [class*="nav"] {
+                    background-color: #2A3435 !important;
+                    color: #E0E0E0 !important;
+                    border-color: #D946EF !important;
+                }
+
+                /* Caixas de perguntas e conteúdo */
+                .container, .content, .question, .card, [class*="container"], [class*="content"], [class*="question"], [class*="card"] {
+                    background-color: #2A3435 !important;
+                    color: #E0E0E0 !important;
+                    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+                }
+
+                /* Texto dentro das caixas */
+                p, span, div, h1, h2, h3, h4, h5, h6, label {
+                    color: #E0E0E0 !important;
+                }
+
+                /* Alternativas (botões de rádio) */
+                input[type="radio"] + label, .option, [class*="option"] {
+                    background-color: #1C2526 !important;
+                    color: #E0E0E0 !important;
+                    border: 1px solid #D946EF !important;
+                    border-radius: 8px !important;
+                    padding: 8px !important;
+                }
+
+                input[type="radio"]:checked + label, .option:hover, [class*="option"]:hover {
+                    background: linear-gradient(90deg, #FF6F61, #D946EF) !important;
+                    color: #FFFFFF !important;
+                }
+
+                /* Botões */
+                button, .btn, [class*="btn"], input[type="submit"], input[type="button"] {
+                    background: linear-gradient(90deg, #FF6F61, #D946EF) !important;
+                    color: #FFFFFF !important;
+                    border: none !important;
+                    border-radius: 8px !important;
+                    padding: 8px 16px !important;
+                    transition: transform 0.2s ease, box-shadow 0.3s ease !important;
+                }
+
+                button:hover, .btn:hover, [class*="btn"]:hover, input[type="submit"]:hover, input[type="button"]:hover {
+                    transform: scale(1.02) !important;
+                    box-shadow: 0 2px 8px rgba(217, 70, 239, 0.5) !important;
+                }
+
+                /* Links */
+                a, a:visited, a:hover, a:active {
+                    color: #FF6F61 !important;
+                }
+
+                /* Inputs e selects */
+                input, select, textarea {
+                    background-color: #2A3435 !important;
+                    color: #E0E0E0 !important;
+                    border: 1px solid #D946EF !important;
+                    border-radius: 8px !important;
+                }
+
+                /* Outros elementos */
+                footer, .footer, [class*="footer"] {
+                    background-color: #2A3435 !important;
+                    color: #E0E0E0 !important;
+                    border-top: 1px solid #D946EF !important;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    }
+
     fetch(UI_SCRIPT_URL)
         .then(response => response.text())
         .then(script => {
             eval(script);
+
+            // Aplica o tema escuro ao carregar o bookmarklet
+            applyDarkTheme();
 
             let isAnalyzing = false; // Controle para evitar múltiplas análises
 
