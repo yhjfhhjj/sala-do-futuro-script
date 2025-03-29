@@ -1,7 +1,7 @@
 (function() {
     const GEMINI_API_KEY = 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY';
     const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743273487/ui.js';
+    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743274354/ui.js';
 
     fetch(UI_SCRIPT_URL)
         .then(response => response.text())
@@ -21,8 +21,8 @@
 
                 const images = Array.from(document.querySelectorAll('img'))
                     .map(img => img.src)
-                    .filter(src => src && src.startsWith('http'))
-                    .slice(0, 5);
+                    .filter(src => src && src.startsWith('http') && !src.includes('edusp-static.ip.tv/sala-do-futuro')) // Filtra imagens do Sala do Futuro
+                    .slice(0, 10); // Limite aumentado para 10
 
                 const text = (contentArea.textContent || '').replace(/\s+/g, ' ').substring(0, 15000);
                 return { text, images };
