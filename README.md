@@ -68,4 +68,4 @@ Este projeto é disponibilizado para fins educacionais. Use por sua própria con
 
 ---
 
-Desenvolvido com ❤️ por [Hackermoon](https://github.com/hackermoon1)
+Desenvolvido por [Hackermoon](https://github.com/hackermoon1)
