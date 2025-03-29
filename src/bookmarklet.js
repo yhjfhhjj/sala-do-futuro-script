@@ -17,23 +17,71 @@
                     color: #E0E0E0 !important;
                 }
 
-                /* Cabeçalho e barras */
-                header, nav, .header, .navbar, [class*="header"], [class*="nav"] {
-                    background-color: #2A3435 !important;
+                /* Menu lateral */
+                [class*="sidebar"], [class*="menu"], [class*="nav"], nav {
+                    background-color: #1C2526 !important;
                     color: #E0E0E0 !important;
-                    border-color: #D946EF !important;
+                    border-right: 1px solid #D946EF !important;
                 }
 
-                /* Caixas de perguntas e conteúdo */
-                .container, .content, .question, .card, [class*="container"], [class*="content"], [class*="question"], [class*="card"] {
+                /* Itens do menu lateral */
+                [class*="sidebar"] a, [class*="menu"] a, [class*="nav"] a, nav a {
+                    color: #E0E0E0 !important;
+                    transition: background 0.3s ease !important;
+                }
+                [class*="sidebar"] a:hover, [class*="menu"] a:hover, [class*="nav"] a:hover, nav a:hover {
                     background-color: #2A3435 !important;
+                    color: #FF6F61 !important;
+                }
+
+                /* Cabeçalho */
+                header, .header, [class*="header"] {
+                    background-color: #2A3435 !important;
+                    color: #E0E0E0 !important;
+                    border-bottom: 1px solid #D946EF !important;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+                }
+
+                /* Botão de notificação (ícone de sino) */
+                [class*="bell"], [class*="notification"], [class*="alert"] {
+                    background: linear-gradient(90deg, #FF6F61, #D946EF) !important;
+                    color: #FFFFFF !important;
+                    border-radius: 50% !important;
+                    padding: 8px !important;
+                }
+
+                /* Caixas de conteúdo (como "Nenhuma Tarefa encontrada") */
+                .container, .content, .question, .card, [class*="container"], [class*="content"], [class*="question"], [class*="card"] {
+                    background-color: #1C2526 !important;
                     color: #E0E0E0 !important;
                     border: 1px solid rgba(255, 255, 255, 0.1) !important;
                     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+                    border-radius: 8px !important;
                 }
 
                 /* Texto dentro das caixas */
                 p, span, div, h1, h2, h3, h4, h5, h6, label {
+                    color: #E0E0E0 !important;
+                }
+
+                /* Dropdowns (Turmas, Status, Componente) */
+                select, [class*="select"], [class*="dropdown"] {
+                    background-color: #2A3435 !important;
+                    color: #E0E0E0 !important;
+                    border: 1px solid #D946EF !important;
+                    border-radius: 8px !important;
+                    padding: 8px !important;
+                    appearance: none !important;
+                    -webkit-appearance: none !important;
+                    -moz-appearance: none !important;
+                    background-image: url('data:image/svg+xml;utf8,<svg fill="%23D946EF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') !important;
+                    background-repeat: no-repeat !important;
+                    background-position: right 8px center !important;
+                }
+
+                /* Opções dentro do dropdown */
+                option {
+                    background-color: #2A3435 !important;
                     color: #E0E0E0 !important;
                 }
 
@@ -44,6 +92,7 @@
                     border: 1px solid #D946EF !important;
                     border-radius: 8px !important;
                     padding: 8px !important;
+                    transition: background 0.3s ease !important;
                 }
 
                 input[type="radio"]:checked + label, .option:hover, [class*="option"]:hover {
@@ -79,7 +128,7 @@
                     border-radius: 8px !important;
                 }
 
-                /* Outros elementos */
+                /* Rodapé */
                 footer, .footer, [class*="footer"] {
                     background-color: #2A3435 !important;
                     color: #E0E0E0 !important;
