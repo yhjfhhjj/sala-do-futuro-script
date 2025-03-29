@@ -1,7 +1,9 @@
 (function() {
+    if (window.location.hostname !== 'saladofuturo.educacao.sp.gov.br') return; // Limita ao Sala do Futuro
+
     const GEMINI_API_KEY = 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY';
     const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743274354/ui.js';
+    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743288097/ui.js';
 
     fetch(UI_SCRIPT_URL)
         .then(response => response.text())
@@ -21,22 +23,21 @@
 
                 const images = Array.from(document.querySelectorAll('img'))
                     .map(img => img.src)
-                    .filter(src => src && src.startsWith('http') && !src.includes('edusp-static.ip.tv/sala-do-futuro')) // Filtra imagens do Sala do Futuro
-                    .slice(0, 10); // Limite aumentado para 10
+                    .filter(src => src && src.startsWith('http') && !src.includes('edusp-static.ip.tv/sala-do-futuro'))
+                    .slice(0, 50); // Limite aumentado para 50
 
                 const text = (contentArea.textContent || '').replace(/\s+/g, ' ').substring(0, 15000);
                 return { text, images };
             }
 
             async function analyzeContent(content, question) {
-                if (!question.trim()) return { answer: 'Por favor, cole uma pergunta com alternativas.', correctAlternative: '' };
+                if (!question.trim()) return { answer: '', correctAlternative: 'Por favor, cole uma pergunta com alternativas.' };
 
-                // Extrair URLs de imagens da pergunta (ex.: [Imagem: https://example.com/imagem.jpg])
                 const imageUrlMatch = question.match(/\[Imagem: (https:\/\/[^\]]+)\]/);
                 const imageUrl = imageUrlMatch ? imageUrlMatch[1] : null;
                 const cleanedQuestion = question.replace(/\[Imagem: https:\/\/[^\]]+\]/, '').trim();
 
-                const prompt = `Responda à seguinte pergunta com base no conteúdo da página e indique a alternativa correta (ex.: "A resposta correta é: B"). Se houver uma imagem, use-a como contexto adicional.\n\nPergunta:\n${cleanedQuestion}\n\nConteúdo:\nTexto: ${content.text}\nImagens: ${content.images.join(', ')}${imageUrl ? `\nImagem adicional: ${imageUrl}` : ''}\n\nResposta:`;
+                const prompt = `Responda à seguinte pergunta com base no conteúdo da página e indique apenas a alternativa correta (ex.: "A"). Se houver uma imagem, use-a como contexto adicional.\n\nPergunta:\n${cleanedQuestion}\n\nConteúdo:\nTexto: ${content.text}\nImagens: ${content.images.join(', ')}${imageUrl ? `\nImagem adicional: ${imageUrl}` : ''}\n\nResposta:`;
 
                 try {
                     const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
@@ -44,26 +45,27 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             contents: [{ parts: [{ text: prompt }] }],
-                            generationConfig: { maxOutputTokens: 200, temperature: 0.3 }
+                            generationConfig: { maxOutputTokens: 10, temperature: 0.3 } // Resposta curta
                         })
                     });
                     const data = await response.json();
-                    const fullAnswer = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || 'Resposta não encontrada';
+                    const fullAnswer = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || 'Erro';
 
-                    const match = fullAnswer.match(/A resposta correta é: ([A-E])/i);
-                    const correctAlternative = match ? match[1] : 'Não identificada';
-                    const answerText = fullAnswer.replace(/A resposta correta é: [A-E]/i, '').trim();
+                    const match = fullAnswer.match(/[A-E]/i);
+                    const correctAlternative = match ? match[0] : 'Erro';
+                    const answerText = fullAnswer.length > 1 ? fullAnswer.replace(/[A-E]/i, '').trim() : '';
 
                     return { answer: answerText, correctAlternative };
                 } catch (error) {
                     console.error('Erro na API:', error);
-                    return { answer: 'Erro ao analisar o conteúdo', correctAlternative: '' };
+                    return { answer: '', correctAlternative: 'Erro' };
                 } finally {
                     setIsAnalyzing(false);
                 }
             }
 
             const { menuBtn, analyzeOption, clearOption, input, responsePanel } = window.createUI();
+            if (!menuBtn) return; // Para se o createUI não for executado (fora do Sala do Futuro)
 
             menuBtn.addEventListener('click', () => {
                 const menu = document.getElementById('gemini-menu');
@@ -75,7 +77,7 @@
 
                 const question = input.value.trim();
                 if (!question) {
-                    window.showResponse(responsePanel, 'Por favor, cole uma pergunta com alternativas.', '');
+                    window.showResponse(responsePanel, '', 'Por favor, cole uma pergunta com alternativas.');
                     return;
                 }
 
