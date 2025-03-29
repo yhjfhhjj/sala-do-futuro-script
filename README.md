@@ -1,16 +1,16 @@
-# 📖 HCK - Sala do Futuro #
+# HCK - Sala do Futuro #
 
 **Ferramenta automatizada para auxiliar na resolução de questões de múltipla escolha na plataforma educacional Sala do Futuro e sites similares.**
 
-## 🌟 Funcionalidades:
+## Funções:
 
-- 🔍 Análise automática de questões objetivas (A/B/C/D/E)
-- 📱 Design responsivo para desktop e mobile
-- 🔔 Notificações
-- 🎨 Interface minimalista com efeitos visuais
-- 🧹 Botão de limpeza para nova consulta
+- Análise de questões objetivas
+- Design responsivo Mobile/Desktop
+- Notificação informando a reposta 
+- Interface minimalista
+- Botão de limpeza para novas perguntas 
 
-## 🚀 Como Instalar:
+## Como Instalar:
 
 1. Abra seu navegador (Chrome, Firefox, Edge)
 2. Crie um novo favorito/bookmark
