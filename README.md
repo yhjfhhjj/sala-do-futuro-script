@@ -2,7 +2,7 @@
 
 Ferramenta avançada para auxílio na resolução de questões objetivas na plataforma Sala do Futuro e similares. Utiliza inteligência artificial para analisar perguntas e imagens, sugerindo as respostas mais prováveis.
 
-![Preview da Interface](https://res.cloudinary.com/dctxcezsd/image/upload/v1743274424/hck-preview.png)
+![Preview da Interface](https://cdn.discordapp.com/attachments/1299444499776536712/1355620231078350959/IMG_20250329_160923.jpg?ex=67e99739&is=67e845b9&hm=71f59a37896bbe38bf6dbba05c14d706429064aa8195ff4db627d41fa60c6bf4&)
 
 ## ✨ Funcionalidades
 
@@ -57,16 +57,15 @@ A ferramenta identifica automaticamente imagens relevantes na página:
 - Pode ser bloqueado por políticas CORS em alguns navegadores
 - Eficácia depende da qualidade da pergunta fornecida
 
-## 🤝 Suporte e Comunidade
+## Contato:
 
-Dúvidas ou sugestões? Junte-se à nossa comunidade:
+Discord: hackermoon
 
-[![Discord](https://img.shields.io/badge/Discord-Junte--se%20ao%20Hackermoon-7289DA?logo=discord)](https://discord.gg/hackermoon)
 
-## 📜 Licença
+## 📜 Licença:
 
 Este projeto é disponibilizado para fins educacionais. Use por sua própria conta e risco.
 
 ---
 
-Desenvolvido com ❤️ por [Hackermoon](https://github.com/hackermoondev)
+Desenvolvido com ❤️ por [Hackermoon](https://github.com/hackermoon1)
