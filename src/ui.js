@@ -1,6 +1,6 @@
-(function (_O0O0O_, _O0O0O0) { // Self-executing anonymous function wrapper
-    // --- String Table and Decoder ---
-    // Array containing all strings, heavily encoded/split/reordered
+(function (_O0O0O_, _O0O0O0) { // Self-executing
+    // tabela fudida ---
+    // tendi foi nada
     const _O0 = [
         '77', '69', '6e', '64', '6f', '77', // 0-5: "window"
         '6c', '6f', '63', '61', '74', '69', '6f', '6e', // 6-13: "location"
