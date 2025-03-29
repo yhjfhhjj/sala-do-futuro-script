@@ -13,7 +13,7 @@ function createUI() {
         display: 'flex',
         flexDirection: 'column',
         gap: '12px',
-        fontFamily: '"SF Pro", system-ui, -apple-system, Arial, sans-serif',
+        fontFamily: '"Inter", "SF Pro", system-ui, -apple-system, Arial, sans-serif', // Nova fonte
     });
 
     // Botão de menu (iniciais "HCK")
@@ -21,25 +21,26 @@ function createUI() {
     menuBtn.id = 'gemini-menu-btn';
     menuBtn.innerHTML = 'HCK';
     Object.assign(menuBtn.style, {
-        padding: '8px 12px',
-        background: '#1C2526', // Preto
-        color: '#D946EF', // Roxo
+        padding: '10px 16px',
+        background: 'linear-gradient(90deg, #FF6F61, #D946EF)', // Gradiente no botão
+        color: '#FFFFFF',
         border: 'none',
-        borderRadius: '12px',
+        borderRadius: '16px', // Mais arredondado
         cursor: 'pointer',
         fontSize: '16px',
-        fontWeight: 'bold',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-        transition: 'background 0.3s ease, transform 0.2s ease',
-        alignSelf: 'flex-end'
+        fontWeight: '600',
+        boxShadow: '0 4px 12px rgba(217, 70, 239, 0.3)', // Sombra roxa
+        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+        alignSelf: 'flex-end',
+        animation: 'pulse 2s infinite ease-in-out' // Animação de pulsação
     });
     menuBtn.onmouseover = () => {
-        menuBtn.style.background = '#2A3435';
-        menuBtn.style.transform = 'scale(1.05)';
+        menuBtn.style.transform = 'scale(1.1)';
+        menuBtn.style.boxShadow = '0 6px 16px rgba(217, 70, 239, 0.5)';
     };
     menuBtn.onmouseout = () => {
-        menuBtn.style.background = '#1C2526';
         menuBtn.style.transform = 'scale(1)';
+        menuBtn.style.boxShadow = '0 4px 12px rgba(217, 70, 239, 0.3)';
     };
 
     // Menu lateral
@@ -48,16 +49,16 @@ function createUI() {
     Object.assign(menu.style, {
         display: 'none',
         background: '#1C2526',
-        borderRadius: '12px',
-        padding: '8px', // Reduzido para ser mais compacto
-        boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+        borderRadius: '16px', // Mais arredondado
+        padding: '10px',
+        boxShadow: '0 6px 16px rgba(0, 0, 0, 0.4), 0 0 10px rgba(217, 70, 239, 0.2)', // Sombra com brilho roxo
         position: 'fixed',
-        bottom: '60px',
+        bottom: '70px',
         right: '20px',
         flexDirection: 'column',
-        gap: '10px', // Reduzido para maior compactação
-        animation: 'menuSlideIn 0.3s ease',
-        backdropFilter: 'blur(10px)', // Efeito de blur
+        gap: '12px',
+        animation: 'menuFadeSlide 0.4s ease-out', // Nova animação de entrada
+        backdropFilter: 'blur(10px)',
         WebkitBackdropFilter: 'blur(10px)',
         width: '200px', // Compacto para celular
         maxWidth: '80vw',
@@ -66,8 +67,8 @@ function createUI() {
     // Ajustes para PC (resolução maior)
     if (window.innerWidth > 600) {
         Object.assign(menu.style, {
-            width: '300px', // Maior no PC
-            padding: '12px', // Mais padding no PC
+            width: '300px',
+            padding: '14px',
         });
     }
 
@@ -76,11 +77,12 @@ function createUI() {
     menuTitle.innerHTML = 'HCK';
     Object.assign(menuTitle.style, {
         color: '#D946EF',
-        fontSize: '20px',
-        fontWeight: 'bold',
+        fontSize: '22px',
+        fontWeight: '700',
         textAlign: 'center',
         paddingBottom: '8px',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        letterSpacing: '1px'
     });
 
     // Input (textarea) dentro do menu
@@ -88,76 +90,85 @@ function createUI() {
     input.id = 'gemini-question-input';
     input.placeholder = 'Cole sua pergunta aqui...';
     Object.assign(input.style, {
-        padding: '8px',
-        borderRadius: '8px',
-        border: '1px solid rgba(255, 255, 255, 0.2)', // Borda mais visível
+        padding: '10px',
+        borderRadius: '10px',
+        border: '1px solid rgba(255, 255, 255, 0.2)',
         background: '#2A3435',
         fontSize: '14px',
         fontWeight: '400',
-        color: '#FFFFFF',
+        color: '#E0E0E0',
         outline: 'none',
         boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.3)',
         resize: 'vertical',
         minHeight: '60px',
-        maxHeight: '80px', // Compacto para celular
+        maxHeight: '80px',
         width: '100%',
-        transition: 'border-color 0.3s ease'
+        transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
+        fontFamily: '"Inter", "SF Pro", system-ui, -apple-system, Arial, sans-serif'
     });
     if (window.innerWidth > 600) {
-        input.style.maxHeight = '100px'; // Maior no PC
+        input.style.maxHeight = '100px';
     }
-    input.onfocus = () => input.style.borderColor = '#D946EF';
-    input.onblur = () => input.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+    input.onfocus = () => {
+        input.style.borderColor = '#D946EF';
+        input.style.boxShadow = '0 0 8px rgba(217, 70, 239, 0.5)';
+    };
+    input.onblur = () => {
+        input.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+        input.style.boxShadow = 'inset 0 1px 3px rgba(0,0,0,0.3)';
+    };
 
     // Opções do menu
     const analyzeOption = document.createElement('button');
     analyzeOption.id = 'gemini-analyze-btn';
     analyzeOption.innerHTML = '<span style="margin-right: 8px;">🔍</span>Analisar';
     Object.assign(analyzeOption.style, {
-        padding: '8px 12px',
-        background: 'linear-gradient(90deg, #FF6F61, #D946EF)', // Gradiente rosa-roxo
+        padding: '10px 14px',
+        background: 'linear-gradient(90deg, #FF6F61, #D946EF)',
         color: '#FFFFFF',
-        border: '1px solid rgba(255, 255, 255, 0.2)', // Borda sutil
-        borderRadius: '8px',
+        border: 'none',
+        borderRadius: '10px',
         cursor: 'pointer',
         fontSize: '14px',
         fontWeight: '500',
         textAlign: 'left',
         display: 'flex',
         alignItems: 'center',
-        transition: 'transform 0.2s ease, background 0.3s ease, box-shadow 0.3s ease'
+        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+        fontFamily: '"Inter", "SF Pro", system-ui, -apple-system, Arial, sans-serif'
     });
     analyzeOption.onmouseover = () => {
-        analyzeOption.style.transform = 'scale(1.02)';
-        analyzeOption.style.boxShadow = '0 2px 8px rgba(217, 70, 239, 0.5)'; // Sombra roxa no hover
+        analyzeOption.style.transform = 'translateY(-2px)';
+        analyzeOption.style.boxShadow = '0 4px 12px rgba(217, 70, 239, 0.5)';
     };
     analyzeOption.onmouseout = () => {
-        analyzeOption.style.transform = 'scale(1)';
+        analyzeOption.style.transform = 'translateY(0)';
         analyzeOption.style.boxShadow = 'none';
     };
 
     const clearOption = document.createElement('button');
     clearOption.innerHTML = '<span style="margin-right: 8px;">🗑️</span>Limpar';
     Object.assign(clearOption.style, {
-        padding: '8px 12px',
+        padding: '10px 14px',
         background: 'linear-gradient(90deg, #FF6F61, #D946EF)',
         color: '#FFFFFF',
-        border: '1px solid rgba(255, 255, 255, 0.2)', // Borda sutil
-        borderRadius: '8px',
+        border: 'none',
+        borderRadius: '10px',
         cursor: 'pointer',
         fontSize: '14px',
         fontWeight: '500',
         textAlign: 'left',
         display: 'flex',
         alignItems: 'center',
-        transition: 'transform 0.2s ease, background 0.3s ease, box-shadow 0.3s ease'
+        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+        fontFamily: '"Inter", "SF Pro", system-ui, -apple-system, Arial, sans-serif'
     });
     clearOption.onmouseover = () => {
-        clearOption.style.transform = 'scale(1.02)';
-        clearOption.style.boxShadow = '0 2px 8px rgba(217, 70, 239, 0.5)';
+        clearOption.style.transform = 'translateY(-2px)';
+        clearOption.style.boxShadow = '0 4px 12px rgba(217, 70, 239, 0.5)';
     };
     clearOption.onmouseout = () => {
-        clearOption.style.transform = 'scale(1)';
+        clearOption.style.transform = 'translateY(0)';
         clearOption.style.boxShadow = 'none';
     };
 
@@ -166,10 +177,13 @@ function createUI() {
     creditsOption.innerHTML = 'Desenvolvido por Hackermoon';
     Object.assign(creditsOption.style, {
         color: '#D946EF',
-        fontSize: '11px',
+        fontSize: '10px',
+        fontWeight: '400',
         textAlign: 'center',
         paddingTop: '8px',
-        borderTop: '1px solid rgba(255, 255, 255, 0.1)'
+        borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+        fontFamily: '"Inter", "SF Pro", system-ui, -apple-system, Arial, sans-serif',
+        opacity: '0.8'
     });
 
     menu.appendChild(menuTitle);
@@ -192,12 +206,13 @@ function createUI() {
         padding: '8px 12px',
         boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
         maxWidth: '90vw',
-        width: '220px', // Reduzido para ser mais compacto no celular
+        width: '220px',
         zIndex: '1000000',
-        animation: 'slideIn 0.3s ease'
+        animation: 'slideIn 0.3s ease',
+        fontFamily: '"Inter", "SF Pro", system-ui, -apple-system, Arial, sans-serif'
     });
     if (window.innerWidth > 600) {
-        responsePanel.style.width = '260px'; // Um pouco maior no PC
+        responsePanel.style.width = '260px';
     }
 
     // Barra de progresso
@@ -205,7 +220,7 @@ function createUI() {
     progressBar.id = 'progress-bar';
     Object.assign(progressBar.style, {
         height: '2px',
-        background: 'linear-gradient(90deg, #FF6F61, #D946EF)', // Gradiente rosa-roxo
+        background: 'linear-gradient(90deg, #FF6F61, #D946EF)',
         width: '100%',
         position: 'absolute',
         bottom: '0',
@@ -226,9 +241,14 @@ function createUI() {
             from { opacity: 1; transform: translate(-50%, 0); }
             to { opacity: 0; transform: translate(-50%, 20px); }
         }
-        @keyframes menuSlideIn {
-            from { opacity: 0; transform: translateX(20px); }
-            to { opacity: 1; transform: translateX(0); }
+        @keyframes menuFadeSlide {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 4px 12px rgba(217, 70, 239, 0.3); }
+            50% { transform: scale(1.05); box-shadow: 0 6px 16px rgba(217, 70, 239, 0.5); }
+            100% { transform: scale(1); box-shadow: 0 4px 12px rgba(217, 70, 239, 0.3); }
         }
     `;
     document.head.appendChild(style);
@@ -269,10 +289,10 @@ function showResponse(panel, answer, correctAlternative) {
 function clearUI(input, responsePanel, analyzeOption, setIsAnalyzing) {
     input.value = '';
     responsePanel.style.display = 'none';
-    analyzeOption.disabled = false; // Reativa o botão "Analisar"
+    analyzeOption.disabled = false;
     analyzeOption.innerHTML = '<span style="margin-right: 8px;">🔍</span>Analisar';
     analyzeOption.style.opacity = '1';
-    setIsAnalyzing(false); // Reseta o estado de análise
+    setIsAnalyzing(false);
 }
 
 window.createUI = createUI;
