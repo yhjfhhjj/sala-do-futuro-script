@@ -129,7 +129,7 @@ function createUI() {
     const imagesSection = document.createElement('div');
     imagesSection.id = 'gemini-images-section';
     Object.assign(imagesSection.style, {
-        maxHeight: '100px',
+        maxHeight: '120px', // Aumentado para caber mais imagens
         overflowY: 'auto',
         padding: '8px',
         background: 'rgba(42, 52, 53, 0.5)',
@@ -140,67 +140,112 @@ function createUI() {
         fontFamily: '"Poppins", sans-serif'
     });
 
-    // Extrair URLs de imagens da página
-    const images = Array.from(document.querySelectorAll('img'))
-        .map(img => img.src)
-        .filter(src => src && src.startsWith('http'))
-        .slice(0, 5); // Limite de 5 imagens
+    // Função para carregar imagens
+    function loadImages() {
+        const images = Array.from(document.querySelectorAll('img'))
+            .map(img => img.src)
+            .filter(src => src && src.startsWith('http') && !src.includes('edusp-static.ip.tv/sala-do-futuro')) // Filtra imagens do Sala do Futuro
+            .slice(0, 10); // Limite aumentado para 10
 
-    if (images.length === 0) {
-        imagesSection.innerHTML = '<div style="text-align: center; color: #999;">Nenhuma imagem encontrada</div>';
-    } else {
-        images.forEach((url, index) => {
-            const imageItem = document.createElement('div');
-            Object.assign(imageItem.style, {
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '4px 0',
-                borderBottom: index < images.length - 1 ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
-            });
+        imagesSection.innerHTML = ''; // Limpa a seção antes de recarregar
 
-            const urlText = document.createElement('span');
-            urlText.textContent = `Imagem ${index + 1}`;
-            Object.assign(urlText.style, {
-                flex: '1',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                marginRight: '8px'
-            });
-
-            const copyBtn = document.createElement('button');
-            copyBtn.textContent = 'Copiar URL';
-            Object.assign(copyBtn.style, {
-                padding: '4px 8px',
-                background: 'linear-gradient(135deg, #FF6F61, #D946EF)',
-                color: '#FFFFFF',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '12px',
-                fontWeight: '500',
-                transition: 'transform 0.3s ease, box-shadow 0.3s ease'
-            });
-            copyBtn.onmouseover = () => {
-                copyBtn.style.transform = 'translateY(-1px)';
-                copyBtn.style.boxShadow = '0 2px 8px rgba(217, 70, 239, 0.5)';
-            };
-            copyBtn.onmouseout = () => {
-                copyBtn.style.transform = 'translateY(0)';
-                copyBtn.style.boxShadow = 'none';
-            };
-            copyBtn.onclick = () => {
-                navigator.clipboard.writeText(url).then(() => {
-                    showCopyNotification('URL copiada!');
-                });
-            };
-
-            imageItem.appendChild(urlText);
-            imageItem.appendChild(copyBtn);
-            imagesSection.appendChild(imageItem);
+        // Botão de atualização
+        const refreshBtn = document.createElement('button');
+        refreshBtn.innerHTML = '<span style="margin-right: 4px;">🔄</span>Atualizar Imagens';
+        Object.assign(refreshBtn.style, {
+            width: '100%',
+            padding: '6px 8px',
+            background: 'linear-gradient(135deg, #FF6F61, #D946EF)',
+            color: '#FFFFFF',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontSize: '12px',
+            fontWeight: '500',
+            textAlign: 'center',
+            marginBottom: '8px',
+            transition: 'transform 0.3s ease, box-shadow 0.3s ease'
         });
+        refreshBtn.onmouseover = () => {
+            refreshBtn.style.transform = 'translateY(-1px)';
+            refreshBtn.style.boxShadow = '0 2px 8px rgba(217, 70, 239, 0.5)';
+        };
+        refreshBtn.onmouseout = () => {
+            refreshBtn.style.transform = 'translateY(0)';
+            refreshBtn.style.boxShadow = 'none';
+        };
+        refreshBtn.onclick = () => {
+            loadImages();
+            window.showCopyNotification('Imagens atualizadas!');
+        };
+        imagesSection.appendChild(refreshBtn);
+
+        // Lista de imagens
+        if (images.length === 0) {
+            const noImages = document.createElement('div');
+            noImages.textContent = 'Nenhuma imagem relevante encontrada';
+            Object.assign(noImages.style, {
+                textAlign: 'center',
+                color: '#999'
+            });
+            imagesSection.appendChild(noImages);
+        } else {
+            images.forEach((url, index) => {
+                const imageItem = document.createElement('div');
+                Object.assign(imageItem.style, {
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '4px 0',
+                    borderBottom: index < images.length - 1 ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
+                });
+
+                const urlText = document.createElement('span');
+                urlText.textContent = `Imagem ${index + 1}`;
+                Object.assign(urlText.style, {
+                    flex: '1',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    marginRight: '8px'
+                });
+
+                const copyBtn = document.createElement('button');
+                copyBtn.textContent = 'Copiar URL';
+                Object.assign(copyBtn.style, {
+                    padding: '4px 8px',
+                    background: 'linear-gradient(135deg, #FF6F61, #D946EF)',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    fontWeight: '500',
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+                });
+                copyBtn.onmouseover = () => {
+                    copyBtn.style.transform = 'translateY(-1px)';
+                    copyBtn.style.boxShadow = '0 2px 8px rgba(217, 70, 239, 0.5)';
+                };
+                copyBtn.onmouseout = () => {
+                    copyBtn.style.transform = 'translateY(0)';
+                    copyBtn.style.boxShadow = 'none';
+                };
+                copyBtn.onclick = () => {
+                    navigator.clipboard.writeText(url).then(() => {
+                        window.showCopyNotification('URL copiada!');
+                    });
+                };
+
+                imageItem.appendChild(urlText);
+                imageItem.appendChild(copyBtn);
+                imagesSection.appendChild(imageItem);
+            });
+        }
     }
+
+    // Carregar imagens inicialmente
+    loadImages();
 
     // Botão "Analisar"
     const analyzeOption = document.createElement('button');
@@ -273,7 +318,7 @@ function createUI() {
 
     menu.appendChild(menuTitle);
     menu.appendChild(input);
-    menu.appendChild(imagesSection); // Nova seção de imagens
+    menu.appendChild(imagesSection);
     menu.appendChild(analyzeOption);
     menu.appendChild(clearOption);
     menu.appendChild(creditsOption);
