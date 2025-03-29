@@ -1,6 +1,6 @@
 (function() {
     const GEMINI_API_KEY = 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY';
-    const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+    const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent'; // Atualizado para Gemini 2.5
     const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743248904/ui.js';
 
     fetch(UI_SCRIPT_URL)
@@ -31,7 +31,8 @@
             async function analyzeContent(content, question) {
                 if (!question.trim()) return { answer: 'Por favor, cole uma pergunta com alternativas.', correctAlternative: '' };
 
-                const prompt = `Responda à seguinte pergunta com base no conteúdo da página e indique a alternativa correta (ex.: "A resposta correta é: B").\n\nPergunta:\n${question}\n\nConteúdo:\nTexto: ${content.text}\nImagens: ${content.images.join(', ')}\n\nResposta:`;
+                // Prompt ajustado para resposta curta e direta
+                const prompt = `Responda à seguinte pergunta com base no conteúdo da página. Dê apenas a alternativa correta (ex.: "A resposta correta é: B") e uma resposta curta (ex.: "Brasília"), sem explicações adicionais.\n\nPergunta:\n${question}\n\nConteúdo:\nTexto: ${content.text}\nImagens: ${content.images.join(', ')}\n\nResposta:`;
 
                 try {
                     const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
@@ -39,7 +40,7 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             contents: [{ parts: [{ text: prompt }] }],
-                            generationConfig: { maxOutputTokens: 200, temperature: 0.3 }
+                            generationConfig: { maxOutputTokens: 50, temperature: 0.3 } // Reduzido para respostas curtas
                         })
                     });
                     const data = await response.json();
