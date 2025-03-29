@@ -1,14 +1,14 @@
 function createUI() {
+    if (window.location.hostname !== 'saladofuturo.educacao.sp.gov.br') return; // Limita ao Sala do Futuro
+
     const existingUI = document.getElementById('gemini-helper-container');
     if (existingUI) existingUI.remove();
 
-    // Carregar a fonte Poppins via Google Fonts
     const fontLink = document.createElement('link');
     fontLink.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap';
     fontLink.rel = 'stylesheet';
     document.head.appendChild(fontLink);
 
-    // Container principal (fixo no canto inferior direito)
     const container = document.createElement('div');
     container.id = 'gemini-helper-container';
     Object.assign(container.style, {
@@ -22,7 +22,6 @@ function createUI() {
         fontFamily: '"Poppins", sans-serif',
     });
 
-    // Botão de menu (iniciais "HCK")
     const menuBtn = document.createElement('button');
     menuBtn.id = 'gemini-menu-btn';
     menuBtn.innerHTML = 'HCK';
@@ -49,7 +48,6 @@ function createUI() {
         menuBtn.style.boxShadow = '0 4px 12px rgba(217, 70, 239, 0.3)';
     };
 
-    // Menu lateral
     const menu = document.createElement('div');
     menu.id = 'gemini-menu';
     Object.assign(menu.style, {
@@ -71,7 +69,6 @@ function createUI() {
         border: '1px solid rgba(217, 70, 239, 0.2)'
     });
 
-    // Ajustes para PC
     if (window.innerWidth > 600) {
         Object.assign(menu.style, {
             width: '300px',
@@ -79,7 +76,6 @@ function createUI() {
         });
     }
 
-    // Título "HCK"
     const menuTitle = document.createElement('div');
     menuTitle.innerHTML = 'HCK';
     Object.assign(menuTitle.style, {
@@ -92,7 +88,6 @@ function createUI() {
         letterSpacing: '1.2px'
     });
 
-    // Input (textarea) dentro do menu
     const input = document.createElement('textarea');
     input.id = 'gemini-question-input';
     input.placeholder = 'Cole sua pergunta aqui...';
@@ -125,11 +120,10 @@ function createUI() {
         input.style.boxShadow = 'inset 0 1px 3px rgba(0,0,0,0.3)';
     };
 
-    // Seção de imagens
     const imagesSection = document.createElement('div');
     imagesSection.id = 'gemini-images-section';
     Object.assign(imagesSection.style, {
-        maxHeight: '120px', // Aumentado para caber mais imagens
+        maxHeight: '150px',
         overflowY: 'auto',
         padding: '8px',
         background: 'rgba(42, 52, 53, 0.5)',
@@ -140,16 +134,14 @@ function createUI() {
         fontFamily: '"Poppins", sans-serif'
     });
 
-    // Função para carregar imagens
     function loadImages() {
         const images = Array.from(document.querySelectorAll('img'))
             .map(img => img.src)
-            .filter(src => src && src.startsWith('http') && !src.includes('edusp-static.ip.tv/sala-do-futuro')) // Filtra imagens do Sala do Futuro
-            .slice(0, 10); // Limite aumentado para 10
+            .filter(src => src && src.startsWith('http') && !src.includes('edusp-static.ip.tv/sala-do-futuro'))
+            .slice(0, 50); // Limite aumentado para 50
 
-        imagesSection.innerHTML = ''; // Limpa a seção antes de recarregar
+        imagesSection.innerHTML = '';
 
-        // Botão de atualização
         const refreshBtn = document.createElement('button');
         refreshBtn.innerHTML = '<span style="margin-right: 4px;">🔄</span>Atualizar Imagens';
         Object.assign(refreshBtn.style, {
@@ -180,7 +172,6 @@ function createUI() {
         };
         imagesSection.appendChild(refreshBtn);
 
-        // Lista de imagens
         if (images.length === 0) {
             const noImages = document.createElement('div');
             noImages.textContent = 'Nenhuma imagem relevante encontrada';
@@ -244,10 +235,8 @@ function createUI() {
         }
     }
 
-    // Carregar imagens inicialmente
     loadImages();
 
-    // Botão "Analisar"
     const analyzeOption = document.createElement('button');
     analyzeOption.id = 'gemini-analyze-btn';
     analyzeOption.innerHTML = '<span style="margin-right: 8px;">🔍</span>Analisar';
@@ -275,7 +264,6 @@ function createUI() {
         analyzeOption.style.boxShadow = 'none';
     };
 
-    // Botão "Limpar"
     const clearOption = document.createElement('button');
     clearOption.innerHTML = '<span style="margin-right: 8px;">🗑️</span>Limpar';
     Object.assign(clearOption.style, {
@@ -302,7 +290,6 @@ function createUI() {
         clearOption.style.boxShadow = 'none';
     };
 
-    // Créditos
     const creditsOption = document.createElement('div');
     creditsOption.innerHTML = 'Desenvolvido por Hackermoon';
     Object.assign(creditsOption.style, {
@@ -323,7 +310,6 @@ function createUI() {
     menu.appendChild(clearOption);
     menu.appendChild(creditsOption);
 
-    // Painel de resposta (toast minimalista)
     const responsePanel = document.createElement('div');
     responsePanel.id = 'gemini-response-panel';
     Object.assign(responsePanel.style, {
@@ -347,7 +333,6 @@ function createUI() {
         responsePanel.style.width = '260px';
     }
 
-    // Barra de progresso
     const progressBar = document.createElement('div');
     progressBar.id = 'progress-bar';
     Object.assign(progressBar.style, {
@@ -362,7 +347,6 @@ function createUI() {
     });
     responsePanel.appendChild(progressBar);
 
-    // Notificação de cópia
     const copyNotification = document.createElement('div');
     copyNotification.id = 'gemini-copy-notification';
     Object.assign(copyNotification.style, {
@@ -382,7 +366,6 @@ function createUI() {
         animation: 'slideIn 0.3s ease'
     });
 
-    // Estilo de animação
     const style = document.createElement('style');
     style.textContent = `
         @keyframes slideIn {
@@ -417,7 +400,7 @@ function createUI() {
 function showResponse(panel, answer, correctAlternative) {
     panel.innerHTML = `
         <div style="color: #FFFFFF; text-align: center; font-size: 14px; line-height: 1.4;">
-            <strong>${correctAlternative}</strong> - ${answer}
+            <strong>${correctAlternative}</strong>${answer ? ` - ${answer}` : ''}
         </div>
     `;
     panel.style.display = 'block';
