@@ -9,7 +9,7 @@ javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743274424/bo
 
 ![Preview da Interface](https://cdn.discordapp.com/attachments/1299444499776536712/1355620231078350959/IMG_20250329_160923.jpg?ex=67e99739&is=67e845b9&hm=71f59a37896bbe38bf6dbba05c14d706429064aa8195ff4db627d41fa60c6bf4&)
 
-## ✨ Funcionalidades
+## ✨ Funcionalidades:
 
 - 🧠 **Análise inteligente** de questões de múltipla escolha
 - 🖼️ **Suporte a imagens** (filtra conteúdo irrelevante e prioriza imagens de questões)
@@ -18,7 +18,7 @@ javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743274424/bo
 - 🗑️ **Limpeza rápida** para análise de novas perguntas
 - 🔄 **Atualização dinâmica** de imagens da página
 
-## 🚀 Como Instalar
+## 🚀 Como Instalar:
 
 1. **Navegadores Desktop (Chrome/Firefox/Edge):**
    - Crie um novo favorito/bookmark
@@ -30,7 +30,7 @@ javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743274424/bo
 2. **Navegadores Mobile:**
    - Adicione a URL acima como um atalho na sua barra de favoritos
 
-## 🛠️ Como Usar
+## 🛠️ Como Usar:
 
 1. Acesse a questão na plataforma Sala do Futuro
 2. Clique no bookmarklet HCK
@@ -40,7 +40,7 @@ javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743274424/bo
 4. Clique em "Analisar"
 5. A resposta sugerida aparecerá como notificação
 
-## 🖼️ Trabalhando com Imagens
+## 🖼️ Trabalhando com Imagens:
 
 A ferramenta identifica automaticamente imagens relevantes na página:
 - Filtra automaticamente logos e elementos da interface
@@ -48,7 +48,7 @@ A ferramenta identifica automaticamente imagens relevantes na página:
 - Inclui botão para recarregar imagens da página atual
 - Suporta até 10 imagens por análise
 
-## 🎨 Design e Experiência
+## 🎨 Design e Experiência:
 
 - Interface minimalista e discreta
 - Animações suaves e feedback visual
@@ -56,7 +56,7 @@ A ferramenta identifica automaticamente imagens relevantes na página:
 - Tipografia elegante (Poppins)
 - Totalmente responsivo
 
-## ⚠️ Limitações
+## ⚠️ Limitações:
 
 - Requer conexão com internet para acessar a API Gemini
 - Pode ser bloqueado por políticas CORS em alguns navegadores
