@@ -1,14 +1,14 @@
 (function() {
     const GEMINI_API_KEY = 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY';
-    const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent'; // Atualizado para Gemini 2.0
-    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743248904/ui.js';
+    const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743167666/ui.js';
 
     fetch(UI_SCRIPT_URL)
         .then(response => response.text())
         .then(script => {
             eval(script);
 
-            let isAnalyzing = false; // Controle para evitar múltiplas análises
+            let isAnalyzing = false;
 
             function setIsAnalyzing(value) {
                 isAnalyzing = value;
@@ -31,8 +31,12 @@
             async function analyzeContent(content, question) {
                 if (!question.trim()) return { answer: 'Por favor, cole uma pergunta com alternativas.', correctAlternative: '' };
 
-                // Prompt ajustado para resposta curta e direta
-                const prompt = `Responda à seguinte pergunta com base no conteúdo da página. Dê apenas a alternativa correta (ex.: "A resposta correta é: B") e uma resposta curta (ex.: "Brasília"), sem explicações adicionais.\n\nPergunta:\n${question}\n\nConteúdo:\nTexto: ${content.text}\nImagens: ${content.images.join(', ')}\n\nResposta:`;
+                // Extrair URLs de imagens da pergunta (ex.: [Imagem: https://example.com/imagem.jpg])
+                const imageUrlMatch = question.match(/\[Imagem: (https:\/\/[^\]]+)\]/);
+                const imageUrl = imageUrlMatch ? imageUrlMatch[1] : null;
+                const cleanedQuestion = question.replace(/\[Imagem: https:\/\/[^\]]+\]/, '').trim();
+
+                const prompt = `Responda à seguinte pergunta com base no conteúdo da página e indique a alternativa correta (ex.: "A resposta correta é: B"). Se houver uma imagem, use-a como contexto adicional.\n\nPergunta:\n${cleanedQuestion}\n\nConteúdo:\nTexto: ${content.text}\nImagens: ${content.images.join(', ')}${imageUrl ? `\nImagem adicional: ${imageUrl}` : ''}\n\nResposta:`;
 
                 try {
                     const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
@@ -40,13 +44,12 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             contents: [{ parts: [{ text: prompt }] }],
-                            generationConfig: { maxOutputTokens: 50, temperature: 0.3 } // Reduzido para respostas curtas
+                            generationConfig: { maxOutputTokens: 200, temperature: 0.3 }
                         })
                     });
                     const data = await response.json();
                     const fullAnswer = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || 'Resposta não encontrada';
 
-                    // Extrair a alternativa correta
                     const match = fullAnswer.match(/A resposta correta é: ([A-E])/i);
                     const correctAlternative = match ? match[1] : 'Não identificada';
                     const answerText = fullAnswer.replace(/A resposta correta é: [A-E]/i, '').trim();
@@ -56,7 +59,7 @@
                     console.error('Erro na API:', error);
                     return { answer: 'Erro ao analisar o conteúdo', correctAlternative: '' };
                 } finally {
-                    setIsAnalyzing(false); // Garante que o estado seja resetado mesmo em caso de erro
+                    setIsAnalyzing(false);
                 }
             }
 
@@ -68,7 +71,7 @@
             });
 
             analyzeOption.addEventListener('click', async () => {
-                if (isAnalyzing) return; // Impede múltiplas análises
+                if (isAnalyzing) return;
 
                 const question = input.value.trim();
                 if (!question) {
