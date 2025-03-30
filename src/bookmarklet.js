@@ -1,9 +1,9 @@
 (function() {
-    if (window.location.hostname !== 'saladofuturo.educacao.sp.gov.br') return; // Limita ao Sala do Futuro
+    if (window.location.hostname !== 'saladofuturo.educacao.sp.gov.br') return;
 
     const GEMINI_API_KEY = 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY';
     const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743288973/ui.js';
+    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743375852/ui.js';
 
     fetch(UI_SCRIPT_URL)
         .then(response => response.text())
@@ -23,8 +23,8 @@
 
                 const images = Array.from(document.querySelectorAll('img'))
                     .map(img => img.src)
-                    .filter(src => src && src.startsWith('http') && !src.includes('edusp-static.ip.tv/sala-do-futuro'))
-                    .slice(0, 50); // Limite aumentado para 50
+                    .filter(src => src && src.startsWith('http') && !src.includes('edusp-static.ip.tv/sala-do-futuro') && !src.includes('s3.sa-east-1.amazonaws.com/edusp-static.ip.tv')) // Novo filtro
+                    .slice(0, 50);
 
                 const text = (contentArea.textContent || '').replace(/\s+/g, ' ').substring(0, 15000);
                 return { text, images };
@@ -37,7 +37,7 @@
                 const imageUrl = imageUrlMatch ? imageUrlMatch[1] : null;
                 const cleanedQuestion = question.replace(/\[Imagem: https:\/\/[^\]]+\]/, '').trim();
 
-                const prompt = `Responda à seguinte pergunta com base no conteúdo da página e indique apenas a alternativa correta (ex.: "A"). Se houver uma imagem, use-a como contexto adicional.\n\nPergunta:\n${cleanedQuestion}\n\nConteúdo:\nTexto: ${content.text}\nImagens: ${content.images.join(', ')}${imageUrl ? `\nImagem adicional: ${imageUrl}` : ''}\n\nResposta:`;
+                const prompt = `Responda à seguinte pergunta com base no conteúdo da página e retorne APENAS a letra da alternativa correta (ex.: "A", "B", "C", "D" ou "E"). NÃO inclua explicações ou texto adicional. Se houver uma imagem, use-a como contexto.\n\nPergunta:\n${cleanedQuestion}\n\nConteúdo:\nTexto: ${content.text}\nImagens: ${content.images.join(', ')}${imageUrl ? `\nImagem adicional: ${imageUrl}` : ''}\n\nResposta:`;
 
                 try {
                     const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
@@ -45,15 +45,15 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             contents: [{ parts: [{ text: prompt }] }],
-                            generationConfig: { maxOutputTokens: 10, temperature: 0.3 } // Resposta curta
+                            generationConfig: { maxOutputTokens: 5, temperature: 0.3 } // Resposta ainda mais curta
                         })
                     });
                     const data = await response.json();
                     const fullAnswer = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || 'Erro';
 
                     const match = fullAnswer.match(/[A-E]/i);
-                    const correctAlternative = match ? match[0] : 'Erro';
-                    const answerText = fullAnswer.length > 1 ? fullAnswer.replace(/[A-E]/i, '').trim() : '';
+                    const correctAlternative = match ? match[0].toUpperCase() : 'Erro';
+                    const answerText = '';
 
                     return { answer: answerText, correctAlternative };
                 } catch (error) {
@@ -65,7 +65,7 @@
             }
 
             const { menuBtn, analyzeOption, clearOption, input, responsePanel } = window.createUI();
-            if (!menuBtn) return; // Para se o createUI não for executado (fora do Sala do Futuro)
+            if (!menuBtn) return;
 
             menuBtn.addEventListener('click', () => {
                 const menu = document.getElementById('gemini-menu');
