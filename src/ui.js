@@ -1,5 +1,5 @@
 function createUI() {
-    if (window.location.hostname !== 'saladofuturo.educacao.sp.gov.br') return; // Limita ao Sala do Futuro
+    if (window.location.hostname !== 'saladofuturo.educacao.sp.gov.br') return;
 
     const existingUI = document.getElementById('gemini-helper-container');
     if (existingUI) existingUI.remove();
@@ -77,7 +77,7 @@ function createUI() {
     }
 
     const menuTitle = document.createElement('div');
-    menuTitle.innerHTML = 'HCK';
+    menuTitle.innerHTML = 'HCK <span style="font-size: 14px; font-weight: 400; opacity: 0.7;">v1.3</span>'; // Versão adicionada
     Object.assign(menuTitle.style, {
         color: '#D946EF',
         fontSize: '24px',
@@ -137,8 +137,8 @@ function createUI() {
     function loadImages() {
         const images = Array.from(document.querySelectorAll('img'))
             .map(img => img.src)
-            .filter(src => src && src.startsWith('http') && !src.includes('edusp-static.ip.tv/sala-do-futuro'))
-            .slice(0, 50); // Limite aumentado para 50
+            .filter(src => src && src.startsWith('http') && !src.includes('edusp-static.ip.tv/sala-do-futuro') && !src.includes('s3.sa-east-1.amazonaws.com/edusp-static.ip.tv')) // Novo filtro
+            .slice(0, 50);
 
         imagesSection.innerHTML = '';
 
