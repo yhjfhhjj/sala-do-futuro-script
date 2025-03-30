@@ -1,6 +1,6 @@
 # 🔍 HCK - Sala do Futuro Helper
 
-Ferramenta avançada para auxílio na resolução de atividades e provas na plataforma Sala do Futuro ou similares. Utiliza "Gemini" para analisar perguntas e imagens, informando a resposta correta.
+Ferramenta avançada para auxílio na resolução de atividades e provas na plataforma Sala do Futuro ou similares. Utiliza o gemini para analisar perguntas e imagens, informando a resposta correta.
 
 ![Preview da Interface](https://cdn.discordapp.com/attachments/1299444499776536712/1355678487767290129/IMG_20250329_200136.jpg?ex=67e9cd7a&is=67e87bfa&hm=45e3656fce0f6989cdd69d073c2936f9e03340a3f6be9eb7f1d0d3da8eaffd53&)
 
