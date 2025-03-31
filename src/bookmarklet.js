@@ -1,94 +1,129 @@
 (function() {
-    // Removemos a restrição de domínio para funcionar em qualquer site
+    // Configurações específicas para o site Sala do Futuro
+    const TARGET_SITE = 'saladofuturo.educacao.sp.gov.br';
+    const isTargetSite = window.location.hostname === TARGET_SITE;
+    
+    // Configurações da API Gemini
     const GEMINI_API_KEY = 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY';
     const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
     const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743421705/ui.js';
 
-    // Técnica 1: Tentar primeiro sem proxy
+    // Padrões de URLs de imagens para filtrar
+    const IMAGE_FILTERS = {
+        // URLs que devem ser sempre bloqueadas (elementos do site)
+        blocked: [
+            /edusp-static\.ip\.tv\/sala-do-futuro\//i,
+            /s3\.sa-east-1\.amazonaws\.com\/edusp-static\.ip\.tv\/sala-do-futuro\//i,
+            /conteudo_logo\.png$/i,
+            /\/icons?\//i,
+            /\/logos?\//i,
+            /\/buttons?\//i,
+            /\/assets\//i
+        ],
+        
+        // URLs que devem ser sempre permitidas (conteúdo educacional)
+        allowed: [
+            /edusp-static\.ip\.tv\/tms\//i,
+            /edusp-static\.ip\.tv\/tarefas\//i,
+            /edusp-static\.ip\.tv\/exercicios\//i,
+            /\.jpg$/i,
+            /\.png$/i,
+            /\.jpeg$/i
+        ]
+    };
+
+    // Verifica se uma URL de imagem deve ser incluída
+    function shouldIncludeImage(url) {
+        if (!url || !url.startsWith('http')) return false;
+        
+        // Primeiro verifica se está na lista de bloqueados
+        for (const pattern of IMAGE_FILTERS.blocked) {
+            if (pattern.test(url)) return false;
+        }
+        
+        // Depois verifica se está na lista de permitidos
+        for (const pattern of IMAGE_FILTERS.allowed) {
+            if (pattern.test(url)) return true;
+        }
+        
+        // Se não estiver em nenhuma lista, inclui apenas no site alvo
+        return isTargetSite;
+    }
+
+    // Estratégias para contornar CORS
     async function makeApiRequest(prompt) {
-        try {
-            // Tentativa direta
-            const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }],
-                    generationConfig: { maxOutputTokens: 2, temperature: 0.1 }
-                }),
-                mode: 'cors' // Tenta explicitamente o modo CORS
-            });
-
-            if (response.ok) return await response.json();
-            
-            // Se falhar, tentar com técnica de cabeçalhos modificados
-            return await makeApiRequestWithModifiedHeaders(prompt);
-        } catch (error) {
-            console.error('Erro na requisição direta:', error);
-            return await makeApiRequestWithModifiedHeaders(prompt);
+        // Tenta diferentes estratégias sequencialmente
+        const strategies = [
+            tryDirectRequest,
+            tryWithModifiedHeaders,
+            tryWithWorker
+        ];
+        
+        for (const strategy of strategies) {
+            try {
+                const result = await strategy(prompt);
+                if (result && !result.error) return result;
+            } catch (error) {
+                console.warn(`Falha na estratégia ${strategy.name}:`, error);
+            }
         }
+        
+        return { error: "Não foi possível conectar à API após várias tentativas" };
     }
 
-    // Técnica 2: Modificar cabeçalhos para tentar evitar CORS
-    async function makeApiRequestWithModifiedHeaders(prompt) {
-        try {
-            const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'text/plain', // Tipo diferente para tentar bypass
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': '*/*',
-                    'Origin': window.location.origin
-                },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }],
-                    generationConfig: { maxOutputTokens: 2, temperature: 0.1 }
-                }),
-                mode: 'cors'
-            });
-
-            if (response.ok) return await response.json();
-            
-            // Se ainda falhar, tentar com JSONP (se a API suportar)
-            return await makeJsonpRequest(prompt);
-        } catch (error) {
-            console.error('Erro na requisição com headers modificados:', error);
-            return await makeJsonpRequest(prompt);
-        }
-    }
-
-    // Técnica 3: Tentar JSONP (se a API suportar)
-    function makeJsonpRequest(prompt) {
-        return new Promise((resolve) => {
-            // Esta é uma implementação fictícia, pois a API Gemini não suporta JSONP
-            // Em uma API real que suporta, você usaria algo como:
-            /*
-            const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
-            const script = document.createElement('script');
-            
-            window[callbackName] = function(data) {
-                delete window[callbackName];
-                document.body.removeChild(script);
-                resolve(data);
-            };
-
-            script.src = `${GEMINI_API_URL}?key=${GEMINI_API_KEY}&callback=${callbackName}`;
-            document.body.appendChild(script);
-            */
-            
-            // Como fallback, retornamos um erro
-            resolve({ error: "Não foi possível conectar à API" });
+    // 1. Tentativa direta
+    async function tryDirectRequest(prompt) {
+        const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { maxOutputTokens: 2, temperature: 0.1 }
+            }),
+            mode: 'cors',
+            credentials: 'omit'
         });
+        
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return await response.json();
     }
 
-    // Técnica 4: Usar Web Worker para fazer a requisição
-    async function makeApiRequestWithWorker(prompt) {
+    // 2. Tentativa com cabeçalhos modificados
+    async function tryWithModifiedHeaders(prompt) {
+        const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain',
+                'Accept': 'application/json, text/plain, */*',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Sec-Fetch-Dest': 'empty',
+                'Sec-Fetch-Mode': 'cors',
+                'Sec-Fetch-Site': 'cross-site'
+            },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { maxOutputTokens: 2, temperature: 0.1 }
+            }),
+            mode: 'cors',
+            credentials: 'omit'
+        });
+        
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return await response.json();
+    }
+
+    // 3. Tentativa com Web Worker
+    async function tryWithWorker(prompt) {
         return new Promise((resolve) => {
             const workerCode = `
                 self.onmessage = async function(e) {
                     try {
                         const response = await fetch('${GEMINI_API_URL}?key=${GEMINI_API_KEY}', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
                             body: JSON.stringify({
                                 contents: [{ parts: [{ text: e.data }] }],
                                 generationConfig: { maxOutputTokens: 2, temperature: 0.1 }
@@ -99,7 +134,7 @@
                             const data = await response.json();
                             postMessage({ success: true, data });
                         } else {
-                            postMessage({ success: false, error: 'Erro na API' });
+                            postMessage({ success: false, error: 'Erro na API: ' + response.status });
                         }
                     } catch (error) {
                         postMessage({ success: false, error: error.message });
@@ -141,17 +176,20 @@
                 const contentArea = document.querySelector('body') || document.documentElement;
                 if (!contentArea) return { text: '', images: [] };
 
+                // Remove elementos não desejados
                 const unwantedTags = ['script', 'style', 'noscript', 'svg', 'iframe', 'head'];
                 unwantedTags.forEach(tag => {
                     const elements = contentArea.querySelectorAll(tag);
                     elements.forEach(el => el.remove());
                 });
 
+                // Filtra imagens conforme regras específicas
                 const images = Array.from(document.querySelectorAll('img'))
                     .map(img => img.src)
-                    .filter(src => src && src.startsWith('http'))
+                    .filter(shouldIncludeImage)
                     .slice(0, 50);
 
+                // Limita o texto para evitar payloads muito grandes
                 const text = (contentArea.textContent || '').replace(/\s+/g, ' ').substring(0, 15000);
                 return { text, images };
             }
@@ -166,14 +204,8 @@
                 const prompt = `Você é um assistente especializado em questões de múltipla escolha. Analise a pergunta e o conteúdo da página e retorne APENAS a letra da alternativa correta (ex.: "A", "B", "C", "D" ou "E"). NÃO inclua explicações, texto adicional ou qualquer outro caractere. Use a imagem como contexto adicional, se fornecida.\n\nPergunta:\n${cleanedQuestion}\n\nConteúdo:\nTexto: ${content.text}\nImagens: ${content.images.join(', ')}${imageUrl ? `\nImagem adicional: ${imageUrl}` : ''}\n\nResposta:`;
 
                 try {
-                    // Tentar primeiro com a abordagem direta
-                    let data = await makeApiRequest(prompt);
+                    const data = await makeApiRequest(prompt);
                     
-                    // Se falhar, tentar com Web Worker
-                    if (data.error) {
-                        data = await makeApiRequestWithWorker(prompt);
-                    }
-
                     const fullAnswer = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || 'Erro';
                     const match = fullAnswer.match(/[A-E]/i);
                     const correctAlternative = match ? match[0].toUpperCase() : 'Erro';
@@ -188,6 +220,7 @@
                 }
             }
 
+            // O restante do código da UI permanece o mesmo...
             const ui = window.createUI();
             if (!ui) return;
 
