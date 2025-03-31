@@ -1,7 +1,7 @@
 (function() {
     const TARGET_SITE = 'saladofuturo.educacao.sp.gov.br';
     const GEMINI_API_KEY = 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY';
-    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743452256/ui.js';
+    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743452745/ui.js';
     const API_ENDPOINTS = [
         'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
         'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent'
