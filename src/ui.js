@@ -4,140 +4,152 @@ function createUI() {
     const existingUI = document.getElementById('gemini-helper-container');
     if (existingUI) existingUI.remove();
 
-    const fontLink = document.createElement('link');
-    fontLink.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap';
-    fontLink.rel = 'stylesheet';
-    document.head.appendChild(fontLink);
-
     const container = document.createElement('div');
     container.id = 'gemini-helper-container';
     Object.assign(container.style, {
         position: 'fixed',
-        bottom: '20px',
-        right: '20px',
-        zIndex: '999999',
+        bottom: '10px',
+        right: '10px',
+        zIndex: '9999',
         display: 'flex',
         flexDirection: 'column',
-        gap: '12px',
-        fontFamily: '"Poppins", sans-serif'
+        gap: '8px',
+        fontFamily: 'Arial, sans-serif'
     });
 
     const menuBtn = document.createElement('button');
     menuBtn.id = 'gemini-menu-btn';
-    menuBtn.innerHTML = 'HCK';
+    menuBtn.innerHTML = 'Ajuda';
     Object.assign(menuBtn.style, {
-        padding: '10px 16px',
-        background: 'linear-gradient(135deg, #FF6F61, #D946EF)',
+        padding: '8px 12px',
+        background: '#0056D2',
         color: '#FFFFFF',
         border: 'none',
-        borderRadius: '20px',
+        borderRadius: '4px',
         cursor: 'pointer',
-        fontSize: '16px',
-        fontWeight: '600',
-        boxShadow: '0 4px 12px rgba(217, 70, 239, 0.3)',
-        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-        alignSelf: 'flex-end',
-        animation: 'pulse 2.5s infinite ease-in-out'
+        fontSize: '14px',
+        fontWeight: '500',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+        transition: 'background 0.3s ease',
+        alignSelf: 'flex-end'
     });
     menuBtn.onmouseover = () => {
-        menuBtn.style.transform = 'scale(1.1)';
-        menuBtn.style.boxShadow = '0 6px 16px rgba(217, 70, 239, 0.5)';
+        menuBtn.style.background = '#003BB5';
     };
     menuBtn.onmouseout = () => {
-        menuBtn.style.transform = 'scale(1)';
-        menuBtn.style.boxShadow = '0 4px 12px rgba(217, 70, 239, 0.3)';
+        menuBtn.style.background = '#0056D2';
     };
 
     const menu = document.createElement('div');
     menu.id = 'gemini-menu';
     Object.assign(menu.style, {
         display: 'none',
-        background: 'rgba(28, 37, 38, 0.95)',
-        borderRadius: '20px',
-        padding: '12px',
-        boxShadow: '0 6px 16px rgba(0, 0, 0, 0.4), 0 0 8px rgba(217, 70, 239, 0.2)',
+        background: '#FFFFFF',
+        borderRadius: '8px',
+        padding: '10px',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
         position: 'fixed',
-        bottom: '70px',
-        right: '20px',
+        bottom: '50px',
+        right: '10px',
         flexDirection: 'column',
-        gap: '10px',
-        animation: 'menuFadeScale 0.4s ease-out',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        width: '200px',
-        maxWidth: '80vw',
-        border: '1px solid rgba(217, 70, 239, 0.2)'
+        gap: '8px',
+        width: '250px',
+        maxWidth: '90vw',
+        border: '1px solid #E0E0E0'
     });
 
     if (window.innerWidth > 600) {
-        Object.assign(menu.style, {
-            width: '300px',
-            padding: '16px'
-        });
+        menu.style.width = '300px';
     }
 
     const menuTitle = document.createElement('div');
-    menuTitle.innerHTML = 'HCK <span style="font-size: 14px; font-weight: 400; opacity: 0.7;">v2.0</span>';
+    menuTitle.innerHTML = 'Assistente de Questões';
     Object.assign(menuTitle.style, {
-        color: '#D946EF',
-        fontSize: '24px',
-        fontWeight: '700',
+        color: '#333',
+        fontSize: '16px',
+        fontWeight: '600',
         textAlign: 'center',
-        paddingBottom: '8px',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-        letterSpacing: '1.2px'
+        paddingBottom: '6px',
+        borderBottom: '1px solid #E0E0E0'
+    });
+
+    const corsWarning = document.createElement('div');
+    corsWarning.innerHTML = '⚠️ Instale a extensão "CORS Unblock" no Chrome para usar este assistente.';
+    Object.assign(corsWarning.style, {
+        color: '#D32F2F',
+        fontSize: '12px',
+        textAlign: 'center',
+        padding: '6px',
+        background: '#FFEBEE',
+        borderRadius: '4px',
+        marginBottom: '8px'
     });
 
     const input = document.createElement('textarea');
     input.id = 'gemini-question-input';
-    input.placeholder = 'Cole sua pergunta aqui...';
+    input.placeholder = 'Cole a questão aqui...';
     Object.assign(input.style, {
-        padding: '10px',
-        borderRadius: '12px',
-        border: '1px solid rgba(255, 255, 255, 0.2)',
-        background: 'rgba(42, 52, 53, 0.8)',
+        padding: '8px',
+        borderRadius: '4px',
+        border: '1px solid #E0E0E0',
+        background: '#F5F5F5',
         fontSize: '14px',
-        fontWeight: '400',
-        color: '#E0E0E0',
+        color: '#333',
         outline: 'none',
-        boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.3)',
         resize: 'vertical',
-        minHeight: '60px',
+        minHeight: '50px',
         maxHeight: '80px',
         width: '100%',
-        transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
-        fontFamily: '"Poppins", sans-serif'
+        transition: 'border-color 0.3s ease',
+        fontFamily: 'Arial, sans-serif'
     });
     if (window.innerWidth > 600) {
         input.style.maxHeight = '100px';
     }
     input.onfocus = () => {
-        input.style.borderColor = '#D946EF';
-        input.style.boxShadow = '0 0 8px rgba(217, 70, 239, 0.4)';
+        input.style.borderColor = '#0056D2';
     };
     input.onblur = () => {
-        input.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-        input.style.boxShadow = 'inset 0 1px 3px rgba(0,0,0,0.3)';
+        input.style.borderColor = '#E0E0E0';
     };
 
     const imagesSection = document.createElement('div');
     imagesSection.id = 'gemini-images-section';
     Object.assign(imagesSection.style, {
-        maxHeight: '150px',
+        maxHeight: '120px',
         overflowY: 'auto',
-        padding: '8px',
-        background: 'rgba(42, 52, 53, 0.5)',
-        borderRadius: '12px',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
+        padding: '6px',
+        background: '#F5F5F5',
+        borderRadius: '4px',
+        border: '1px solid #E0E0E0',
         fontSize: '12px',
-        color: '#E0E0E0',
-        fontFamily: '"Poppins", sans-serif'
+        color: '#333',
+        fontFamily: 'Arial, sans-serif'
     });
 
     function loadImages() {
         const images = Array.from(document.querySelectorAll('img'))
             .map(img => img.src)
-            .filter(src => src && src.startsWith('http') && !src.includes('edusp-static.ip.tv/sala-do-futuro') && !src.includes('s3.sa-east-1.amazonaws.com/edusp-static.ip.tv') && !src.includes('edusp-static.ip.tv/tms'))
+            .filter(src => {
+                if (!src || !src.startsWith('http')) return false;
+                const blocked = [
+                    /edusp-static\.ip\.tv\/sala-do-futuro\//i,
+                    /s3\.sa-east-1\.amazonaws\.com\/edusp-static\.ip\.tv\/sala-do-futuro\//i,
+                    /conteudo_logo\.png$/i,
+                    /\/icons?\//i,
+                    /\/logos?\//i,
+                    /\/buttons?\//i,
+                    /\/assets\//i
+                ];
+                const allowed = [
+                    /edusp-static\.ip\.tv\/tms\//i,
+                    /edusp-static\.ip\.tv\/tarefas\//i,
+                    /edusp-static\.ip\.tv\/exercicios\//i,
+                    /\/atividade\/\d+\?eExame=true/i,
+                    /\.(jpg|png|jpeg|gif|webp)$/i
+                ];
+                return !blocked.some(pattern => pattern.test(src)) && allowed.some(pattern => pattern.test(src));
+            })
             .slice(0, 50);
 
         imagesSection.innerHTML = '';
@@ -146,25 +158,23 @@ function createUI() {
         refreshBtn.innerHTML = '<span style="margin-right: 4px;">🔄</span>Atualizar Imagens';
         Object.assign(refreshBtn.style, {
             width: '100%',
-            padding: '6px 8px',
-            background: 'linear-gradient(135deg, #FF6F61, #D946EF)',
+            padding: '6px',
+            background: '#0056D2',
             color: '#FFFFFF',
             border: 'none',
-            borderRadius: '8px',
+            borderRadius: '4px',
             cursor: 'pointer',
             fontSize: '12px',
             fontWeight: '500',
             textAlign: 'center',
-            marginBottom: '8px',
-            transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+            marginBottom: '6px',
+            transition: 'background 0.3s ease'
         });
         refreshBtn.onmouseover = () => {
-            refreshBtn.style.transform = 'translateY(-1px)';
-            refreshBtn.style.boxShadow = '0 2px 8px rgba(217, 70, 239, 0.5)';
+            refreshBtn.style.background = '#003BB5';
         };
         refreshBtn.onmouseout = () => {
-            refreshBtn.style.transform = 'translateY(0)';
-            refreshBtn.style.boxShadow = 'none';
+            refreshBtn.style.background = '#0056D2';
         };
         refreshBtn.onclick = () => {
             loadImages();
@@ -174,10 +184,10 @@ function createUI() {
 
         if (images.length === 0) {
             const noImages = document.createElement('div');
-            noImages.textContent = 'Nenhuma imagem relevante encontrada';
+            noImages.textContent = 'Nenhuma imagem encontrada';
             Object.assign(noImages.style, {
                 textAlign: 'center',
-                color: '#999'
+                color: '#666'
             });
             imagesSection.appendChild(noImages);
         } else {
@@ -188,7 +198,7 @@ function createUI() {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     padding: '4px 0',
-                    borderBottom: index < images.length - 1 ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
+                    borderBottom: index < images.length - 1 ? '1px solid #E0E0E0' : 'none'
                 });
 
                 const urlText = document.createElement('span');
@@ -205,22 +215,20 @@ function createUI() {
                 copyBtn.textContent = 'Copiar URL';
                 Object.assign(copyBtn.style, {
                     padding: '4px 8px',
-                    background: 'linear-gradient(135deg, #FF6F61, #D946EF)',
+                    background: '#0056D2',
                     color: '#FFFFFF',
                     border: 'none',
-                    borderRadius: '8px',
+                    borderRadius: '4px',
                     cursor: 'pointer',
                     fontSize: '12px',
                     fontWeight: '500',
-                    transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+                    transition: 'background 0.3s ease'
                 });
                 copyBtn.onmouseover = () => {
-                    copyBtn.style.transform = 'translateY(-1px)';
-                    copyBtn.style.boxShadow = '0 2px 8px rgba(217, 70, 239, 0.5)';
+                    copyBtn.style.background = '#003BB5';
                 };
                 copyBtn.onmouseout = () => {
-                    copyBtn.style.transform = 'translateY(0)';
-                    copyBtn.style.boxShadow = 'none';
+                    copyBtn.style.background = '#0056D2';
                 };
                 copyBtn.onclick = () => {
                     navigator.clipboard.writeText(url).then(() => {
@@ -241,71 +249,64 @@ function createUI() {
 
     const analyzeOption = document.createElement('button');
     analyzeOption.id = 'gemini-analyze-btn';
-    analyzeOption.innerHTML = '<span style="margin-right: 8px;">🔍</span>Analisar';
+    analyzeOption.innerHTML = '<span style="margin-right: 6px;">🔍</span>Analisar';
     Object.assign(analyzeOption.style, {
-        padding: '10px 14px',
-        background: 'linear-gradient(135deg, #FF6F61, #D946EF)',
+        padding: '8px 12px',
+        background: '#0056D2',
         color: '#FFFFFF',
         border: 'none',
-        borderRadius: '12px',
+        borderRadius: '4px',
         cursor: 'pointer',
         fontSize: '14px',
         fontWeight: '500',
-        textAlign: 'left',
         display: 'flex',
         alignItems: 'center',
-        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-        fontFamily: '"Poppins", sans-serif'
+        transition: 'background 0.3s ease',
+        fontFamily: 'Arial, sans-serif'
     });
     analyzeOption.onmouseover = () => {
-        analyzeOption.style.transform = 'translateY(-2px)';
-        analyzeOption.style.boxShadow = '0 4px 12px rgba(217, 70, 239, 0.5)';
+        analyzeOption.style.background = '#003BB5';
     };
     analyzeOption.onmouseout = () => {
-        analyzeOption.style.transform = 'translateY(0)';
-        analyzeOption.style.boxShadow = 'none';
+        analyzeOption.style.background = '#0056D2';
     };
 
     const clearOption = document.createElement('button');
-    clearOption.innerHTML = '<span style="margin-right: 8px;">🗑️</span>Limpar';
+    clearOption.innerHTML = '<span style="margin-right: 6px;">🗑️</span>Limpar';
     Object.assign(clearOption.style, {
-        padding: '10px 14px',
-        background: 'linear-gradient(135deg, #FF6F61, #D946EF)',
+        padding: '8px 12px',
+        background: '#D32F2F',
         color: '#FFFFFF',
         border: 'none',
-        borderRadius: '12px',
+        borderRadius: '4px',
         cursor: 'pointer',
         fontSize: '14px',
         fontWeight: '500',
-        textAlign: 'left',
         display: 'flex',
         alignItems: 'center',
-        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-        fontFamily: '"Poppins", sans-serif'
+        transition: 'background 0.3s ease',
+        fontFamily: 'Arial, sans-serif'
     });
     clearOption.onmouseover = () => {
-        clearOption.style.transform = 'translateY(-2px)';
-        clearOption.style.boxShadow = '0 4px 12px rgba(217, 70, 239, 0.5)';
+        clearOption.style.background = '#B71C1C';
     };
     clearOption.onmouseout = () => {
-        clearOption.style.transform = 'translateY(0)';
-        clearOption.style.boxShadow = 'none';
+        clearOption.style.background = '#D32F2F';
     };
 
     const creditsOption = document.createElement('div');
-    creditsOption.innerHTML = 'Desenvolvido por Hackermoon';
+    creditsOption.innerHTML = 'Desenvolvido por Sala do Futuro';
     Object.assign(creditsOption.style, {
-        color: '#D946EF',
+        color: '#666',
         fontSize: '10px',
-        fontWeight: '400',
         textAlign: 'center',
-        paddingTop: '8px',
-        borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-        fontFamily: '"Poppins", sans-serif',
-        opacity: '0.7'
+        paddingTop: '6px',
+        borderTop: '1px solid #E0E0E0',
+        fontFamily: 'Arial, sans-serif'
     });
 
     menu.appendChild(menuTitle);
+    menu.appendChild(corsWarning);
     menu.appendChild(input);
     menu.appendChild(imagesSection);
     menu.appendChild(analyzeOption);
@@ -317,34 +318,33 @@ function createUI() {
     Object.assign(responsePanel.style, {
         display: 'none',
         position: 'fixed',
-        bottom: '20px',
+        bottom: '10px',
         left: '50%',
         transform: 'translateX(-50%)',
-        background: 'rgba(28, 37, 38, 0.95)',
-        borderRadius: '12px',
+        background: '#FFFFFF',
+        borderRadius: '8px',
         padding: '8px 12px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+        boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
         maxWidth: '90vw',
-        width: '220px',
-        zIndex: '1000000',
-        animation: 'slideIn 0.3s ease',
-        fontFamily: '"Poppins", sans-serif',
-        border: '1px solid rgba(217, 70, 239, 0.2)'
+        width: '200px',
+        zIndex: '10000',
+        fontFamily: 'Arial, sans-serif',
+        border: '1px solid #E0E0E0'
     });
     if (window.innerWidth > 600) {
-        responsePanel.style.width = '260px';
+        responsePanel.style.width = '240px';
     }
 
     const progressBar = document.createElement('div');
     progressBar.id = 'progress-bar';
     Object.assign(progressBar.style, {
         height: '2px',
-        background: 'linear-gradient(135deg, #FF6F61, #D946EF)',
+        background: '#0056D2',
         width: '100%',
         position: 'absolute',
         bottom: '0',
         left: '0',
-        borderRadius: '0 0 12px 12px',
+        borderRadius: '0 0 8px 8px',
         transition: 'width 6s linear'
     });
     responsePanel.appendChild(progressBar);
@@ -354,38 +354,29 @@ function createUI() {
     Object.assign(copyNotification.style, {
         display: 'none',
         position: 'fixed',
-        bottom: '80px',
+        bottom: '60px',
         left: '50%',
         transform: 'translateX(-50%)',
-        background: 'rgba(28, 37, 38, 0.95)',
-        borderRadius: '12px',
-        padding: '8px 16px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-        color: '#E0E0E0',
+        background: '#FFFFFF',
+        borderRadius: '8px',
+        padding: '8px 12px',
+        boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
+        color: '#333',
         fontSize: '12px',
-        fontFamily: '"Poppins", sans-serif',
-        zIndex: '1000001',
-        animation: 'slideIn 0.3s ease'
+        fontFamily: 'Arial, sans-serif',
+        zIndex: '10001',
+        border: '1px solid #E0E0E0'
     });
 
     const style = document.createElement('style');
     style.textContent = `
         @keyframes slideIn {
-            from { opacity: 0; transform: translate(-50%, 20px); }
+            from { opacity: 0; transform: translate(-50%, 10px); }
             to { opacity: 1; transform: translate(-50%, 0); }
         }
         @keyframes slideOut {
             from { opacity: 1; transform: translate(-50%, 0); }
-            to { opacity: 0; transform: translate(-50%, 20px); }
-        }
-        @keyframes menuFadeScale {
-            from { opacity: 0; transform: translateY(15px) scale(0.9); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 4px 12px rgba(217, 70, 239, 0.3); }
-            50% { transform: scale(1.05); box-shadow: 0 6px 16px rgba(217, 70, 239, 0.5); }
-            100% { transform: scale(1); box-shadow: 0 4px 12px rgba(217, 70, 239, 0.3); }
+            to { opacity: 0; transform: translate(-50%, 10px); }
         }
     `;
     document.head.appendChild(style);
@@ -401,7 +392,7 @@ function createUI() {
 
 function showResponse(panel, answer, correctAlternative) {
     panel.innerHTML = `
-        <div style="color: #FFFFFF; text-align: center; font-size: 14px; line-height: 1.4;">
+        <div style="color: #333; text-align: center; font-size: 14px; line-height: 1.4;">
             <strong>${correctAlternative}</strong>${answer ? ` - ${answer}` : ''}
         </div>
     `;
@@ -445,10 +436,10 @@ function clearUI(input, responsePanel, analyzeOption, setIsAnalyzing) {
     if (responsePanel) responsePanel.style.display = 'none';
     if (analyzeOption) {
         analyzeOption.disabled = false;
-        analyzeOption.innerHTML = '<span style="margin-right: 8px;">🔍</span>Analisar';
+        analyzeOption.innerHTML = '<span style="margin-right: 6px;">🔍</span>Analisar';
         analyzeOption.style.opacity = '1';
     }
-    setIsAnalyzing(false);
+    setIsAnalyzing();
 }
 
 window.createUI = createUI;
