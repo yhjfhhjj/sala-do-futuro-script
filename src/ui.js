@@ -4,7 +4,7 @@ function createDraggableMenu() {
     menu.id = 'hck-v4-menu';
     menu.style.cssText = `
         position: fixed;
-        width: 260px;
+        width: 220px;
         background: #1a1a1a;
         border-radius: 12px;
         padding: 8px;
@@ -32,7 +32,7 @@ function createDraggableMenu() {
     // Container de conteúdo (escondido inicialmente)
     const content = document.createElement('div');
     content.id = 'hck-v4-content';
-    content.style.display = 'none'; // Começa fechado
+    content.style.display = 'none';
 
     // Caixa de texto
     const input = document.createElement('textarea');
@@ -87,14 +87,15 @@ function createDraggableMenu() {
 
     // Função para atualizar os botões de imagem dinamicamente
     function updateImageButtons(images) {
-        imageButtonContainer.innerHTML = ''; // Limpar botões existentes
-        imageButtonContainer.appendChild(updateImagesBtn); // Sempre manter o botão "Atualizar Imagens"
+        imageButtonContainer.innerHTML = '';
+        imageButtonContainer.appendChild(updateImagesBtn);
 
-        if (images.length === 0) return; // Não adicionar botões se não houver imagens
+        if (images.length === 0) return { imageOptions: [], copyUrlOptions: [] };
 
-        // Criar botões para cada imagem (máximo 2 para manter compacto)
+        const imageOptions = [];
+        const copyUrlOptions = [];
+
         images.slice(0, 2).forEach((_, index) => {
-            // Botão Mostrar Imagem
             const showImageBtn = document.createElement('button');
             showImageBtn.innerHTML = `<span style="margin-right: 4px;">🖼️</span>Imagem ${index + 1}`;
             showImageBtn.style.cssText = `
@@ -111,7 +112,6 @@ function createDraggableMenu() {
             showImageBtn.addEventListener('mouseover', () => showImageBtn.style.opacity = '0.8');
             showImageBtn.addEventListener('mouseout', () => showImageBtn.style.opacity = '1');
 
-            // Botão Copiar URL
             const copyUrlBtn = document.createElement('button');
             copyUrlBtn.innerHTML = `<span style="margin-right: 4px;">📋</span>Copiar URL`;
             copyUrlBtn.style.cssText = `
@@ -128,7 +128,6 @@ function createDraggableMenu() {
             copyUrlBtn.addEventListener('mouseover', () => copyUrlBtn.style.opacity = '0.8');
             copyUrlBtn.addEventListener('mouseout', () => copyUrlBtn.style.opacity = '1');
 
-            // Adicionar botões ao container
             const imageOptionContainer = document.createElement('div');
             imageOptionContainer.style.cssText = `
                 display: flex;
@@ -138,9 +137,12 @@ function createDraggableMenu() {
             imageOptionContainer.appendChild(showImageBtn);
             imageOptionContainer.appendChild(copyUrlBtn);
             imageButtonContainer.appendChild(imageOptionContainer);
+
+            imageOptions.push(showImageBtn);
+            copyUrlOptions.push(copyUrlBtn);
         });
 
-        return imageButtonContainer.querySelectorAll('button:not([innerHTML*="Atualizar Imagens"])');
+        return { imageOptions, copyUrlOptions };
     }
 
     // Botão Analisar
@@ -238,7 +240,7 @@ function createDraggableMenu() {
     }
 
     // Posição inicial
-    currentX = window.innerWidth - 260;
+    currentX = window.innerWidth - 220;
     currentY = window.innerHeight - 60;
 
     // Montar o menu
@@ -255,16 +257,16 @@ function createDraggableMenu() {
         currentX = window.innerWidth * 0.05;
     }
 
-    // Inicializar botões de imagem (vazio inicialmente)
-    const imageButtons = updateImageButtons([]);
+    // Inicializar botões de imagem
+    const { imageOptions, copyUrlOptions } = updateImageButtons([]);
 
     return {
         input,
         analyzeOption: analyzeBtn,
         clearOption: clearBtn,
         updateImagesOption: updateImagesBtn,
-        imageOptions: Array.from(imageButtons).filter((_, i) => i % 2 === 0), // Botões "Imagem X"
-        copyUrlOptions: Array.from(imageButtons).filter((_, i) => i % 2 === 1), // Botões "Copiar URL"
+        imageOptions,
+        copyUrlOptions,
         responsePanel
     };
 }
@@ -281,15 +283,25 @@ function showResponse(responsePanel, rawAnswer, displayAnswer) {
     responsePanel.style.fontSize = '12px';
 }
 
-// Expor funções globalmente
 window.createUI = createDraggableMenu;
 window.showResponse = showResponse;
 window.updateImageButtons = (images) => {
     const imageButtonContainer = document.getElementById('hck-v4-image-buttons');
+    if (!imageButtonContainer) return { imageOptions: [], copyUrlOptions: [] };
     const updateImagesBtn = imageButtonContainer.querySelector('button[innerHTML*="Atualizar Imagens"]');
-    const buttons = createDraggableMenu().updateImageButtons(images);
+    const { imageOptions, copyUrlOptions } = createDraggableMenu().updateImageButtons(images);
     imageButtonContainer.innerHTML = '';
     imageButtonContainer.appendChild(updateImagesBtn);
-    buttons.forEach(btn => imageButtonContainer.appendChild(btn.parentElement));
-    return buttons;
+    imageOptions.forEach((btn, index) => {
+        const container = document.createElement('div');
+        container.style.cssText = `
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        `;
+        container.appendChild(btn);
+        container.appendChild(copyUrlOptions[index]);
+        imageButtonContainer.appendChild(container);
+    });
+    return { imageOptions, copyUrlOptions };
 };
