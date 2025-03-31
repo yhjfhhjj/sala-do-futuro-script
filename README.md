@@ -21,7 +21,7 @@ Sim, ele tá usando IA, sendo mais específico o (Gemini 2.0), o script tá func
    - Crie um novo favorito/bookmark
    - No campo URL, cole:
      ```javascript
-     javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743440317/bookmarklet.js').then(r=>r.text()).then(r=>eval(r))
+     javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743440740/bookmarklet.js').then(r=>r.text()).then(r=>eval(r))
      ```
 
 2. **Navegadores Mobile:**
