@@ -1,6 +1,6 @@
 # 🔍 HCK - Prova Paulista
 
-Como não tem script pra fazer prova paulista crie esse carinha pra dar uma ajuda.
+Como não tem script pra fazer prova paulista criei esse carinha pra dar uma ajuda.
 
 Sim, ele tá usando IA, sendo mais específico o (Gemini 2.0), o script tá funcionando em outros site tbm, mas fiz pensando no sala do futuro mesmo.
 
