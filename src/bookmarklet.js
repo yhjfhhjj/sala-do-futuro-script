@@ -2,7 +2,7 @@
     // ===== CONFIGURAÇÕES PRINCIPAIS =====
     const TARGET_SITE = 'saladofuturo.educacao.sp.gov.br';
     const BLACKBOX_API = 'https://www.blackbox.ai/api/chat';
-    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743453180/bookmark1.js';
+    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743454341/ui.js';
     const STATE = { 
         isAnalyzing: false,
         images: [] 
