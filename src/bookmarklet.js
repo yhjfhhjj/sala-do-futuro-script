@@ -1,135 +1,102 @@
 (function() {
-    // ===== CONFIGURAÇÕES PRINCIPAIS =====
-    const TARGET_SITE = 'saladofuturo.educacao.sp.gov.br';
-    const BLACKBOX_API = 'https://www.blackbox.ai/api/chat';
-    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743454341/ui.js';
-    const STATE = { 
-        isAnalyzing: false,
-        images: [] 
+    // Configurações básicas (sem frescura)
+    const siteAlvo = 'saladofuturo.educacao.sp.gov.br';
+    const apiBlackbox = 'https://www.blackbox.ai/api/chat'; 
+    const uiScript = ''; // Cola seu link do UI aqui
+
+    // Estado do sistema (o que realmente importa)
+    const estado = { 
+        analisando: false,
+        imagens: []
     };
 
-    // ===== FUNÇÕES UTILITÁRIAS =====
-    function log(message) {
-        console.log(`[HCK Blackbox] ${message}`);
-    }
-
-    function buildPrompt(question, images = []) {
-        return `ANÁLISE EXATA - RESPONDA APENAS COM A ALTERNATIVA COMPLETA CORRETA (Ex: "B) 120").
-NÃO EXPLIQUE, NÃO COMENTE, NÃO FORMATE.
-
-Questão: ${question}
-${images.length ? `Imagens referenciais: ${images.slice(0,2).join(' | ')}` : ''}
-
-Responda estritamente com a alternativa correta no formato "X) ...":`;
-    }
-
-    // ===== SISTEMA DE IMAGENS =====
-    function extractImages() {
-        STATE.images = Array.from(document.querySelectorAll('img'))
+    // Função pra extrair imagens da página (igual o anterior, mas mais esperto)
+    function pegarImagens() {
+        estado.imagens = [...document.querySelectorAll('img')]
             .map(img => img.src)
             .filter(src => src && src.startsWith('http'))
-            .slice(0, 5); // Limite reduzido (Blackbox)
-        return STATE.images;
+            .slice(0, 3); // Só 3 imagens pra não encher
+        return estado.imagens;
     }
 
-    // ===== INTEGRAÇÃO COM BLACKBOX =====
-    async function queryBlackbox(prompt) {
+    // Monta o prompt perfeito pra Blackbox
+    function criarPrompt(pergunta) {
+        return `RESPONDA DIRETO COM A ALTERNATIVA CORRETA (Ex: "C) 720") SEM ENROLAÇÃO:
+
+        ${pergunta}
+        
+        ${estado.imagens.length ? `Imagens pra ajudar: ${estado.imagens.join(' | ')}` : ''}
+        
+        Manda a letra certa:`;
+    }
+
+    // Função que faz a mágica acontecer
+    async function consultarBlackbox(pergunta) {
         try {
-            const response = await fetch(BLACKBOX_API, {
+            // Truque pra evitar bloqueio - finge ser um navegador normal
+            const resposta = await fetch(apiBlackbox, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    'User-Agent': 'Mozilla/5.0'
                 },
                 body: JSON.stringify({
-                    messages: [{ role: 'user', content: prompt }],
-                    model: 'blackbox',
+                    messages: [{ role: 'user', content: pergunta }],
                     stream: false
                 })
             });
 
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            if (!resposta.ok) throw new Error('Blackbox deu tilt');
+
+            const dados = await resposta.json();
             
-            const data = await response.json();
-            return extractBlackboxAnswer(data);
-        } catch (error) {
-            throw error;
-        }
-    }
-
-    function extractBlackboxAnswer(data) {
-        // Padrões de resposta esperados
-        const answerPatterns = [
-            /([A-Ea-e]\)\s*.+)/,  // Padrão "X) ..."
-            /Alternativa\s*([A-Ea-e])/i  // Padrão "Alternativa X"
-        ];
-
-        const rawAnswer = data?.message?.content || '';
-        for (const pattern of answerPatterns) {
-            const match = rawAnswer.match(pattern);
-            if (match) return match[0].trim();
-        }
-        return rawAnswer.substring(0, 50); // Fallback
-    }
-
-    // ===== FUNÇÃO PRINCIPAL DE ANÁLISE =====
-    async function analyzeQuestion(input, analyzeOption, responsePanel) {
-        if (STATE.isAnalyzing) return;
-        const question = input.value.trim();
-        if (!question) {
-            window.showResponse(responsePanel, '', 'Cole a questão primeiro');
-            return;
-        }
-
-        STATE.isAnalyzing = true;
-        analyzeOption.disabled = true;
-        analyzeOption.innerHTML = '⏳ Analisando...';
-
-        try {
-            const prompt = buildPrompt(question, STATE.images);
-            log(`Enviando: ${prompt.substring(0, 60)}...`);
+            // Caça a resposta no meio do texto
+            const padrao = /([A-Ea-e]\)\s*.+)/;
+            return dados?.message?.content?.match(padrao)?.[0] || "Não achei a resposta certa";
             
-            const answer = await queryBlackbox(prompt);
-            window.showResponse(responsePanel, answer, answer || 'Resposta não reconhecida');
-        } catch (error) {
-            window.showResponse(responsePanel, '', `Erro: ${error.message}`);
-        } finally {
-            STATE.isAnalyzing = false;
-            analyzeOption.disabled = false;
-            analyzeOption.innerHTML = '🔍 Analisar';
+        } catch (erro) {
+            console.error("Deu ruim:", erro);
+            return "Erro ao consultar - tenta de novo";
         }
     }
 
-    // ===== INICIALIZAÇÃO =====
-    function initialize() {
-        if (!window.location.hostname.includes(TARGET_SITE)) return;
+    // Inicialização (sem complicação)
+    function iniciar() {
+        if (!window.location.hostname.includes(siteAlvo)) return;
 
         const script = document.createElement('script');
-        script.src = UI_SCRIPT_URL;
+        script.src = uiScript;
+        
         script.onload = () => {
-            const { input, analyzeOption, clearOption, updateImagesOption, responsePanel } = window.createUI();
+            // Pega os elementos da UI
+            const { input, botaoAnalisar } = window.criarUI();
 
-            analyzeOption.onclick = () => analyzeQuestion(input, analyzeOption, responsePanel);
-            clearOption.onclick = () => {
-                input.value = '';
-                responsePanel.style.display = 'none';
-            };
-            updateImagesOption.onclick = () => {
-                extractImages();
-                window.updateImageButtons(STATE.images);
+            // Configura o botão pra funcionar
+            botaoAnalisar.onclick = async () => {
+                if (estado.analisando) return;
+                
+                estado.analisando = true;
+                botaoAnalisar.textContent = 'Analisando...';
+                
+                const resposta = await consultarBlackbox(input.value);
+                window.mostrarResposta(resposta);
+                
+                estado.analisando = false;
+                botaoAnalisar.textContent = '🔍 Analisar';
             };
 
-            // UI modificada (Blackbox)
-            document.getElementById('hck-toggle-btn').textContent = 'HCK Blackbox';
-            log('Modo Blackbox ativado');
+            // Atualiza as imagens automaticamente
+            pegarImagens();
+            window.atualizarImagens(estado.imagens);
         };
+
         document.head.appendChild(script);
     }
 
-    // ===== INICIAR =====
+    // Roda quando a página carregar
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initialize);
+        document.addEventListener('DOMContentLoaded', iniciar);
     } else {
-        initialize();
+        iniciar();
     }
 })();
