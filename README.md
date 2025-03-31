@@ -2,7 +2,7 @@
 
 Como não tem script pra fazer prova paulista crie esse carinha pra dar uma ajuda.
 
-Sim ele usando IA, sendo mais específico o (Gemini 2.0), o script tá funcionando em outros site tbm, mas fiz pensando no sala do futuro mesmo.
+Sim, ele tá usando IA, sendo mais específico o (Gemini 2.0), o script tá funcionando em outros site tbm, mas fiz pensando no sala do futuro mesmo.
 
 ![Preview da Interface](https://cdn.discordapp.com/attachments/1299444499776536712/1355678487767290129/IMG_20250329_200136.jpg?ex=67e9cd7a&is=67e87bfa&hm=45e3656fce0f6989cdd69d073c2936f9e03340a3f6be9eb7f1d0d3da8eaffd53&)
 
