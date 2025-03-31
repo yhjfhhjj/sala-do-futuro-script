@@ -1,4 +1,4 @@
-# 🔍 HCK - Sala do Futuro Helper
+# 🔍 HCK - Prova Paulista
 
 Como não tem script pra fazer prova paulista crie esse carinha pra dar uma ajuda.
 
