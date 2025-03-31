@@ -137,7 +137,7 @@ function createUI() {
     function loadImages() {
         const images = Array.from(document.querySelectorAll('img'))
             .map(img => img.src)
-            .filter(src => src && src.startsWith('http') && !src.includes('edusp-static.ip.tv/sala-do-futuro') && !src.includes('s3.sa-east-1.amazonaws.com/edusp-static.ip.tv'))
+            .filter(src => src && src.startsWith('http') && !src.includes('edusp-static.ip.tv/sala-do-futuro') && !src.includes('s3.sa-east-1.amazonaws.com/edusp-static.ip.tv') && !src.includes('edusp-static.ip.tv/tms'))
             .slice(0, 50);
 
         imagesSection.innerHTML = '';
