@@ -1,20 +1,13 @@
 (function(){
-    // Configurações de estilo
+    // Configurações de estilo minimalista
     const COLORS = {
-        primary: '#6e48fb',
+        primary: '#6e48fa',
         secondary: '#9c42f5',
         text: '#2d3748',
-        light: '#ffffff',
-        bgHover: '#f0f5ff'
+        light: '#ffffff'
     };
 
-    // Carregar fonte Inter
-    const fontLink = document.createElement('link');
-    fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap';
-    fontLink.rel = 'stylesheet';
-    document.head.appendChild(fontLink);
-
-    // Container principal
+    // Criar elementos básicos
     const container = document.createElement('div');
     container.id = 'hck-container';
     container.style.cssText = `
@@ -22,206 +15,145 @@
         bottom: 15px;
         right: 15px;
         z-index: 9999;
-        font-family: 'Inter', sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 13px;
     `;
 
-    // Botão toggle
+    // Botão principal
     const toggleBtn = document.createElement('div');
     toggleBtn.textContent = 'HCK V4';
     toggleBtn.style.cssText = `
         background: linear-gradient(135deg, ${COLORS.primary}, ${COLORS.secondary});
         color: ${COLORS.light};
-        padding: 6px 12px;
-        border-radius: 18px;
+        padding: 5px 10px;
+        border-radius: 15px;
         cursor: pointer;
         font-weight: 500;
-        font-size: 12px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        display: inline-block;
-        transition: all 0.2s;
+        user-select: none;
     `;
-    toggleBtn.addEventListener('mouseenter', () => toggleBtn.style.transform = 'translateY(-2px)');
-    toggleBtn.addEventListener('mouseleave', () => toggleBtn.style.transform = 'none');
 
-    // Menu principal
+    // Menu compacto
     const menu = document.createElement('div');
     menu.id = 'hck-menu';
     menu.style.cssText = `
         background: ${COLORS.light};
-        border-radius: 10px;
-        width: 280px;
-        padding: 10px;
-        margin-top: 8px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-radius: 8px;
+        width: 180px;
+        padding: 8px;
+        margin-top: 5px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         display: none;
-        opacity: 0;
-        transform: translateY(5px);
-        transition: all 0.25s cubic-bezier(0.2, 0, 0, 1.1);
-        max-height: 70vh;
-        overflow: hidden;
     `;
 
-    // Área de texto
+    // Área de texto minimalista
     const input = document.createElement('textarea');
     input.placeholder = 'Cole sua pergunta aqui...';
     input.style.cssText = `
         width: 100%;
-        min-height: 60px;
-        padding: 8px;
-        margin-bottom: 10px;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        font-size: 12px;
-        resize: vertical;
-        transition: border 0.2s;
-    `;
-    input.addEventListener('focus', () => input.style.borderColor = COLORS.primary);
-    input.addEventListener('blur', () => input.style.borderColor = '#e2e8f0');
-
-    // Container de imagens (com scroll)
-    const imagesContainer = document.createElement('div');
-    imagesContainer.id = 'hck-images-container';
-    imagesContainer.style.cssText = `
-        max-height: 150px;
-        overflow-y: auto;
-        margin-bottom: 10px;
-        border: 1px solid #edf2f7;
-        border-radius: 8px;
-        padding: 5px;
-        background: #f8fafc;
-    `;
-
-    // Botões de ação
-    const btnContainer = document.createElement('div');
-    btnContainer.style.cssText = 'display: flex; gap: 8px; margin-bottom: 10px;';
-
-    const analyzeBtn = document.createElement('button');
-    analyzeBtn.innerHTML = '<span style="margin-right:4px">🔍</span> Analisar';
-    analyzeBtn.style.cssText = `
-        flex: 1;
-        padding: 8px;
-        background: linear-gradient(135deg, ${COLORS.primary}, ${COLORS.secondary});
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-size: 12px;
-        cursor: pointer;
-        transition: all 0.2s;
-    `;
-
-    const clearBtn = document.createElement('button');
-    clearBtn.innerHTML = '<span style="margin-right:4px">🧹</span> Limpar';
-    clearBtn.style.cssText = `
-        flex: 1;
-        padding: 8px;
-        background: #f1f5f9;
-        border: none;
-        border-radius: 6px;
-        font-size: 12px;
-        cursor: pointer;
-        transition: all 0.2s;
-    `;
-
-    btnContainer.append(analyzeBtn, clearBtn);
-
-    // Painel de resposta
-    const responsePanel = document.createElement('div');
-    responsePanel.id = 'hck-response';
-    responsePanel.style.cssText = `
-        background: #f8fafc;
-        border-radius: 8px;
-        padding: 10px;
-        font-size: 12px;
-        border-left: 3px solid ${COLORS.primary};
-        display: none;
+        min-height: 50px;
+        padding: 6px;
         margin-bottom: 8px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        resize: vertical;
+        font-size: 12px;
     `;
 
-    // Footer
-    const footer = document.createElement('div');
-    footer.textContent = 'Desenvolvido por Hackermoon';
-    footer.style.cssText = `
-        font-size: 10px;
-        color: #94a3b8;
-        text-align: center;
-        margin-top: 8px;
+    // Lista de imagens ultra-compacta
+    const imagesList = document.createElement('div');
+    imagesList.id = 'hck-images';
+    imagesList.style.cssText = `
+        max-height: 120px;
+        overflow-y: auto;
+        margin-bottom: 8px;
+        font-size: 12px;
     `;
 
-    // Montar estrutura
-    menu.append(input, imagesContainer, btnContainer, responsePanel, footer);
+    // Botões de ação no estilo da imagem
+    const createActionItem = (text, checked = false) => {
+        const item = document.createElement('div');
+        item.style.cssText = `
+            display: flex;
+            align-items: center;
+            padding: 5px 0;
+            cursor: pointer;
+        `;
+        
+        const checkbox = document.createElement('span');
+        checkbox.textContent = checked ? '[x]' : '[ ]';
+        checkbox.style.marginRight = '6px';
+        
+        const label = document.createElement('span');
+        label.textContent = text;
+        
+        item.append(checkbox, label);
+        return item;
+    };
+
+    // Itens do menu como na imagem
+    const updateImagesItem = createActionItem('Atualizar Imagens', true);
+    const analyzeItem = createActionItem('Analisar');
+    const clearItem = createActionItem('Limpar');
+
+    // Adicionar elementos ao menu
+    menu.append(input, updateImagesItem, imagesList, analyzeItem, clearItem);
     container.append(toggleBtn, menu);
     document.body.append(container);
 
     // Controle do menu
-    toggleBtn.addEventListener('click', toggleMenu);
-    document.addEventListener('click', (e) => {
-        if (!container.contains(e.target)) closeMenu();
+    toggleBtn.addEventListener('click', () => {
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
     });
 
-    function toggleMenu() {
-        if (menu.style.display === 'block') closeMenu();
-        else openMenu();
-    }
-
-    function openMenu() {
-        menu.style.display = 'block';
-        setTimeout(() => {
-            menu.style.opacity = '1';
-            menu.style.transform = 'translateY(0)';
-        }, 10);
-    }
-
-    function closeMenu() {
-        menu.style.opacity = '0';
-        menu.style.transform = 'translateY(5px)';
-        setTimeout(() => menu.style.display = 'none', 200);
-    }
-
-    // ===== API para o bookmarklet =====
+    // ===== FUNCIONALIDADES =====
     window.createUI = () => ({
         input,
-        analyzeOption: analyzeBtn,
-        clearOption: clearBtn,
-        responsePanel,
-        imagesContainer
+        analyzeOption: analyzeItem,
+        clearOption: clearItem,
+        updateImagesOption: updateImagesItem,
+        imagesContainer: imagesList,
+        responsePanel: document.createElement('div') // Painel oculto para respostas
     });
 
     window.updateImageButtons = (images) => {
-        imagesContainer.innerHTML = images.length ? 
-            images.map((img, i) => `
-                <div style="display:flex;justify-content:space-between;align-items:center;
-                           padding:6px;margin-bottom:4px;background:#fff;border-radius:5px;
-                           border:1px solid #e2e8f0;font-size:12px;">
-                    <span>Imagem ${i+1}</span>
-                    <button onclick="copyImageUrl(${i})"
-                            style="background:#e3f2fd;color:#1976d2;border:none;border-radius:4px;
-                                   padding:3px 8px;font-size:11px;cursor:pointer;
-                                   transition:all 0.2s;" 
-                            onmouseover="this.style.background='#bbdefb'" 
-                            onmouseout="this.style.background='#e3f2fd'">
-                        Copiar URL
-                    </button>
-                </div>
-            `).join('') : '<div style="text-align:center;color:#94a3b8;padding:8px;font-size:12px;">Nenhuma imagem encontrada</div>';
-    };
-
-    window.copyImageUrl = (index) => {
-        if (STATE.images[index]) {
-            navigator.clipboard.writeText(STATE.images[index]).then(() => {
-                const currentText = input.value.trim();
-                input.value = currentText ? `${currentText}\n${STATE.images[index]}` : STATE.images[index];
-                window.showResponse(responsePanel, '', `URL da Imagem ${index+1} copiada!`);
+        imagesList.innerHTML = '';
+        images.forEach((img, i) => {
+            const item = document.createElement('div');
+            item.style.cssText = `
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 3px 0;
+                margin-left: 18px;
+            `;
+            
+            const label = document.createElement('span');
+            label.textContent = `Imagem ${i+1}`;
+            
+            const copyBtn = document.createElement('span');
+            copyBtn.textContent = 'Copiar URL';
+            copyBtn.style.cssText = `
+                color: ${COLORS.primary};
+                cursor: pointer;
+                font-size: 11px;
+                margin-left: 8px;
+            `;
+            copyBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                navigator.clipboard.writeText(img);
+                input.value = input.value ? `${input.value}\n${img}` : img;
             });
-        }
+            
+            item.append(label, copyBtn);
+            imagesList.append(item);
+        });
     };
 
-    window.showResponse = (panel, full, short) => {
-        panel.innerHTML = short && full ? `
-            <details style="cursor:pointer;">
-                <summary style="font-weight:500;">${short}</summary>
-                <div style="margin-top:6px;color:#4a5568;">${full}</div>
-            </details>
-        ` : (short || full);
-        panel.style.display = 'block';
-    };
+    // Fechar ao clicar fora
+    document.addEventListener('click', (e) => {
+        if (!container.contains(e.target)) {
+            menu.style.display = 'none';
+        }
+    });
 })();
