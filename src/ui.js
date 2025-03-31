@@ -1,159 +1,202 @@
 (function(){
-    // Configurações de estilo minimalista
-    const COLORS = {
-        primary: '#6e48fa',
-        secondary: '#9c42f5',
-        text: '#2d3748',
-        light: '#ffffff'
+    // Configuração visual (cores e tamanhos)
+    const estilo = {
+        cores: {
+            principal: '#6e48fa',
+            fundo: '#ffffff',
+            texto: '#2d3748',
+            destaque: '#f0f5ff'
+        },
+        tamanhos: {
+            largura: '260px',
+            borderRadius: '12px'
+        }
     };
 
-    // Criar elementos básicos
+    // Cria o container principal
     const container = document.createElement('div');
-    container.id = 'hck-container';
+    container.id = 'hck-blackbox-ui';
     container.style.cssText = `
         position: fixed;
-        bottom: 15px;
-        right: 15px;
+        bottom: 20px;
+        right: 20px;
         z-index: 9999;
-        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-        font-size: 13px;
+        font-family: 'Segoe UI', system-ui, sans-serif;
     `;
 
-    // Botão principal
-    const toggleBtn = document.createElement('div');
-    toggleBtn.textContent = 'HCK V4';
-    toggleBtn.style.cssText = `
-        background: linear-gradient(135deg, ${COLORS.primary}, ${COLORS.secondary});
-        color: ${COLORS.light};
-        padding: 5px 10px;
-        border-radius: 15px;
+    // Botão principal (HCK Blackbox)
+    const botaoPrincipal = document.createElement('button');
+    botaoPrincipal.textContent = 'HCK Blackbox';
+    botaoPrincipal.style.cssText = `
+        background: ${estilo.cores.principal};
+        color: white;
+        padding: 8px 16px;
+        border: none;
+        border-radius: ${estilo.tamanhos.borderRadius};
         cursor: pointer;
-        font-weight: 500;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        user-select: none;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: all 0.2s;
     `;
+    botaoPrincipal.onmouseenter = () => botaoPrincipal.style.transform = 'translateY(-2px)';
+    botaoPrincipal.onmouseleave = () => botaoPrincipal.style.transform = 'none';
 
-    // Menu compacto
+    // Menu que aparece ao clicar
     const menu = document.createElement('div');
     menu.id = 'hck-menu';
     menu.style.cssText = `
-        background: ${COLORS.light};
-        border-radius: 8px;
-        width: 180px;
-        padding: 8px;
-        margin-top: 5px;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        background: ${estilo.cores.fundo};
+        width: ${estilo.tamanhos.largura};
+        padding: 12px;
+        margin-top: 8px;
+        border-radius: ${estilo.tamanhos.borderRadius};
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         display: none;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all 0.3s ease-out;
     `;
 
-    // Área de texto minimalista
-    const input = document.createElement('textarea');
-    input.placeholder = 'Cole sua pergunta aqui...';
-    input.style.cssText = `
+    // Área de input (onde cola a pergunta)
+    const inputPergunta = document.createElement('textarea');
+    inputPergunta.id = 'hck-input';
+    inputPergunta.placeholder = 'Cole a questão aqui...';
+    inputPergunta.style.cssText = `
         width: 100%;
-        min-height: 50px;
-        padding: 6px;
-        margin-bottom: 8px;
+        min-height: 80px;
+        padding: 10px;
+        margin-bottom: 12px;
         border: 1px solid #e2e8f0;
-        border-radius: 6px;
+        border-radius: 8px;
         resize: vertical;
-        font-size: 12px;
+        font-size: 14px;
     `;
 
-    // Lista de imagens ultra-compacta
-    const imagesList = document.createElement('div');
-    imagesList.id = 'hck-images';
-    imagesList.style.cssText = `
-        max-height: 120px;
+    // Seção de imagens (compacta)
+    const secaoImagens = document.createElement('div');
+    secaoImagens.id = 'hck-imagens';
+    secaoImagens.style.cssText = `
+        max-height: 150px;
         overflow-y: auto;
-        margin-bottom: 8px;
-        font-size: 12px;
+        margin-bottom: 12px;
+        background: ${estilo.cores.destaque};
+        border-radius: 8px;
+        padding: 8px;
     `;
 
-    // Botões de ação no estilo da imagem
-    const createActionItem = (text, checked = false) => {
-        const item = document.createElement('div');
-        item.style.cssText = `
-            display: flex;
-            align-items: center;
-            padding: 5px 0;
-            cursor: pointer;
-        `;
-        
-        const checkbox = document.createElement('span');
-        checkbox.textContent = checked ? '[x]' : '[ ]';
-        checkbox.style.marginRight = '6px';
-        
-        const label = document.createElement('span');
-        label.textContent = text;
-        
-        item.append(checkbox, label);
-        return item;
-    };
+    // Botão de análise (estilo moderno)
+    const botaoAnalisar = document.createElement('button');
+    botaoAnalisar.id = 'hck-analisar';
+    botaoAnalisar.innerHTML = `
+        <span style="display:flex;align-items:center;gap:6px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M10 6H14M10 12H14M10 18H6V4H18V20H10V18Z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            Analisar Questão
+        </span>
+    `;
+    botaoAnalisar.style.cssText = `
+        width: 100%;
+        padding: 10px;
+        background: ${estilo.cores.principal};
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+    `;
+    botaoAnalisar.onmouseenter = () => botaoAnalisar.style.background = '#5a3fd8';
+    botaoAnalisar.onmouseleave = () => botaoAnalisar.style.background = estilo.cores.principal;
 
-    // Itens do menu como na imagem
-    const updateImagesItem = createActionItem('Atualizar Imagens', true);
-    const analyzeItem = createActionItem('Analisar');
-    const clearItem = createActionItem('Limpar');
+    // Área de resposta (hidden por padrão)
+    const areaResposta = document.createElement('div');
+    areaResposta.id = 'hck-resposta';
+    areaResposta.style.cssText = `
+        margin-top: 12px;
+        padding: 12px;
+        background: ${estilo.cores.destaque};
+        border-radius: 8px;
+        display: none;
+        border-left: 3px solid ${estilo.cores.principal};
+    `;
 
-    // Adicionar elementos ao menu
-    menu.append(input, updateImagesItem, imagesList, analyzeItem, clearItem);
-    container.append(toggleBtn, menu);
+    // Monta a estrutura
+    menu.append(
+        inputPergunta,
+        secaoImagens,
+        botaoAnalisar,
+        areaResposta
+    );
+    container.append(botaoPrincipal, menu);
     document.body.append(container);
 
-    // Controle do menu
-    toggleBtn.addEventListener('click', () => {
+    // Controle do menu (show/hide)
+    botaoPrincipal.addEventListener('click', (e) => {
+        e.stopPropagation();
         menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        setTimeout(() => {
+            menu.style.opacity = menu.style.display === 'block' ? '1' : '0';
+            menu.style.transform = menu.style.display === 'block' ? 'translateY(0)' : 'translateY(10px)';
+        }, 10);
     });
 
-    // ===== FUNCIONALIDADES =====
-    window.createUI = () => ({
-        input,
-        analyzeOption: analyzeItem,
-        clearOption: clearItem,
-        updateImagesOption: updateImagesItem,
-        imagesContainer: imagesList,
-        responsePanel: document.createElement('div') // Painel oculto para respostas
-    });
-
-    window.updateImageButtons = (images) => {
-        imagesList.innerHTML = '';
-        images.forEach((img, i) => {
-            const item = document.createElement('div');
-            item.style.cssText = `
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 3px 0;
-                margin-left: 18px;
-            `;
-            
-            const label = document.createElement('span');
-            label.textContent = `Imagem ${i+1}`;
-            
-            const copyBtn = document.createElement('span');
-            copyBtn.textContent = 'Copiar URL';
-            copyBtn.style.cssText = `
-                color: ${COLORS.primary};
-                cursor: pointer;
-                font-size: 11px;
-                margin-left: 8px;
-            `;
-            copyBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                navigator.clipboard.writeText(img);
-                input.value = input.value ? `${input.value}\n${img}` : img;
-            });
-            
-            item.append(label, copyBtn);
-            imagesList.append(item);
-        });
-    };
-
-    // Fechar ao clicar fora
-    document.addEventListener('click', (e) => {
-        if (!container.contains(e.target)) {
-            menu.style.display = 'none';
+    document.addEventListener('click', () => {
+        if (menu.style.display === 'block') {
+            menu.style.opacity = '0';
+            menu.style.transform = 'translateY(10px)';
+            setTimeout(() => menu.style.display = 'none', 300);
         }
     });
+
+    // ===== FUNÇÕES PÚBLICAS =====
+    window.criarUI = () => {
+        return {
+            input: inputPergunta,
+            analyzeOption: botaoAnalisar,
+            imagesContainer: secaoImagens,
+            responsePanel: areaResposta
+        };
+    };
+
+    window.atualizarImagens = (imagens) => {
+        secaoImagens.innerHTML = imagens.length ? 
+            imagens.map((img, i) => `
+                <div style="display:flex;justify-content:space-between;align-items:center;
+                           padding:6px;margin-bottom:4px;background:white;border-radius:6px;">
+                    <span style="font-size:13px;">Imagem ${i+1}</span>
+                    <button onclick="copiarUrl(${i})" 
+                            style="background:#e3f2fd;color:#1976d2;border:none;border-radius:4px;
+                                   padding:4px 8px;font-size:12px;cursor:pointer;">
+                        Copiar
+                    </button>
+                </div>
+            `).join('') : `
+                <div style="text-align:center;color:#64748b;padding:8px;font-size:13px;">
+                    Nenhuma imagem detectada
+                </div>
+            `;
+    };
+
+    window.mostrarResposta = (resposta) => {
+        areaResposta.innerHTML = resposta;
+        areaResposta.style.display = 'block';
+        areaResposta.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    };
+
+    window.copiarUrl = (index) => {
+        if (STATE?.images?.[index]) {
+            navigator.clipboard.writeText(STATE.images[index]);
+            inputPergunta.value = inputPergunta.value 
+                ? `${inputPergunta.value}\n${STATE.images[index]}`
+                : STATE.images[index];
+            
+            // Feedback visual
+            const btn = secaoImagens.querySelectorAll('button')[index];
+            btn.textContent = '✔ Copiado!';
+            setTimeout(() => {
+                btn.innerHTML = 'Copiar';
+            }, 2000);
+        }
+    };
 })();
