@@ -4,6 +4,16 @@ function createUI() {
     const existingUI = document.getElementById('gemini-helper-container');
     if (existingUI) existingUI.remove();
 
+    // Estado para as cores
+    let currentTheme = {
+        menuBg: '#1C2526',
+        menuText: '#FFFFFF',
+        buttonBg: '#333333',
+        buttonText: '#FFFFFF',
+        panelBg: '#1C2526',
+        panelText: '#FFFFFF'
+    };
+
     const container = document.createElement('div');
     container.id = 'gemini-helper-container';
     Object.assign(container.style, {
@@ -19,68 +29,69 @@ function createUI() {
 
     const menuBtn = document.createElement('button');
     menuBtn.id = 'gemini-menu-btn';
-    menuBtn.innerHTML = 'Ajuda';
+    menuBtn.innerHTML = 'HCK V3';
     Object.assign(menuBtn.style, {
         padding: '8px 12px',
-        background: '#0056D2',
-        color: '#FFFFFF',
+        background: currentTheme.buttonBg,
+        color: currentTheme.buttonText,
         border: 'none',
         borderRadius: '4px',
         cursor: 'pointer',
         fontSize: '14px',
         fontWeight: '500',
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
         transition: 'background 0.3s ease',
         alignSelf: 'flex-end'
     });
     menuBtn.onmouseover = () => {
-        menuBtn.style.background = '#003BB5';
+        menuBtn.style.background = '#555555';
     };
     menuBtn.onmouseout = () => {
-        menuBtn.style.background = '#0056D2';
+        menuBtn.style.background = currentTheme.buttonBg;
     };
 
     const menu = document.createElement('div');
     menu.id = 'gemini-menu';
     Object.assign(menu.style, {
         display: 'none',
-        background: '#FFFFFF',
+        background: currentTheme.menuBg,
+        color: currentTheme.menuText,
         borderRadius: '8px',
-        padding: '10px',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
+        padding: '12px',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
         position: 'fixed',
         bottom: '50px',
         right: '10px',
         flexDirection: 'column',
-        gap: '8px',
-        width: '250px',
+        gap: '10px',
+        width: '280px',
         maxWidth: '90vw',
-        border: '1px solid #E0E0E0'
+        border: '1px solid #333333'
     });
 
     if (window.innerWidth > 600) {
-        menu.style.width = '300px';
+        menu.style.width = '320px';
     }
 
     const menuTitle = document.createElement('div');
-    menuTitle.innerHTML = 'Assistente de Questões';
+    menuTitle.innerHTML = 'HCK V3';
     Object.assign(menuTitle.style, {
-        color: '#333',
+        color: currentTheme.menuText,
         fontSize: '16px',
         fontWeight: '600',
         textAlign: 'center',
-        paddingBottom: '6px',
-        borderBottom: '1px solid #E0E0E0'
+        paddingBottom: '8px',
+        borderBottom: '1px solid #444444'
     });
 
     const corsWarning = document.createElement('div');
-    corsWarning.innerHTML = '⚠️ Instale a extensão "CORS Unblock" no Chrome para usar este assistente.';
+    corsWarning.innerHTML = '⚠️ Instale a extensão "CORS Unblock" para melhor funcionamento.';
     Object.assign(corsWarning.style, {
-        color: '#D32F2F',
+        color: '#FF5555',
         fontSize: '12px',
         textAlign: 'center',
         padding: '6px',
-        background: '#FFEBEE',
+        background: '#2A2F30',
         borderRadius: '4px',
         marginBottom: '8px'
     });
@@ -91,26 +102,23 @@ function createUI() {
     Object.assign(input.style, {
         padding: '8px',
         borderRadius: '4px',
-        border: '1px solid #E0E0E0',
-        background: '#F5F5F5',
+        border: '1px solid #444444',
+        background: '#2A2F30',
         fontSize: '14px',
-        color: '#333',
+        color: currentTheme.menuText,
         outline: 'none',
         resize: 'vertical',
-        minHeight: '50px',
-        maxHeight: '80px',
+        minHeight: '60px',
+        maxHeight: '100px',
         width: '100%',
         transition: 'border-color 0.3s ease',
         fontFamily: 'Arial, sans-serif'
     });
-    if (window.innerWidth > 600) {
-        input.style.maxHeight = '100px';
-    }
     input.onfocus = () => {
-        input.style.borderColor = '#0056D2';
+        input.style.borderColor = '#666666';
     };
     input.onblur = () => {
-        input.style.borderColor = '#E0E0E0';
+        input.style.borderColor = '#444444';
     };
 
     const imagesSection = document.createElement('div');
@@ -119,11 +127,11 @@ function createUI() {
         maxHeight: '120px',
         overflowY: 'auto',
         padding: '6px',
-        background: '#F5F5F5',
+        background: '#2A2F30',
         borderRadius: '4px',
-        border: '1px solid #E0E0E0',
+        border: '1px solid #444444',
         fontSize: '12px',
-        color: '#333',
+        color: currentTheme.menuText,
         fontFamily: 'Arial, sans-serif'
     });
 
@@ -146,7 +154,8 @@ function createUI() {
                     /edusp-static\.ip\.tv\/tarefas\//i,
                     /edusp-static\.ip\.tv\/exercicios\//i,
                     /\/atividade\/\d+\?eExame=true/i,
-                    /\.(jpg|png|jpeg|gif|webp)$/i
+                    /\.(jpg|png|jpeg|gif|webp)$/i,
+                    /lh7-rt\.googleusercontent\.com/i // Novo padrão para Google URLs
                 ];
                 return !blocked.some(pattern => pattern.test(src)) && allowed.some(pattern => pattern.test(src));
             })
@@ -159,8 +168,8 @@ function createUI() {
         Object.assign(refreshBtn.style, {
             width: '100%',
             padding: '6px',
-            background: '#0056D2',
-            color: '#FFFFFF',
+            background: currentTheme.buttonBg,
+            color: currentTheme.buttonText,
             border: 'none',
             borderRadius: '4px',
             cursor: 'pointer',
@@ -171,10 +180,10 @@ function createUI() {
             transition: 'background 0.3s ease'
         });
         refreshBtn.onmouseover = () => {
-            refreshBtn.style.background = '#003BB5';
+            refreshBtn.style.background = '#555555';
         };
         refreshBtn.onmouseout = () => {
-            refreshBtn.style.background = '#0056D2';
+            refreshBtn.style.background = currentTheme.buttonBg;
         };
         refreshBtn.onclick = () => {
             loadImages();
@@ -187,7 +196,7 @@ function createUI() {
             noImages.textContent = 'Nenhuma imagem encontrada';
             Object.assign(noImages.style, {
                 textAlign: 'center',
-                color: '#666'
+                color: '#888888'
             });
             imagesSection.appendChild(noImages);
         } else {
@@ -198,7 +207,7 @@ function createUI() {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     padding: '4px 0',
-                    borderBottom: index < images.length - 1 ? '1px solid #E0E0E0' : 'none'
+                    borderBottom: index < images.length - 1 ? '1px solid #444444' : 'none'
                 });
 
                 const urlText = document.createElement('span');
@@ -215,8 +224,8 @@ function createUI() {
                 copyBtn.textContent = 'Copiar URL';
                 Object.assign(copyBtn.style, {
                     padding: '4px 8px',
-                    background: '#0056D2',
-                    color: '#FFFFFF',
+                    background: currentTheme.buttonBg,
+                    color: currentTheme.buttonText,
                     border: 'none',
                     borderRadius: '4px',
                     cursor: 'pointer',
@@ -225,10 +234,10 @@ function createUI() {
                     transition: 'background 0.3s ease'
                 });
                 copyBtn.onmouseover = () => {
-                    copyBtn.style.background = '#003BB5';
+                    copyBtn.style.background = '#555555';
                 };
                 copyBtn.onmouseout = () => {
-                    copyBtn.style.background = '#0056D2';
+                    copyBtn.style.background = currentTheme.buttonBg;
                 };
                 copyBtn.onclick = () => {
                     navigator.clipboard.writeText(url).then(() => {
@@ -247,13 +256,73 @@ function createUI() {
 
     loadImages();
 
+    // Seção de Seleção de Cores
+    const themeSection = document.createElement('div');
+    themeSection.innerHTML = 'Tema:';
+    Object.assign(themeSection.style, {
+        fontSize: '14px',
+        fontWeight: '500',
+        color: currentTheme.menuText,
+        marginBottom: '4px'
+    });
+
+    const themeSelect = document.createElement('select');
+    Object.assign(themeSelect.style, {
+        padding: '6px',
+        borderRadius: '4px',
+        border: '1px solid #444444',
+        background: '#2A2F30',
+        color: currentTheme.menuText,
+        width: '100%',
+        fontSize: '14px',
+        cursor: 'pointer'
+    });
+
+    const themes = [
+        { name: 'Preto e Branco', value: { menuBg: '#1C2526', menuText: '#FFFFFF', buttonBg: '#333333', buttonText: '#FFFFFF', panelBg: '#1C2526', panelText: '#FFFFFF' } },
+        { name: 'Cinza Escuro', value: { menuBg: '#2A2A2A', menuText: '#D3D3D3', buttonBg: '#444444', buttonText: '#D3D3D3', panelBg: '#2A2A2A', panelText: '#D3D3D3' } },
+        { name: 'Azul Escuro', value: { menuBg: '#1A252F', menuText: '#A3BFFA', buttonBg: '#2D3748', buttonText: '#A3BFFA', panelBg: '#1A252F', panelText: '#A3BFFA' } }
+    ];
+
+    themes.forEach(theme => {
+        const option = document.createElement('option');
+        option.value = JSON.stringify(theme.value);
+        option.textContent = theme.name;
+        themeSelect.appendChild(option);
+    });
+
+    themeSelect.onchange = () => {
+        currentTheme = JSON.parse(themeSelect.value);
+        menu.style.background = currentTheme.menuBg;
+        menu.style.color = currentTheme.menuText;
+        menuTitle.style.color = currentTheme.menuText;
+        input.style.color = currentTheme.menuText;
+        imagesSection.style.color = currentTheme.menuText;
+        analyzeOption.style.background = currentTheme.buttonBg;
+        analyzeOption.style.color = currentTheme.buttonText;
+        clearOption.style.background = currentTheme.buttonBg;
+        clearOption.style.color = currentTheme.buttonText;
+        logOption.style.background = currentTheme.buttonBg;
+        logOption.style.color = currentTheme.buttonText;
+        menuBtn.style.background = currentTheme.buttonBg;
+        menuBtn.style.color = currentTheme.buttonText;
+        responsePanel.style.background = currentTheme.panelBg;
+        responsePanel.style.color = currentTheme.panelText;
+        refreshBtn.style.background = currentTheme.buttonBg;
+        refreshBtn.style.color = currentTheme.buttonText;
+        Array.from(imagesSection.querySelectorAll('button')).forEach(btn => {
+            btn.style.background = currentTheme.buttonBg;
+            btn.style.color = currentTheme.buttonText;
+        });
+    };
+
     const analyzeOption = document.createElement('button');
     analyzeOption.id = 'gemini-analyze-btn';
     analyzeOption.innerHTML = '<span style="margin-right: 6px;">🔍</span>Analisar';
     Object.assign(analyzeOption.style, {
         padding: '8px 12px',
-        background: '#0056D2',
-        color: '#FFFFFF',
+        background: currentTheme.buttonBg,
+        color: currentTheme.buttonText,
         border: 'none',
         borderRadius: '4px',
         cursor: 'pointer',
@@ -265,18 +334,18 @@ function createUI() {
         fontFamily: 'Arial, sans-serif'
     });
     analyzeOption.onmouseover = () => {
-        analyzeOption.style.background = '#003BB5';
+        analyzeOption.style.background = '#555555';
     };
     analyzeOption.onmouseout = () => {
-        analyzeOption.style.background = '#0056D2';
+        analyzeOption.style.background = currentTheme.buttonBg;
     };
 
     const clearOption = document.createElement('button');
     clearOption.innerHTML = '<span style="margin-right: 6px;">🗑️</span>Limpar';
     Object.assign(clearOption.style, {
         padding: '8px 12px',
-        background: '#D32F2F',
-        color: '#FFFFFF',
+        background: currentTheme.buttonBg,
+        color: currentTheme.buttonText,
         border: 'none',
         borderRadius: '4px',
         cursor: 'pointer',
@@ -288,20 +357,68 @@ function createUI() {
         fontFamily: 'Arial, sans-serif'
     });
     clearOption.onmouseover = () => {
-        clearOption.style.background = '#B71C1C';
+        clearOption.style.background = '#555555';
     };
     clearOption.onmouseout = () => {
-        clearOption.style.background = '#D32F2F';
+        clearOption.style.background = currentTheme.buttonBg;
+    };
+
+    const logOption = document.createElement('button');
+    logOption.innerHTML = '<span style="margin-right: 6px;">📜</span>Log';
+    Object.assign(logOption.style, {
+        padding: '8px 12px',
+        background: currentTheme.buttonBg,
+        color: currentTheme.buttonText,
+        border: 'none',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        fontSize: '14px',
+        fontWeight: '500',
+        display: 'flex',
+        alignItems: 'center',
+        transition: 'background 0.3s ease',
+        fontFamily: 'Arial, sans-serif'
+    });
+    logOption.onmouseover = () => {
+        logOption.style.background = '#555555';
+    };
+    logOption.onmouseout = () => {
+        logOption.style.background = currentTheme.buttonBg;
+    };
+
+    const logPanel = document.createElement('div');
+    logPanel.id = 'gemini-log-panel';
+    Object.assign(logPanel.style, {
+        display: 'none',
+        position: 'fixed',
+        bottom: '50px',
+        right: '300px',
+        background: currentTheme.panelBg,
+        color: currentTheme.panelText,
+        borderRadius: '8px',
+        padding: '12px',
+        boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+        width: '300px',
+        maxWidth: '90vw',
+        maxHeight: '400px',
+        overflowY: 'auto',
+        zIndex: '10000',
+        fontFamily: 'Arial, sans-serif',
+        border: '1px solid #444444'
+    });
+
+    logOption.onclick = () => {
+        logPanel.style.display = logPanel.style.display === 'block' ? 'none' : 'block';
     };
 
     const creditsOption = document.createElement('div');
-    creditsOption.innerHTML = 'Desenvolvido por Sala do Futuro';
+    creditsOption.innerHTML = 'Desenvolvido por HCK';
     Object.assign(creditsOption.style, {
-        color: '#666',
+        color: '#888888',
         fontSize: '10px',
         textAlign: 'center',
-        paddingTop: '6px',
-        borderTop: '1px solid #E0E0E0',
+        paddingTop: '8px',
+        borderTop: '1px solid #444444',
         fontFamily: 'Arial, sans-serif'
     });
 
@@ -309,8 +426,11 @@ function createUI() {
     menu.appendChild(corsWarning);
     menu.appendChild(input);
     menu.appendChild(imagesSection);
+    menu.appendChild(themeSection);
+    menu.appendChild(themeSelect);
     menu.appendChild(analyzeOption);
     menu.appendChild(clearOption);
+    menu.appendChild(logOption);
     menu.appendChild(creditsOption);
 
     const responsePanel = document.createElement('div');
@@ -321,15 +441,16 @@ function createUI() {
         bottom: '10px',
         left: '50%',
         transform: 'translateX(-50%)',
-        background: '#FFFFFF',
+        background: currentTheme.panelBg,
+        color: currentTheme.panelText,
         borderRadius: '8px',
         padding: '8px 12px',
-        boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
+        boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
         maxWidth: '90vw',
         width: '200px',
         zIndex: '10000',
         fontFamily: 'Arial, sans-serif',
-        border: '1px solid #E0E0E0'
+        border: '1px solid #444444'
     });
     if (window.innerWidth > 600) {
         responsePanel.style.width = '240px';
@@ -339,7 +460,7 @@ function createUI() {
     progressBar.id = 'progress-bar';
     Object.assign(progressBar.style, {
         height: '2px',
-        background: '#0056D2',
+        background: '#666666',
         width: '100%',
         position: 'absolute',
         bottom: '0',
@@ -357,15 +478,15 @@ function createUI() {
         bottom: '60px',
         left: '50%',
         transform: 'translateX(-50%)',
-        background: '#FFFFFF',
+        background: currentTheme.panelBg,
+        color: currentTheme.panelText,
         borderRadius: '8px',
         padding: '8px 12px',
-        boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
-        color: '#333',
+        boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
         fontSize: '12px',
         fontFamily: 'Arial, sans-serif',
         zIndex: '10001',
-        border: '1px solid #E0E0E0'
+        border: '1px solid #444444'
     });
 
     const style = document.createElement('style');
@@ -386,13 +507,14 @@ function createUI() {
     document.body.appendChild(container);
     document.body.appendChild(responsePanel);
     document.body.appendChild(copyNotification);
+    document.body.appendChild(logPanel);
 
-    return { menuBtn, analyzeOption, clearOption, input, responsePanel };
+    return { menuBtn, analyzeOption, clearOption, input, responsePanel, logPanel };
 }
 
 function showResponse(panel, answer, correctAlternative) {
     panel.innerHTML = `
-        <div style="color: #333; text-align: center; font-size: 14px; line-height: 1.4;">
+        <div style="text-align: center; font-size: 14px; line-height: 1.4;">
             <strong>${correctAlternative}</strong>${answer ? ` - ${answer}` : ''}
         </div>
     `;
@@ -431,6 +553,20 @@ function showCopyNotification(message) {
     }
 }
 
+function showLog(logPanel, message) {
+    const logEntry = document.createElement('div');
+    logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+    Object.assign(logEntry.style, {
+        padding: '4px 0',
+        borderBottom: '1px solid #444444',
+        fontSize: '12px',
+        wordWrap: 'break-word'
+    });
+    logPanel.appendChild(logEntry);
+    logPanel.scrollTop = logPanel.scrollHeight;
+    console.log(`[HCK V3 Log] ${message}`);
+}
+
 function clearUI(input, responsePanel, analyzeOption, setIsAnalyzing) {
     if (input) input.value = '';
     if (responsePanel) responsePanel.style.display = 'none';
@@ -446,3 +582,4 @@ window.createUI = createUI;
 window.showResponse = showResponse;
 window.clearUI = clearUI;
 window.showCopyNotification = showCopyNotification;
+window.showLog = showLog;
