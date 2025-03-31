@@ -1,202 +1,129 @@
 (function(){
-    // Configuração visual (cores e tamanhos)
+    // Configuração visual
     const estilo = {
         cores: {
             principal: '#6e48fa',
-            fundo: '#ffffff',
-            texto: '#2d3748',
-            destaque: '#f0f5ff'
-        },
-        tamanhos: {
-            largura: '260px',
-            borderRadius: '12px'
+            fundo: '#fff',
+            texto: '#333',
+            border: '#e2e8f0'
         }
     };
 
-    // Cria o container principal
+    // Container principal
     const container = document.createElement('div');
     container.id = 'hck-blackbox-ui';
     container.style.cssText = `
         position: fixed;
-        bottom: 20px;
-        right: 20px;
+        bottom: 15px;
+        right: 15px;
         z-index: 9999;
-        font-family: 'Segoe UI', system-ui, sans-serif;
+        font-family: 'Segoe UI', sans-serif;
     `;
 
-    // Botão principal (HCK Blackbox)
-    const botaoPrincipal = document.createElement('button');
-    botaoPrincipal.textContent = 'HCK Blackbox';
-    botaoPrincipal.style.cssText = `
+    // Botão toggle
+    const toggleBtn = document.createElement('button');
+    toggleBtn.textContent = 'HCK Blackbox';
+    toggleBtn.style.cssText = `
         background: ${estilo.cores.principal};
         color: white;
-        padding: 8px 16px;
+        padding: 7px 14px;
         border: none;
-        border-radius: ${estilo.tamanhos.borderRadius};
+        border-radius: 15px;
         cursor: pointer;
         font-weight: 600;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        transition: all 0.2s;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     `;
-    botaoPrincipal.onmouseenter = () => botaoPrincipal.style.transform = 'translateY(-2px)';
-    botaoPrincipal.onmouseleave = () => botaoPrincipal.style.transform = 'none';
 
-    // Menu que aparece ao clicar
+    // Menu principal
     const menu = document.createElement('div');
     menu.id = 'hck-menu';
     menu.style.cssText = `
         background: ${estilo.cores.fundo};
-        width: ${estilo.tamanhos.largura};
-        padding: 12px;
+        width: 250px;
+        padding: 10px;
         margin-top: 8px;
-        border-radius: ${estilo.tamanhos.borderRadius};
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         display: none;
-        opacity: 0;
-        transform: translateY(10px);
-        transition: all 0.3s ease-out;
+        border: 1px solid ${estilo.cores.border};
     `;
 
-    // Área de input (onde cola a pergunta)
-    const inputPergunta = document.createElement('textarea');
-    inputPergunta.id = 'hck-input';
-    inputPergunta.placeholder = 'Cole a questão aqui...';
-    inputPergunta.style.cssText = `
+    // Componentes do menu
+    const input = document.createElement('textarea');
+    input.placeholder = 'Cole a questão aqui...';
+    input.style.cssText = `
         width: 100%;
-        min-height: 80px;
-        padding: 10px;
-        margin-bottom: 12px;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        resize: vertical;
-        font-size: 14px;
-    `;
-
-    // Seção de imagens (compacta)
-    const secaoImagens = document.createElement('div');
-    secaoImagens.id = 'hck-imagens';
-    secaoImagens.style.cssText = `
-        max-height: 150px;
-        overflow-y: auto;
-        margin-bottom: 12px;
-        background: ${estilo.cores.destaque};
-        border-radius: 8px;
+        min-height: 70px;
         padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid ${estilo.cores.border};
+        border-radius: 6px;
+        resize: vertical;
     `;
 
-    // Botão de análise (estilo moderno)
-    const botaoAnalisar = document.createElement('button');
-    botaoAnalisar.id = 'hck-analisar';
-    botaoAnalisar.innerHTML = `
-        <span style="display:flex;align-items:center;gap:6px;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M10 6H14M10 12H14M10 18H6V4H18V20H10V18Z" stroke="currentColor" stroke-width="2"/>
-            </svg>
-            Analisar Questão
-        </span>
+    const imagesContainer = document.createElement('div');
+    imagesContainer.style.cssText = `
+        max-height: 120px;
+        overflow-y: auto;
+        margin-bottom: 10px;
+        font-size: 13px;
     `;
-    botaoAnalisar.style.cssText = `
+
+    const analyzeBtn = document.createElement('button');
+    analyzeBtn.textContent = '🔍 Analisar';
+    analyzeBtn.style.cssText = `
         width: 100%;
-        padding: 10px;
+        padding: 8px;
         background: ${estilo.cores.principal};
         color: white;
         border: none;
-        border-radius: 8px;
-        font-weight: 500;
+        border-radius: 6px;
         cursor: pointer;
-        transition: background 0.2s;
+        margin-bottom: 8px;
     `;
-    botaoAnalisar.onmouseenter = () => botaoAnalisar.style.background = '#5a3fd8';
-    botaoAnalisar.onmouseleave = () => botaoAnalisar.style.background = estilo.cores.principal;
 
-    // Área de resposta (hidden por padrão)
-    const areaResposta = document.createElement('div');
-    areaResposta.id = 'hck-resposta';
-    areaResposta.style.cssText = `
-        margin-top: 12px;
-        padding: 12px;
-        background: ${estilo.cores.destaque};
-        border-radius: 8px;
+    const responsePanel = document.createElement('div');
+    responsePanel.style.cssText = `
+        padding: 8px;
+        background: #f8fafc;
+        border-radius: 6px;
         display: none;
+        font-size: 13px;
         border-left: 3px solid ${estilo.cores.principal};
     `;
 
-    // Monta a estrutura
-    menu.append(
-        inputPergunta,
-        secaoImagens,
-        botaoAnalisar,
-        areaResposta
-    );
-    container.append(botaoPrincipal, menu);
+    // Montagem
+    menu.append(input, imagesContainer, analyzeBtn, responsePanel);
+    container.append(toggleBtn, menu);
     document.body.append(container);
 
-    // Controle do menu (show/hide)
-    botaoPrincipal.addEventListener('click', (e) => {
-        e.stopPropagation();
+    // Controles
+    toggleBtn.addEventListener('click', () => {
         menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-        setTimeout(() => {
-            menu.style.opacity = menu.style.display === 'block' ? '1' : '0';
-            menu.style.transform = menu.style.display === 'block' ? 'translateY(0)' : 'translateY(10px)';
-        }, 10);
     });
 
-    document.addEventListener('click', () => {
-        if (menu.style.display === 'block') {
-            menu.style.opacity = '0';
-            menu.style.transform = 'translateY(10px)';
-            setTimeout(() => menu.style.display = 'none', 300);
-        }
+    // API para o bookmarklet
+    window.createUI = () => ({
+        input,
+        analyzeOption: analyzeBtn,
+        responsePanel,
+        imagesContainer
     });
 
-    // ===== FUNÇÕES PÚBLICAS =====
-    window.criarUI = () => {
-        return {
-            input: inputPergunta,
-            analyzeOption: botaoAnalisar,
-            imagesContainer: secaoImagens,
-            responsePanel: areaResposta
-        };
+    window.updateImageButtons = (images) => {
+        imagesContainer.innerHTML = images.map((img, i) => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:5px 0;">
+                <span>Imagem ${i+1}</span>
+                <button onclick="navigator.clipboard.writeText('${img}')" 
+                        style="background:#e3f2fd; color:#1976d2; border:none; border-radius:3px; padding:3px 6px; font-size:11px; cursor:pointer;">
+                    Copiar
+                </button>
+            </div>
+        `).join('') || '<div style="color:#666; text-align:center; padding:8px;">Nenhuma imagem</div>';
     };
 
-    window.atualizarImagens = (imagens) => {
-        secaoImagens.innerHTML = imagens.length ? 
-            imagens.map((img, i) => `
-                <div style="display:flex;justify-content:space-between;align-items:center;
-                           padding:6px;margin-bottom:4px;background:white;border-radius:6px;">
-                    <span style="font-size:13px;">Imagem ${i+1}</span>
-                    <button onclick="copiarUrl(${i})" 
-                            style="background:#e3f2fd;color:#1976d2;border:none;border-radius:4px;
-                                   padding:4px 8px;font-size:12px;cursor:pointer;">
-                        Copiar
-                    </button>
-                </div>
-            `).join('') : `
-                <div style="text-align:center;color:#64748b;padding:8px;font-size:13px;">
-                    Nenhuma imagem detectada
-                </div>
-            `;
-    };
-
-    window.mostrarResposta = (resposta) => {
-        areaResposta.innerHTML = resposta;
-        areaResposta.style.display = 'block';
-        areaResposta.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    };
-
-    window.copiarUrl = (index) => {
-        if (STATE?.images?.[index]) {
-            navigator.clipboard.writeText(STATE.images[index]);
-            inputPergunta.value = inputPergunta.value 
-                ? `${inputPergunta.value}\n${STATE.images[index]}`
-                : STATE.images[index];
-            
-            // Feedback visual
-            const btn = secaoImagens.querySelectorAll('button')[index];
-            btn.textContent = '✔ Copiado!';
-            setTimeout(() => {
-                btn.innerHTML = 'Copiar';
-            }, 2000);
-        }
+    window.showResponse = (panel, text) => {
+        panel.innerHTML = text;
+        panel.style.display = 'block';
     };
 })();
