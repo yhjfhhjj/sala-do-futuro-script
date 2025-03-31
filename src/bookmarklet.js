@@ -1,7 +1,7 @@
 (function() {
     const TARGET_SITE = 'saladofuturo.educacao.sp.gov.br';
     const GEMINI_API_KEY = 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY';
-    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743447179/ui.js';
+    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743448385/ui.js'; // URL do ui.js
     const API_ENDPOINTS = [
         'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
         'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent'
@@ -33,12 +33,12 @@
             /lh7-rt\.googleusercontent\.com/i
         ]
     };
-    const STATE = { isAnalyzing: false, currentEndpoint: 0, currentProxy: 0, retryCount: 0, maxRetries: 2 };
+    const STATE = { isAnalyzing: false, currentEndpoint: 0, currentProxy: 0, retryCount: 0, maxRetries: 2, images: [] };
 
     function log(message) {
-        const logPanel = document.getElementById('gemini-log-panel');
+        const logPanel = document.getElementById('hck-log-panel');
         if (logPanel) window.showLog(logPanel, message);
-        else console.log(`[HCK V3 Log] ${message}`);
+        else console.log(`[HCK V4 Log] ${message}`);
     }
 
     async function tryRequest(url, options) {
@@ -94,12 +94,14 @@
     }
 
     function extractImages() {
-        return Array.from(document.querySelectorAll('img'))
+        const images = Array.from(document.querySelectorAll('img'))
             .map(img => img.src)
             .filter(src => src && src.startsWith('http') && 
                 !IMAGE_FILTERS.blocked.some(p => p.test(src)) && 
                 IMAGE_FILTERS.allowed.some(p => p.test(src)))
             .slice(0, 50);
+        STATE.images = images;
+        return images;
     }
 
     function buildPrompt(question, images = []) {
@@ -107,11 +109,13 @@
                (images.length > 0 ? `\n\nImagens relacionadas (URLs):\n${images.slice(0, 3).join('\n')}` : '');
     }
 
-    async function analyzeQuestion() {
+    async function analyzeQuestion(input, analyzeOption, responsePanel) {
         if (STATE.isAnalyzing) return;
-        const { input, responsePanel, analyzeOption } = window.createUI();
         const question = input.value.trim();
-        if (!question) return window.showResponse(responsePanel, '', 'Por favor, cole a questão');
+        if (!question) {
+            window.showResponse(responsePanel, '', 'Por favor, cole a questão');
+            return;
+        }
 
         STATE.isAnalyzing = true;
         analyzeOption.disabled = true;
@@ -119,7 +123,7 @@
         analyzeOption.style.opacity = '0.7';
 
         try {
-            const prompt = buildPrompt(question, extractImages());
+            const prompt = buildPrompt(question, STATE.images);
             log(`Enviando prompt: ${prompt.substring(0, 100)}...`);
             const response = await sendRequest(prompt);
             const answer = response?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
@@ -137,26 +141,55 @@
 
     function initialize() {
         if (window.location.hostname !== TARGET_SITE) return;
+
         const script = document.createElement('script');
         script.src = UI_SCRIPT_URL;
         script.onload = () => {
-            const { menuBtn, analyzeOption, clearOption, input } = window.createUI();
-            menuBtn.onclick = () => {
-                const menu = document.getElementById('gemini-menu');
-                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-            };
-            analyzeOption.onclick = analyzeQuestion;
+            const { input, analyzeOption, clearOption, updateImagesOption, showImageOption, copyUrlOption, responsePanel } = window.createUI();
+
+            // Conectar os botões às funções
+            analyzeOption.onclick = () => analyzeQuestion(input, analyzeOption, responsePanel);
             clearOption.onclick = () => {
                 input.value = '';
-                document.getElementById('gemini-response-panel')?.style.display = 'none';
+                responsePanel.style.display = 'none';
             };
-            document.addEventListener('click', (e) => {
-                const menu = document.getElementById('gemini-menu');
-                if (menu?.style.display === 'block' && !menu.contains(e.target) && !menuBtn.contains(e.target)) {
-                    menu.style.display = 'none';
+            updateImagesOption.onclick = () => {
+                extractImages();
+                window.showResponse(responsePanel, '', STATE.images.length > 0 ? `${STATE.images.length} imagens encontradas` : 'Nenhuma imagem encontrada');
+            };
+            showImageOption.onclick = () => {
+                if (STATE.images.length > 0) {
+                    const imgWindow = window.open('', '_blank');
+                    imgWindow.document.write(`
+                        <html>
+                            <body style="margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: #000;">
+                                <img src="${STATE.images[0]}" style="max-width: 90%; max-height: 90%;" />
+                            </body>
+                        </html>
+                    `);
+                    imgWindow.document.close();
+                } else {
+                    window.showResponse(responsePanel, '', 'Nenhuma imagem disponível');
                 }
-            });
-            log('Bookmarklet inicializado');
+            };
+            copyUrlOption.onclick = () => {
+                if (STATE.images.length > 0) {
+                    navigator.clipboard.writeText(STATE.images[0]).then(() => {
+                        // Adicionar a URL ao final da pergunta
+                        const currentText = input.value.trim();
+                        input.value = currentText ? `${currentText}\n${STATE.images[0]}` : STATE.images[0];
+                        window.showResponse(responsePanel, '', 'URL copiada e adicionada à pergunta');
+                    }).catch(() => {
+                        window.showResponse(responsePanel, '', 'Erro ao copiar URL');
+                    });
+                } else {
+                    window.showResponse(responsePanel, '', 'Nenhuma imagem disponível');
+                }
+            };
+
+            // Inicializar imagens ao carregar
+            extractImages();
+            log('HCK V4 inicializado');
         };
         script.onerror = () => console.error('Falha ao carregar o script da UI');
         document.head.appendChild(script);
