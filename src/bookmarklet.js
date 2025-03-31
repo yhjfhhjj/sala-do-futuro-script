@@ -3,7 +3,7 @@ javascript:(function() {
     const CONFIG = {
         TARGET_SITE: 'saladofuturo.educacao.sp.gov.br',
         BLACKBOX_API: 'https://www.blackbox.ai/api/chat',
-        UI_SCRIPT_URL: '',
+        UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743459158/ui.js',
         TIMEOUT: 15000, 
         MAX_RETRIES: 2 
     };
