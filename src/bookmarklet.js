@@ -12,7 +12,7 @@ javascript:(function() {
         USER_AGENT: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 HCK-V5/1.0'
     };
 
-    // ===== PROXIES CORS PÚBLICAS FUNCIONAIS (ATÉ 2025) =====
+    // ===== PROXIES CORS PÚBLICAS FUNCIONAIS =====
     const CORS_PROXIES = [
         '',
         'https://cors-anywhere.herokuapp.com/',
