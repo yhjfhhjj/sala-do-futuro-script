@@ -5,7 +5,7 @@ javascript:(function() {
         GEMINI_API_BASE: 'https://generativelanguage.googleapis.com/v1beta/models/',
         GEMINI_MODELS: ['gemini-2.0-flash:generateContent', 'gemini-pro:generateContent'],
         API_KEY: 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY',
-        UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743464086/ui.js', // Atualize com o link do UI.js
+        UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743464876/ui.js', // Atualize com o link do UI.js
         TIMEOUT: 15000,
         MAX_RETRIES: 3,
         TEMPERATURE: 0.5,
@@ -14,7 +14,7 @@ javascript:(function() {
 
     // ===== PROXIES CORS PÚBLICAS FUNCIONAIS (ATÉ 2025) =====
     const CORS_PROXIES = [
-        '', // Tentativa direta
+        '',
         'https://cors-anywhere.herokuapp.com/',
         'https://api.codetabs.com/v1/proxy/?quest=',
         'https://thingproxy.freeboard.io/fetch/',
@@ -27,10 +27,10 @@ javascript:(function() {
         'https://crossorigin.me/',
         'https://www.whateverorigin.org/get?url=',
         'https://api.allorigins.win/raw?url=',
-        'https://cors.eu.org/', // Nova e funcional em 2025
-        'https://cors.now.sh/', // Alternativa moderna
-        'https://gimmeproxy.com/api/getProxy?country=BR', // Proxy brasileiro dinâmico
-        'https://cors.io/' // Outra alternativa
+        'https://cors.eu.org/',
+        'https://cors.now.sh/',
+        'https://gimmeproxy.com/api/getProxy?country=BR',
+        'https://cors.io/'
     ];
 
     // ===== FILTROS DE IMAGEM =====
@@ -38,6 +38,7 @@ javascript:(function() {
         blocked: [
             /edusp-static\.ip\.tv\/sala-do-futuro\//i,
             /s3\.sa-east-1\.amazonaws\.com\/edusp-static\.ip\.tv\/sala-do-futuro\//i,
+            /s3\.sa-east-1\.amazonaws\.com\/edusp-static\.ip\.tv\/room\/cards\//i, // Ignora URLs de cards
             /conteudo_logo\.png$/i,
             /\/icons?\//i,
             /\/logos?\//i,
@@ -96,7 +97,6 @@ javascript:(function() {
         const model = CONFIG.GEMINI_MODELS[0];
         let url = `${CONFIG.GEMINI_API_BASE}${model}?key=${CONFIG.API_KEY}`;
 
-        // Método 1: Tentar proxies públicas
         for (let i = STATE.currentProxyIndex; i < CORS_PROXIES.length; i++) {
             try {
                 const proxyUrl = CORS_PROXIES[i] ? `${CORS_PROXIES[i]}${encodeURIComponent(url)}` : url;
@@ -106,8 +106,8 @@ javascript:(function() {
                         'Content-Type': 'application/json',
                         'User-Agent': CONFIG.USER_AGENT,
                         'Accept': 'application/json',
-                        'Referer': 'https://educacao.sp.gov.br', // Simula origem legítima
-                        'Origin': 'https://educacao.sp.gov.br' // Simula origem legítima
+                        'Referer': 'https://educacao.sp.gov.br',
+                        'Origin': 'https://educacao.sp.gov.br'
                     },
                     body: JSON.stringify(prompt)
                 });
@@ -126,7 +126,6 @@ javascript:(function() {
             }
         }
 
-        // Método 2: Fallback para JSONP (se a API suportar)
         try {
             const jsonpUrl = `https://jsonp.afeld.me/?url=${encodeURIComponent(url)}`;
             const response = await fetchWithRetry(jsonpUrl, {
@@ -144,9 +143,8 @@ javascript:(function() {
             console.error('Erro com JSONP:', error);
         }
 
-        // Método 3: Tentar WebRTC (simulação de túnel)
         try {
-            const webrtcUrl = 'https://your-webrtc-tunnel.example.com/proxy'; // Configure um túnel WebRTC
+            const webrtcUrl = 'https://your-webrtc-tunnel.example.com/proxy';
             const response = await fetchWithRetry(webrtcUrl, {
                 method: 'POST',
                 headers: {
