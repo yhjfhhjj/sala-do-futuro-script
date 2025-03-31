@@ -5,15 +5,15 @@ function createDraggableMenu() {
     menu.style.cssText = `
         position: fixed;
         width: 280px;
-        background: #000;
+        background: #1a1a1a;
         border-radius: 12px;
         padding: 10px;
         color: #fff;
         font-family: -apple-system, BlinkMacSystemFont, sans-serif;
         box-shadow: 0 2px 10px rgba(0,0,0,0.3);
         z-index: 9999;
-        top: 20px;
-        left: 20px;
+        bottom: 20px;
+        right: 20px;
         user-select: none;
     `;
 
@@ -22,22 +22,22 @@ function createDraggableMenu() {
     title.textContent = 'HCK V4';
     title.style.cssText = `
         text-align: center;
-        font-size: 16px;
+        font-size: 18px;
         font-weight: 600;
         padding: 5px 0;
-        border-bottom: 1px solid #333;
+        color: #a855f7;
         cursor: move;
     `;
 
     // Caixa de texto
     const input = document.createElement('textarea');
     input.id = 'hck-v4-input';
-    input.placeholder = 'Cole a questão aqui...';
+    input.placeholder = 'Cole sua pergunta aqui...';
     input.style.cssText = `
         width: 100%;
-        height: 80px;
-        background: #1a1a1a;
-        border: none;
+        height: 60px;
+        background: #333;
+        border: 1px solid #444;
         border-radius: 8px;
         color: #fff;
         padding: 8px;
@@ -51,17 +51,76 @@ function createDraggableMenu() {
     const buttonContainer = document.createElement('div');
     buttonContainer.style.cssText = `
         display: flex;
+        flex-direction: column;
         gap: 10px;
     `;
+
+    // Container para os botões de imagem
+    const imageButtonContainer = document.createElement('div');
+    imageButtonContainer.style.cssText = `
+        display: flex;
+        gap: 10px;
+    `;
+
+    // Botão Atualizar Imagens
+    const updateImagesBtn = document.createElement('button');
+    updateImagesBtn.innerHTML = '<span style="margin-right: 6px;">🔄</span>Atualizar Imagens';
+    updateImagesBtn.style.cssText = `
+        flex: 1;
+        padding: 10px;
+        background: linear-gradient(to right, #ff6e7f, #a855f7);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    `;
+    updateImagesBtn.addEventListener('mouseover', () => updateImagesBtn.style.opacity = '0.8');
+    updateImagesBtn.addEventListener('mouseout', () => updateImagesBtn.style.opacity = '1');
+
+    // Botão Mostrar Imagem 1
+    const showImageBtn = document.createElement('button');
+    showImageBtn.innerHTML = '<span style="margin-right: 6px;">🖼️</span>Imagem 1';
+    showImageBtn.style.cssText = `
+        flex: 1;
+        padding: 10px;
+        background: #333;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    `;
+    showImageBtn.addEventListener('mouseover', () => showImageBtn.style.opacity = '0.8');
+    showImageBtn.addEventListener('mouseout', () => showImageBtn.style.opacity = '1');
+
+    // Botão Copiar URL
+    const copyUrlBtn = document.createElement('button');
+    copyUrlBtn.innerHTML = '<span style="margin-right: 6px;">📋</span>Copiar URL';
+    copyUrlBtn.style.cssText = `
+        flex: 1;
+        padding: 10px;
+        background: linear-gradient(to right, #ff6e7f, #a855f7);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    `;
+    copyUrlBtn.addEventListener('mouseover', () => copyUrlBtn.style.opacity = '0.8');
+    copyUrlBtn.addEventListener('mouseout', () => copyUrlBtn.style.opacity = '1');
 
     // Botão Analisar
     const analyzeBtn = document.createElement('button');
     analyzeBtn.innerHTML = '<span style="margin-right: 6px;">🔍</span>Analisar';
     analyzeBtn.style.cssText = `
-        flex: 1;
-        padding: 8px;
-        background: #fff;
-        color: #000;
+        width: 100%;
+        padding: 10px;
+        background: linear-gradient(to right, #ff6e7f, #a855f7);
+        color: #fff;
         border: none;
         border-radius: 8px;
         font-size: 14px;
@@ -75,9 +134,9 @@ function createDraggableMenu() {
     const clearBtn = document.createElement('button');
     clearBtn.innerHTML = '<span style="margin-right: 6px;">🗑️</span>Limpar';
     clearBtn.style.cssText = `
-        flex: 1;
-        padding: 8px;
-        background: #333;
+        width: 100%;
+        padding: 10px;
+        background: linear-gradient(to right, #ff6e7f, #a855f7);
         color: #fff;
         border: none;
         border-radius: 8px;
@@ -87,6 +146,11 @@ function createDraggableMenu() {
     `;
     clearBtn.addEventListener('mouseover', () => clearBtn.style.opacity = '0.8');
     clearBtn.addEventListener('mouseout', () => clearBtn.style.opacity = '1');
+
+    // Painel de resposta
+    const responsePanel = document.createElement('div');
+    responsePanel.id = 'hck-response-panel';
+    responsePanel.style.display = 'none';
 
     // Função para tornar o menu arrastável
     let isDragging = false;
@@ -120,6 +184,8 @@ function createDraggableMenu() {
                 currentX = e.clientX - initialX;
                 currentY = e.clientY - initialY;
             }
+            menu.style.right = 'auto';
+            menu.style.bottom = 'auto';
             menu.style.left = `${currentX}px`;
             menu.style.top = `${currentY}px`;
         }
@@ -134,31 +200,45 @@ function createDraggableMenu() {
     }
 
     // Posição inicial
-    currentX = 20;
-    currentY = 20;
+    currentX = window.innerWidth - 300;
+    currentY = window.innerHeight - 300;
 
     // Montar o menu
-    buttonContainer.append(analyzeBtn, clearBtn);
-    menu.append(title, input, buttonContainer);
+    imageButtonContainer.append(updateImagesBtn, showImageBtn, copyUrlBtn);
+    buttonContainer.append(imageButtonContainer, analyzeBtn, clearBtn);
+    menu.append(title, input, buttonContainer, responsePanel);
     document.body.appendChild(menu);
-
-    // Funcionalidades dos botões
-    analyzeBtn.addEventListener('click', () => {
-        console.log('Analisar clicado:', input.value);
-        // Aqui você pode integrar com a função analyzeQuestion() do código original
-    });
-
-    clearBtn.addEventListener('click', () => {
-        input.value = '';
-    });
 
     // Ajustar para mobile
     if (window.innerWidth <= 768) {
         menu.style.width = '90%';
-        menu.style.left = '5%';
+        menu.style.right = '5%';
+        menu.style.left = 'auto';
         currentX = window.innerWidth * 0.05;
     }
+
+    return {
+        input,
+        analyzeOption: analyzeBtn,
+        clearOption: clearBtn,
+        updateImagesOption: updateImagesBtn,
+        showImageOption: showImageBtn,
+        copyUrlOption: copyUrlBtn,
+        responsePanel
+    };
 }
 
-// Inicializar o menu
-createDraggableMenu();
+function showResponse(responsePanel, rawAnswer, displayAnswer) {
+    responsePanel.innerHTML = displayAnswer;
+    responsePanel.style.display = 'block';
+    responsePanel.style.background = rawAnswer ? '#1a1a1a' : '#ff4444';
+    responsePanel.style.color = '#fff';
+    responsePanel.style.padding = '10px';
+    responsePanel.style.borderRadius = '8px';
+    responsePanel.style.marginTop = '10px';
+    responsePanel.style.textAlign = 'center';
+}
+
+// Expor funções globalmente
+window.createUI = createDraggableMenu;
+window.showResponse = showResponse;
