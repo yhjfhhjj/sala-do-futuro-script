@@ -1,22 +1,20 @@
 (function() {
-    // Configurações principais
     const TARGET_SITE = 'saladofuturo.educacao.sp.gov.br';
     const GEMINI_API_KEY = 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY';
-    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743421705/ui.js';
-    
-    // Múltiplos endpoints e proxies para fallback
+    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743443406/ui.js';
+
     const API_ENDPOINTS = [
         'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
         'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent'
     ];
-    
+
     const CORS_PROXIES = [
         'https://cors-anywhere.herokuapp.com/',
         'https://api.codetabs.com/v1/proxy/?quest=',
-        'https://thingproxy.freeboard.io/fetch/'
+        'https://thingproxy.freeboard.io/fetch/',
+        'https://api.allorigins.win/raw?url='
     ];
 
-    // Configurações de imagem
     const IMAGE_FILTERS = {
         blocked: [
             /edusp-static\.ip\.tv\/sala-do-futuro\//i,
@@ -36,20 +34,16 @@
         ]
     };
 
-    // Estado global
     const STATE = {
         isAnalyzing: false,
         currentEndpoint: 0,
-        currentProxy: 0
+        currentProxy: 0,
+        retryCount: 0,
+        maxRetries: 2
     };
-
-    // ======================
-    // FUNÇÕES PARA CONTORNAR CORS
-    // ======================
 
     async function tryDirectRequest(prompt) {
         const endpoint = `${API_ENDPOINTS[STATE.currentEndpoint]}?key=${GEMINI_API_KEY}`;
-        
         try {
             const response = await fetch(endpoint, {
                 method: 'POST',
@@ -64,11 +58,10 @@
                 mode: 'cors',
                 credentials: 'omit'
             });
-            
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             return await response.json();
         } catch (error) {
-            console.log('Falha na requisição direta, tentando com proxy...');
+            console.log('Falha na requisição direta:', error);
             throw error;
         }
     }
@@ -76,7 +69,6 @@
     async function tryWithProxy(prompt) {
         const endpoint = `${API_ENDPOINTS[STATE.currentEndpoint]}?key=${GEMINI_API_KEY}`;
         const proxy = CORS_PROXIES[STATE.currentProxy];
-        
         try {
             const response = await fetch(`${proxy}${encodeURIComponent(endpoint)}`, {
                 method: 'POST',
@@ -89,18 +81,16 @@
                     generationConfig: { maxOutputTokens: 2, temperature: 0.1 }
                 })
             });
-            
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             return await response.json();
         } catch (error) {
-            console.log(`Falha no proxy ${proxy}, tentando próximo...`);
+            console.log(`Falha no proxy ${proxy}:`, error);
             throw error;
         }
     }
 
     async function tryWithModifiedHeaders(prompt) {
         const endpoint = `${API_ENDPOINTS[STATE.currentEndpoint]}?key=${GEMINI_API_KEY}`;
-        
         try {
             const response = await fetch(endpoint, {
                 method: 'POST',
@@ -117,7 +107,6 @@
                 }),
                 mode: 'no-cors'
             });
-            
             if (response.type === 'opaque') {
                 const text = await response.text();
                 try {
@@ -128,45 +117,88 @@
             }
             return await response.json();
         } catch (error) {
-            console.log('Falha com headers modificados, tentando próxima estratégia...');
+            console.log('Falha com headers modificados:', error);
+            throw error;
+        }
+    }
+
+    async function tryWithXMLHttpRequest(prompt) {
+        return new Promise((resolve, reject) => {
+            const endpoint = `${API_ENDPOINTS[STATE.currentEndpoint]}?key=${GEMINI_API_KEY}`;
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', endpoint, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        try {
+                            resolve(JSON.parse(xhr.responseText));
+                        } catch {
+                            reject(new Error('Resposta inválida'));
+                        }
+                    } else {
+                        reject(new Error(`HTTP ${xhr.status}`));
+                    }
+                }
+            };
+            xhr.onerror = () => reject(new Error('Erro na requisição XHR'));
+            xhr.send(JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { maxOutputTokens: 2, temperature: 0.1 }
+            }));
+        });
+    }
+
+    async function tryWithAllOrigins(prompt) {
+        const endpoint = `${API_ENDPOINTS[STATE.currentEndpoint]}?key=${GEMINI_API_KEY}`;
+        const proxy = 'https://api.allorigins.win/raw?url=';
+        try {
+            const response = await fetch(`${proxy}${encodeURIComponent(endpoint)}`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: { maxOutputTokens: 2, temperature: 0.1 }
+                })
+            });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return await response.json();
+        } catch (error) {
+            console.log('Falha com AllOrigins:', error);
             throw error;
         }
     }
 
     async function makeApiRequest(prompt) {
-        const strategies = [tryDirectRequest, tryWithProxy, tryWithModifiedHeaders];
-        
+        const strategies = [tryDirectRequest, tryWithProxy, tryWithModifiedHeaders, tryWithXMLHttpRequest, tryWithAllOrigins];
         for (const strategy of strategies) {
             try {
-                // Rotacionar endpoints e proxies
                 STATE.currentEndpoint = (STATE.currentEndpoint + 1) % API_ENDPOINTS.length;
                 STATE.currentProxy = (STATE.currentProxy + 1) % CORS_PROXIES.length;
-                
                 const result = await strategy(prompt);
-                if (result) return result;
+                if (result) {
+                    STATE.retryCount = 0; // Resetar contagem de retries
+                    return result;
+                }
             } catch (error) {
                 console.warn(`Falha na estratégia ${strategy.name}:`, error);
             }
         }
-        
         throw new Error("Todas as estratégias falharam");
     }
 
-    // ======================
-    // FUNÇÕES PRINCIPAIS
-    // ======================
-
     function shouldIncludeImage(url) {
         if (!url || !url.startsWith('http')) return false;
-        
         for (const pattern of IMAGE_FILTERS.blocked) {
             if (pattern.test(url)) return false;
         }
-        
         for (const pattern of IMAGE_FILTERS.allowed) {
             if (pattern.test(url)) return true;
         }
-        
         return window.location.hostname === TARGET_SITE;
     }
 
@@ -204,14 +236,15 @@
             const match = fullAnswer.match(/[A-E]/i);
             return { answer: '', correctAlternative: match ? match[0].toUpperCase() : 'Erro' };
         } catch (error) {
-            console.error('Erro na API:', error);
-            return { answer: '', correctAlternative: 'Erro' };
+            console.error('Erro na análise:', error);
+            if (STATE.retryCount < STATE.maxRetries) {
+                STATE.retryCount++;
+                console.log(`Tentando novamente (${STATE.retryCount}/${STATE.maxRetries})...`);
+                return await analyzeContent(content, question); // Retry
+            }
+            return { answer: '', correctAlternative: 'Erro: Falha na análise. Instale a extensão "CORS Unblock" ou tente novamente.' };
         }
     }
-
-    // ======================
-    // INICIALIZAÇÃO DA UI
-    // ======================
 
     fetch(UI_SCRIPT_URL)
         .then(response => response.text())
@@ -219,7 +252,10 @@
             eval(script);
 
             const ui = window.createUI();
-            if (!ui) return;
+            if (!ui) {
+                console.error('Falha ao criar UI');
+                return;
+            }
 
             const { menuBtn, analyzeOption, clearOption, input, responsePanel } = ui;
 
@@ -231,6 +267,7 @@
             analyzeOption.addEventListener('click', async () => {
                 if (STATE.isAnalyzing) return;
                 STATE.isAnalyzing = true;
+                STATE.retryCount = 0; // Resetar contagem de retries
 
                 const question = input.value.trim();
                 if (!question) {
@@ -240,7 +277,7 @@
                 }
 
                 analyzeOption.disabled = true;
-                analyzeOption.innerHTML = '<span style="margin-right: 8px;">⏳</span>Analisando...';
+                analyzeOption.innerHTML = '<span style="margin-right: 6px;">⏳</span>Analisando...';
                 analyzeOption.style.opacity = '0.7';
 
                 try {
@@ -248,13 +285,13 @@
                     const { answer, correctAlternative } = await analyzeContent(content, question);
                     window.showResponse(responsePanel, answer, correctAlternative);
                 } catch (error) {
-                    window.showResponse(responsePanel, '', 'Erro na análise. Tente novamente.');
+                    window.showResponse(responsePanel, '', 'Erro na análise. Tente novamente ou instale a extensão "CORS Unblock".');
                 } finally {
                     analyzeOption.disabled = false;
-                    analyzeOption.innerHTML = '<span style="margin-right: 8px;">🔍</span>Analisar';
+                    analyzeOption.innerHTML = '<span style="margin-right: 6px;">🔍</span>Analisar';
                     analyzeOption.style.opacity = '1';
                     STATE.isAnalyzing = false;
-                    
+
                     const menu = document.getElementById('gemini-menu');
                     if (menu) menu.style.display = 'none';
                 }
@@ -275,32 +312,29 @@
         })
         .catch(error => {
             console.error('Erro ao carregar ui.js:', error);
-            // Fallback básico
             const fallbackBtn = document.createElement('button');
-            fallbackBtn.innerHTML = 'Ajuda HCK';
+            fallbackBtn.innerHTML = 'Ajuda';
             Object.assign(fallbackBtn.style, {
                 position: 'fixed',
-                bottom: '20px',
-                right: '20px',
-                zIndex: '999999',
-                padding: '10px 16px',
-                background: 'linear-gradient(135deg, #FF6F61, #D946EF)',
+                bottom: '10px',
+                right: '10px',
+                zIndex: '9999',
+                padding: '8px 12px',
+                background: '#0056D2',
                 color: '#FFFFFF',
                 border: 'none',
-                borderRadius: '20px',
+                borderRadius: '4px',
                 cursor: 'pointer',
                 fontSize: '14px',
-                fontWeight: '600',
-                boxShadow: '0 4px 12px rgba(217, 70, 239, 0.3)'
+                fontWeight: '500',
+                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                fontFamily: 'Arial, sans-serif'
             });
-            
+
             fallbackBtn.addEventListener('click', () => {
-                const question = prompt('Cole a questão com alternativas:');
-                if (question) {
-                    alert('Análise em andamento... Recarregue a página para tentar carregar a UI completa.');
-                }
+                alert('Não foi possível carregar o assistente. Instale a extensão "CORS Unblock" no Chrome e recarregue a página.');
             });
-            
+
             document.body.appendChild(fallbackBtn);
         });
 })();
