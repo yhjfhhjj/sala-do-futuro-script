@@ -19,7 +19,7 @@ function createUI() {
         display: 'flex',
         flexDirection: 'column',
         gap: '12px',
-        fontFamily: '"Poppins", sans-serif',
+        fontFamily: '"Poppins", sans-serif'
     });
 
     const menuBtn = document.createElement('button');
@@ -72,12 +72,12 @@ function createUI() {
     if (window.innerWidth > 600) {
         Object.assign(menu.style, {
             width: '300px',
-            padding: '16px',
+            padding: '16px'
         });
     }
 
     const menuTitle = document.createElement('div');
-    menuTitle.innerHTML = 'HCK <span style="font-size: 14px; font-weight: 400; opacity: 0.7;">v1.3</span>'; // Versão adicionada
+    menuTitle.innerHTML = 'HCK <span style="font-size: 14px; font-weight: 400; opacity: 0.7;">v2.0</span>';
     Object.assign(menuTitle.style, {
         color: '#D946EF',
         fontSize: '24px',
@@ -137,7 +137,7 @@ function createUI() {
     function loadImages() {
         const images = Array.from(document.querySelectorAll('img'))
             .map(img => img.src)
-            .filter(src => src && src.startsWith('http') && !src.includes('edusp-static.ip.tv/sala-do-futuro') && !src.includes('s3.sa-east-1.amazonaws.com/edusp-static.ip.tv')) // Novo filtro
+            .filter(src => src && src.startsWith('http') && !src.includes('edusp-static.ip.tv/sala-do-futuro') && !src.includes('s3.sa-east-1.amazonaws.com/edusp-static.ip.tv'))
             .slice(0, 50);
 
         imagesSection.innerHTML = '';
@@ -225,6 +225,8 @@ function createUI() {
                 copyBtn.onclick = () => {
                     navigator.clipboard.writeText(url).then(() => {
                         window.showCopyNotification('URL copiada!');
+                    }).catch(() => {
+                        window.showCopyNotification('Erro ao copiar URL');
                     });
                 };
 
@@ -406,10 +408,12 @@ function showResponse(panel, answer, correctAlternative) {
     panel.style.display = 'block';
 
     const progressBar = document.getElementById('progress-bar');
-    progressBar.style.width = '100%';
-    setTimeout(() => {
-        progressBar.style.width = '0%';
-    }, 0);
+    if (progressBar) {
+        progressBar.style.width = '100%';
+        setTimeout(() => {
+            progressBar.style.width = '0%';
+        }, 0);
+    }
 
     setTimeout(() => {
         panel.style.animation = 'slideOut 0.3s ease forwards';
@@ -422,24 +426,28 @@ function showResponse(panel, answer, correctAlternative) {
 
 function showCopyNotification(message) {
     const copyNotification = document.getElementById('gemini-copy-notification');
-    copyNotification.textContent = message;
-    copyNotification.style.display = 'block';
+    if (copyNotification) {
+        copyNotification.textContent = message;
+        copyNotification.style.display = 'block';
 
-    setTimeout(() => {
-        copyNotification.style.animation = 'slideOut 0.3s ease forwards';
         setTimeout(() => {
-            copyNotification.style.display = 'none';
-            copyNotification.style.animation = 'slideIn 0.3s ease';
-        }, 300);
-    }, 2000);
+            copyNotification.style.animation = 'slideOut 0.3s ease forwards';
+            setTimeout(() => {
+                copyNotification.style.display = 'none';
+                copyNotification.style.animation = 'slideIn 0.3s ease';
+            }, 300);
+        }, 2000);
+    }
 }
 
 function clearUI(input, responsePanel, analyzeOption, setIsAnalyzing) {
-    input.value = '';
-    responsePanel.style.display = 'none';
-    analyzeOption.disabled = false;
-    analyzeOption.innerHTML = '<span style="margin-right: 8px;">🔍</span>Analisar';
-    analyzeOption.style.opacity = '1';
+    if (input) input.value = '';
+    if (responsePanel) responsePanel.style.display = 'none';
+    if (analyzeOption) {
+        analyzeOption.disabled = false;
+        analyzeOption.innerHTML = '<span style="margin-right: 8px;">🔍</span>Analisar';
+        analyzeOption.style.opacity = '1';
+    }
     setIsAnalyzing(false);
 }
 
