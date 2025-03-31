@@ -1,169 +1,144 @@
 (function() {
-    // Configurações avançadas
-    const CONFIG = {
-        TARGET_SITE: 'saladofuturo.educacao.sp.gov.br',
-        ACTIVITY_URL_PATTERN: /\/atividade\/\d+\?eExame=true/i,
-        GEMINI_API_KEY: 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY',
-        API_ENDPOINTS: [
-            'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
-            'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent'
+    // ======================
+    // CONFIGURAÇÕES PRINCIPAIS
+    // ======================
+    const TARGET_SITE = 'saladofuturo.educacao.sp.gov.br';
+    const GEMINI_API_KEY = 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY';
+    const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743421705/ui.js';
+    const ACTIVITY_URL_PATTERN = /\/atividade\/\d+\?eExame=true/i;
+
+    // ======================
+    // CONFIGURAÇÕES DE IMAGENS
+    // ======================
+    const IMAGE_FILTERS = {
+        blocked: [
+            /edusp-static\.ip\.tv\/sala-do-futuro\//i,
+            /s3\.sa-east-1\.amazonaws\.com\/edusp-static\.ip\.tv\/sala-do-futuro\//i,
+            /(conteudo_logo|logo|icon|favicon)\.(png|jpg|jpeg|svg)$/i,
+            /\/icons?\//i,
+            /\/logos?\//i,
+            /\/buttons?\//i,
+            /\/assets\//i,
+            /\/banners?\//i,
+            /\/spinners?\//i
         ],
-        UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743421705/ui.js',
-        IMAGE_FILTERS: {
-            blocked: [
-                /edusp-static\.ip\.tv\/sala-do-futuro\//i,
-                /s3\.sa-east-1\.amazonaws\.com\/edusp-static\.ip\.tv\/sala-do-futuro\//i,
-                /(conteudo_logo|logo|icon|favicon)\.(png|jpg|jpeg|svg)$/i,
-                /\/icons?\//i,
-                /\/logos?\//i,
-                /\/buttons?\//i,
-                /\/assets\//i,
-                /\/banners?\//i,
-                /\/spinners?\//i
-            ],
-            allowed: [
-                /edusp-static\.ip\.tv\/tms\//i,
-                /edusp-static\.ip\.tv\/tarefas\//i,
-                /edusp-static\.ip\.tv\/exercicios\//i,
-                /\/atividade\/\d+\?eExame=true/i,
-                /\/questions?\//i,
-                /\/problems?\//i,
-                /\.(jpg|png|jpeg|gif|webp|bmp)$/i
-            ]
-        },
-        MAX_TEXT_LENGTH: 20000,
-        MAX_IMAGES: 50
+        allowed: [
+            /edusp-static\.ip\.tv\/tms\//i,
+            /edusp-static\.ip\.tv\/tarefas\//i,
+            /edusp-static\.ip\.tv\/exercicios\//i,
+            ACTIVITY_URL_PATTERN,
+            /\/questions?\//i,
+            /\/problems?\//i,
+            /\.(jpg|png|jpeg|gif|webp|bmp)$/i
+        ]
     };
 
     // ======================
-    // FUNÇÕES DE PROCESSAMENTO
+    // FUNÇÕES AUXILIARES
     // ======================
+    function isTargetSite() {
+        return window.location.hostname === TARGET_SITE;
+    }
 
     function isActivityPage() {
-        return CONFIG.ACTIVITY_URL_PATTERN.test(window.location.pathname + window.location.search);
+        return ACTIVITY_URL_PATTERN.test(window.location.pathname + window.location.search);
     }
 
     function shouldIncludeImage(url) {
         if (!url || !url.startsWith('http')) return false;
         
         // Verificar lista de bloqueados primeiro
-        for (const pattern of CONFIG.IMAGE_FILTERS.blocked) {
-            if (pattern.test(url)) {
-                console.log(`Imagem bloqueada: ${url} (padrão: ${pattern})`);
-                return false;
-            }
+        for (const pattern of IMAGE_FILTERS.blocked) {
+            if (pattern.test(url)) return false;
         }
         
         // Verificar lista de permitidos
-        for (const pattern of CONFIG.IMAGE_FILTERS.allowed) {
-            if (pattern.test(url)) {
-                console.log(`Imagem permitida: ${url} (padrão: ${pattern})`);
-                return true;
-            }
+        for (const pattern of IMAGE_FILTERS.allowed) {
+            if (pattern.test(url)) return true;
         }
         
-        // Permitir outras imagens apenas em páginas de atividade
-        return isActivityPage();
+        return false;
     }
 
+    // ======================
+    // FUNÇÕES DE EXTRACAÇÃO DE CONTEÚDO
+    // ======================
     function extractPageContent() {
-        const contentSelectors = isActivityPage() 
-            ? ['#question-container', '.question-content', '.exercise-text', 'body']
-            : ['main', '.content-area', '.exercise-container', 'body'];
-        
-        let contentArea = null;
-        for (const selector of contentSelectors) {
-            contentArea = document.querySelector(selector);
-            if (contentArea) break;
-        }
-
+        const contentArea = document.querySelector('body') || document.documentElement;
         if (!contentArea) return { text: '', images: [] };
 
-        // Clonar o elemento para não modificar o DOM original
-        const clone = contentArea.cloneNode(true);
-        
-        // Remover elementos indesejados
-        const unwantedSelectors = [
-            'script', 'style', 'noscript', 'svg', 'iframe', 'head',
-            'nav', 'footer', 'header', '.navbar', '.footer', '.ad',
-            '.tooltip', '.modal', '.notification', '.menu', '.sidebar'
-        ];
-        
-        unwantedSelectors.forEach(selector => {
-            const elements = clone.querySelectorAll(selector);
+        // Remove elementos não desejados
+        const unwantedTags = ['script', 'style', 'noscript', 'svg', 'iframe', 'head'];
+        unwantedTags.forEach(tag => {
+            const elements = contentArea.querySelectorAll(tag);
             elements.forEach(el => el.remove());
         });
 
-        // Extrair texto limpo
-        const text = (clone.textContent || '')
-            .replace(/\s+/g, ' ')
-            .replace(/[\u200B-\u200D\uFEFF]/g, '')
-            .replace(/\s*([.,;:!?])\s*/g, '$1 ')
-            .trim()
-            .substring(0, CONFIG.MAX_TEXT_LENGTH);
+        // Filtra imagens conforme regras específicas
+        const images = Array.from(document.querySelectorAll('img'))
+            .map(img => img.src)
+            .filter(shouldIncludeImage)
+            .slice(0, 50);
 
-        // Extrair e filtrar imagens de múltiplas fontes
-        const imageSources = new Set();
+        // Limita o texto para evitar payloads muito grandes
+        const text = (contentArea.textContent || '').replace(/\s+/g, ' ').substring(0, 15000);
         
-        // 1. Tags <img> tradicionais
-        Array.from(clone.querySelectorAll('img')).forEach(img => {
-            if (img.src && shouldIncludeImage(img.src)) {
-                imageSources.add(img.src);
-            }
-        });
-        
-        // 2. Background images
-        Array.from(clone.querySelectorAll('[style*="background-image"]')).forEach(el => {
-            const style = window.getComputedStyle(el);
-            const match = style.backgroundImage.match(/url\(["']?(.*?)["']?\)/);
-            if (match && shouldIncludeImage(match[1])) {
-                imageSources.add(match[1]);
-            }
-        });
-        
-        // 3. Links para imagens
-        Array.from(clone.querySelectorAll('a')).forEach(a => {
-            if (a.href && shouldIncludeImage(a.href)) {
-                imageSources.add(a.href);
-            }
-        });
-        
-        // Converter para array e limitar
-        const images = Array.from(imageSources).slice(0, CONFIG.MAX_IMAGES);
-
         return { text, images };
     }
 
     // ======================
-    // INTEGRAÇÃO COM API GEMINI
+    // FUNÇÕES DE COMUNICAÇÃO COM API
     // ======================
+    async function makeApiRequest(prompt) {
+        try {
+            const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: { 
+                        maxOutputTokens: 2, 
+                        temperature: 0.1,
+                        topP: 0.3
+                    }
+                }),
+                mode: 'cors',
+                credentials: 'omit'
+            });
 
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            return await response.json();
+        } catch (error) {
+            console.error('Erro na requisição direta:', error);
+            throw error;
+        }
+    }
+
+    // ======================
+    // FUNÇÃO PRINCIPAL DE ANÁLISE
+    // ======================
     async function analyzeContent(content, question) {
         if (!question.trim()) {
             return { answer: '', correctAlternative: 'Por favor, cole uma pergunta com alternativas.' };
         }
 
-        // Extrair informações da pergunta
         const imageUrlMatch = question.match(/\[Imagem: (https:\/\/[^\]]+)\]/);
         const imageUrl = imageUrlMatch ? imageUrlMatch[1] : null;
         const cleanedQuestion = question.replace(/\[Imagem: https:\/\/[^\]]+\]/, '').trim();
 
-        // Construir prompt otimizado
         const prompt = `
-Você é um especialista em análise de questões educacionais. Siga rigorosamente estas instruções:
+ANÁLISE DE QUESTÃO - DIRETRIZES ESTRITAS:
 
-1. ANALISE a pergunta abaixo e o contexto da página.
-2. IDENTIFIQUE o assunto principal e os conceitos envolvidos.
-3. CONSIDERE todas as imagens fornecidas como contexto adicional.
-4. AVALIE cada alternativa criticamente.
-5. RETORNE apenas a letra da alternativa correta (A, B, C, D ou E).
+1. FOCO: Analise exclusivamente a questão e o contexto fornecido.
+2. FORMATO: Retorne APENAS a letra da alternativa correta (A, B, C, D ou E).
+3. CONTEXTO: Considere o texto da página e as imagens relacionadas.
+4. IMAGENS: Utilize como suporte visual quando relevante.
 
-FORMATO DE RESPOSTA:
-\`\`\`
-[LETRA DA ALTERNATIVA CORRETA]
-\`\`\`
-
-DADOS DA QUESTÃO:
+QUESTÃO:
 ${cleanedQuestion}
 
 CONTEXTO DA PÁGINA:
@@ -171,70 +146,53 @@ ${content.text}
 
 IMAGENS DISPONÍVEIS:
 ${content.images.join('\n')}
-${imageUrl ? `\nIMAGEM ADICIONAL DA QUESTÃO:\n${imageUrl}` : ''}
+${imageUrl ? `\nIMAGEM ADICIONAL:\n${imageUrl}` : ''}
 
-ANÁLISE CRÍTICA (interna):
-`.trim();
+RESPOSTA (APENAS A LETRA):`.trim();
 
         try {
-            const response = await fetch(`${CONFIG.API_ENDPOINTS[0]}?key=${CONFIG.GEMINI_API_KEY}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }],
-                    generationConfig: { 
-                        maxOutputTokens: 2,
-                        temperature: 0.1,
-                        topP: 0.3
-                    }
-                })
-            });
-
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            
-            const data = await response.json();
+            const data = await makeApiRequest(prompt);
             const fullAnswer = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
-            
-            // Extrair a alternativa de forma robusta
-            const match = fullAnswer.match(/^[A-Ea-e]/);
-            const correctAlternative = match ? match[0].toUpperCase() : 'Erro';
-            
-            return { answer: '', correctAlternative };
-
+            const match = fullAnswer.match(/^[A-E]/);
+            return { 
+                answer: '', 
+                correctAlternative: match ? match[0].toUpperCase() : 'Erro' 
+            };
         } catch (error) {
-            console.error('Erro na API:', error);
+            console.error('Erro na análise:', error);
             return { answer: '', correctAlternative: 'Erro' };
         }
     }
 
     // ======================
-    // CARREGAMENTO DA UI
+    // INICIALIZAÇÃO DA UI
     // ======================
-
     fetch(UI_SCRIPT_URL)
         .then(response => response.text())
         .then(script => {
             eval(script);
+
+            let isAnalyzing = false;
 
             const ui = window.createUI();
             if (!ui) return;
 
             const { menuBtn, analyzeOption, clearOption, input, responsePanel } = ui;
 
-            // Configurar eventos
+            // Configurar eventos da UI
             menuBtn.addEventListener('click', () => {
                 const menu = document.getElementById('gemini-menu');
                 if (menu) menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
             });
 
             analyzeOption.addEventListener('click', async () => {
-                if (window.isAnalyzing) return;
-                window.isAnalyzing = true;
+                if (isAnalyzing) return;
+                isAnalyzing = true;
 
                 const question = input.value.trim();
                 if (!question) {
                     window.showResponse(responsePanel, '', 'Por favor, cole uma pergunta com alternativas.');
-                    window.isAnalyzing = false;
+                    isAnalyzing = false;
                     return;
                 }
 
@@ -248,12 +206,11 @@ ANÁLISE CRÍTICA (interna):
                     window.showResponse(responsePanel, answer, correctAlternative);
                 } catch (error) {
                     window.showResponse(responsePanel, '', 'Erro na análise. Tente novamente.');
-                    console.error(error);
                 } finally {
                     analyzeOption.disabled = false;
                     analyzeOption.innerHTML = '<span style="margin-right: 8px;">🔍</span>Analisar';
                     analyzeOption.style.opacity = '1';
-                    window.isAnalyzing = false;
+                    isAnalyzing = false;
                     
                     const menu = document.getElementById('gemini-menu');
                     if (menu) menu.style.display = 'none';
@@ -261,20 +218,20 @@ ANÁLISE CRÍTICA (interna):
             });
 
             clearOption.addEventListener('click', () => {
-                window.clearUI(input, responsePanel, analyzeOption);
+                window.clearUI(input, responsePanel, analyzeOption, () => { isAnalyzing = false; });
                 const menu = document.getElementById('gemini-menu');
                 if (menu) menu.style.display = 'none';
             });
 
-            // Adicionar atalho de teclado
-            document.addEventListener('keydown', (e) => {
-                if (e.ctrlKey && e.key === 'Enter' && input.value.trim()) {
-                    analyzeOption.click();
+            document.addEventListener('click', e => {
+                const menu = document.getElementById('gemini-menu');
+                if (menu && !e.target.closest('#gemini-helper-container') && !e.target.closest('#gemini-response-panel')) {
+                    menu.style.display = 'none';
                 }
             });
         })
         .catch(error => {
-            console.error('Erro ao carregar a UI:', error);
+            console.error('Erro ao carregar ui.js:', error);
             // Fallback básico
             const fallbackBtn = document.createElement('button');
             fallbackBtn.innerHTML = 'Ajuda HCK';
@@ -303,19 +260,4 @@ ANÁLISE CRÍTICA (interna):
             
             document.body.appendChild(fallbackBtn);
         });
-
-    // Monitorar alterações na página (para SPAs)
-    if (isActivityPage()) {
-        const observer = new MutationObserver(() => {
-            if (document.getElementById('gemini-helper-container')) return;
-            const uiScript = document.createElement('script');
-            uiScript.src = UI_SCRIPT_URL;
-            document.head.appendChild(uiScript);
-        });
-
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
-    }
-})();
+})();,
