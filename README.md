@@ -1,8 +1,8 @@
 # 🔍 HCK - Sala do Futuro Helper
 
-Ferramenta de auxílio na resolução de atividades, provas da plataforma sala do futuro ou similares. 
+Como não tem script pra fazer prova paulista crie esse carinha pra dar uma ajuda.
 
-Utiliza o gemini para analisar perguntas e imagens, informando a resposta correta.
+E como vai perceber no código ele ta usando o gemini pra responder, eu sei podia usar o gpt mais confiável, mas é caro dms os tokens enfim
 
 ![Preview da Interface](https://cdn.discordapp.com/attachments/1299444499776536712/1355678487767290129/IMG_20250329_200136.jpg?ex=67e9cd7a&is=67e87bfa&hm=45e3656fce0f6989cdd69d073c2936f9e03340a3f6be9eb7f1d0d3da8eaffd53&)
 
