@@ -1,7 +1,7 @@
 (function() {
     const TARGET_SITE = 'saladofuturo.educacao.sp.gov.br';
     const GEMINI_API_KEY = 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY';
-    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743448950/ui.js';
+    const UI_SCRIPT_URL = 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743447179/ui.js';
     const API_ENDPOINTS = [
         'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
         'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent'
@@ -119,7 +119,7 @@
 
         STATE.isAnalyzing = true;
         analyzeOption.disabled = true;
-        analyzeOption.innerHTML = '<span style="margin-right: 6px;">⏳</span>Analisando...';
+        analyzeOption.innerHTML = '<span style="margin-right: 4px;">⏳</span>Analisando...';
         analyzeOption.style.opacity = '0.7';
 
         try {
@@ -134,7 +134,7 @@
         } finally {
             STATE.isAnalyzing = false;
             analyzeOption.disabled = false;
-            analyzeOption.innerHTML = '<span style="margin-right: 6px;">🔍</span>Analisar';
+            analyzeOption.innerHTML = '<span style="margin-right: 4px;">🔍</span>Analisar';
             analyzeOption.style.opacity = '1';
         }
     }
@@ -154,9 +154,9 @@
                 responsePanel.style.display = 'none';
             };
             updateImagesOption.onclick = () => {
-                extractImages();
-                window.updateImageButtons(STATE.images); // Atualizar botões de imagem dinamicamente
-                window.showResponse(responsePanel, '', STATE.images.length > 0 ? `${STATE.images.length} imagens encontradas` : 'Nenhuma imagem encontrada');
+                const images = extractImages();
+                window.updateImageButtons(images);
+                window.showResponse(responsePanel, '', images.length > 0 ? `${images.length} imagens encontradas` : 'Nenhuma imagem encontrada');
             };
             imageOptions.forEach((btn, index) => {
                 btn.onclick = () => {
@@ -192,8 +192,8 @@
             });
 
             // Inicializar imagens ao carregar
-            extractImages();
-            window.updateImageButtons(STATE.images);
+            const images = extractImages();
+            window.updateImageButtons(images);
             log('HCK V4 inicializado');
         };
         script.onerror = () => console.error('Falha ao carregar o script da UI');
