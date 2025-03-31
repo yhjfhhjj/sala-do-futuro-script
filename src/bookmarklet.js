@@ -5,28 +5,28 @@ javascript:(function() {
         GEMINI_API_BASE: 'https://generativelanguage.googleapis.com/v1beta/models/',
         GEMINI_MODELS: ['gemini-2.0-flash:generateContent', 'gemini-pro:generateContent'],
         API_KEY: 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY',
-        UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743460592/ui.js', // Atualize com o link do UI.js
+        UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743461255/ui.js', 
         TIMEOUT: 15000,
         MAX_RETRIES: 2,
         TEMPERATURE: 0.5,
-        USER_AGENT: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 HCK-Gemini/1.0' // User-Agent mascarado
+        USER_AGENT: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 HCK-V5/1.0'
     };
 
-    // ===== PROXIES (CORS PÚBLICAS) FUNCIONAIS =====
+    // ===== PROXIES CORS PÚBLICAS FUNCIONAIS =====
     const CORS_PROXIES = [
-        '', // Sem proxy (tentativa direta)
-        'https://cors-anywhere.herokuapp.com/', // Amplamente usada, mas requer ativação manual às vezes
-        'https://api.codetabs.com/v1/proxy/?quest=', // Confiável e rápida
-        'https://thingproxy.freeboard.io/fetch/', // Simples e funcional
-        'https://yacdn.org/proxy/', // Leve e estável
-        'https://cors.bridged.cc/', // Moderna e eficiente
-        'https://proxy.cors.sh/', // Suporte ativo, boa para APIs
-        'https://corsproxy.io/?', // Nova e robusta
-        'https://allorigins.win/api/v1/fetch?url=', // Boa para contornar CORS
-        'https://jsonp.afeld.me/?url=', // Alternativa com JSONP
-        'https://crossorigin.me/', // Clássica, mas pode ser instável
-        'https://www.whateverorigin.org/get?url=', // Simples, mas menos confiável
-        'https://api.allorigins.win/raw?url=' // Versão raw da AllOrigins
+        '',
+        'https://cors-anywhere.herokuapp.com/',
+        'https://api.codetabs.com/v1/proxy/?quest=',
+        'https://thingproxy.freeboard.io/fetch/',
+        'https://yacdn.org/proxy/',
+        'https://cors.bridged.cc/',
+        'https://proxy.cors.sh/',
+        'https://corsproxy.io/?',
+        'https://allorigins.win/api/v1/fetch?url=',
+        'https://jsonp.afeld.me/?url=',
+        'https://crossorigin.me/',
+        'https://www.whateverorigin.org/get?url=',
+        'https://api.allorigins.win/raw?url='
     ];
 
     // ===== FILTROS DE IMAGEM =====
@@ -111,7 +111,7 @@ javascript:(function() {
     }
 
     async function queryGemini(prompt) {
-        const model = CONFIG.GEMINI_MODELS[0]; // Usa gemini-2.0-flash por padrão
+        const model = CONFIG.GEMINI_MODELS[0];
         let url = `${CONFIG.GEMINI_API_BASE}${model}?key=${CONFIG.API_KEY}`;
 
         for (let i = STATE.currentProxyIndex; i < CORS_PROXIES.length; i++) {
@@ -121,7 +121,7 @@ javascript:(function() {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'User-Agent': CONFIG.USER_AGENT, // User-Agent mascarado
+                        'User-Agent': CONFIG.USER_AGENT,
                         'Accept': 'application/json'
                     },
                     body: JSON.stringify(prompt)
@@ -131,7 +131,7 @@ javascript:(function() {
                 const answer = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sem resposta';
                 const match = answer.match(/[A-Ea-e]\)\s*.+/) || 
                              answer.match(/Alternativa\s*([A-Ea-e])/i);
-                STATE.currentProxyIndex = i; // Salva o proxy que funcionou
+                STATE.currentProxyIndex = i;
                 return match ? match[0] : answer.substring(0, 100);
             } catch (error) {
                 console.error(`Erro com proxy ${CORS_PROXIES[i]}:`, error);
