@@ -40,7 +40,9 @@
     const STATE = {
         isAnalyzing: false,
         currentEndpoint: 0,
-        currentProxy: 0
+        currentProxy: 0,
+        retryCount: 0,
+        maxRetries: 3
     };
 
     // ======================
@@ -68,7 +70,7 @@
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             return await response.json();
         } catch (error) {
-            console.log('Falha na requisição direta, tentando com proxy...');
+            console.log('Falha na requisição direta:', error.message);
             throw error;
         }
     }
@@ -93,7 +95,7 @@
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             return await response.json();
         } catch (error) {
-            console.log(`Falha no proxy ${proxy}, tentando próximo...`);
+            console.log(`Falha no proxy ${proxy}:`, error.message);
             throw error;
         }
     }
@@ -128,7 +130,7 @@
             }
             return await response.json();
         } catch (error) {
-            console.log('Falha com headers modificados, tentando próxima estratégia...');
+            console.log('Falha com headers modificados:', error.message);
             throw error;
         }
     }
@@ -136,20 +138,36 @@
     async function makeApiRequest(prompt) {
         const strategies = [tryDirectRequest, tryWithProxy, tryWithModifiedHeaders];
         
-        for (const strategy of strategies) {
-            try {
-                // Rotacionar endpoints e proxies
-                STATE.currentEndpoint = (STATE.currentEndpoint + 1) % API_ENDPOINTS.length;
-                STATE.currentProxy = (STATE.currentProxy + 1) % CORS_PROXIES.length;
-                
-                const result = await strategy(prompt);
-                if (result) return result;
-            } catch (error) {
-                console.warn(`Falha na estratégia ${strategy.name}:`, error);
+        // Resetar contagem de tentativas para cada nova requisição
+        STATE.retryCount = 0;
+        
+        while (STATE.retryCount < STATE.maxRetries) {
+            for (const strategy of strategies) {
+                try {
+                    STATE.retryCount++;
+                    console.log(`Tentativa ${STATE.retryCount} com estratégia ${strategy.name}`);
+                    
+                    // Rotacionar endpoints e proxies
+                    STATE.currentEndpoint = (STATE.currentEndpoint + 1) % API_ENDPOINTS.length;
+                    STATE.currentProxy = (STATE.currentProxy + 1) % CORS_PROXIES.length;
+                    
+                    const result = await strategy(prompt);
+                    if (result) return result;
+                    
+                } catch (error) {
+                    console.warn(`Falha na estratégia ${strategy.name}:`, error);
+                    
+                    // Pequeno delay entre tentativas
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
+                    if (STATE.retryCount >= STATE.maxRetries) {
+                        throw new Error("Todas as tentativas falharam");
+                    }
+                }
             }
         }
         
-        throw new Error("Todas as estratégias falharam");
+        throw new Error("Todas as estratégias falharam após várias tentativas");
     }
 
     // ======================
@@ -204,7 +222,7 @@
             const match = fullAnswer.match(/[A-E]/i);
             return { answer: '', correctAlternative: match ? match[0].toUpperCase() : 'Erro' };
         } catch (error) {
-            console.error('Erro na API:', error);
+            console.error('Erro na análise:', error);
             return { answer: '', correctAlternative: 'Erro' };
         }
     }
