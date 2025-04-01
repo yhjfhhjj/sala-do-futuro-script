@@ -66,7 +66,7 @@ Discord: hackermoon
 
 ## 📜 Licença:
 
-Este projeto é disponibilizado para fins educacionais. Use por sua própria conta e risco.
+Este projeto é disponibilizado para fins educacionais, use por sua própria conta e risco.
 
 ---
 
