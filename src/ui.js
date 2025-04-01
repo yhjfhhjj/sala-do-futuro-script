@@ -1,20 +1,20 @@
 (function() {
-    // Injetar Google Fonts (Roboto)
+    // Injetar Google Fonts (SF Pro, para estilo iOS)
     const fontLink = document.createElement('link');
-    fontLink.href = 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap';
+    fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap';
     fontLink.rel = 'stylesheet';
     document.head.appendChild(fontLink);
 
     const estilo = {
         cores: {
-            principal: '#a855f7', // Roxo do gradiente
-            fundo: '#1e1e2f', // Fundo preto escuro
-            texto: '#d1d5db', // Texto claro
-            border: 'rgba(75, 85, 99, 0.5)', // Borda mais suave e translúcida
-            erro: '#ef4444',
-            analisar: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa
-            limpar: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa
-            atualizar: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa
+            principal: '#007AFF', // Azul iOS para o botão "HCK V5"
+            fundo: 'rgba(30, 30, 47, 0.95)', // Fundo preto escuro com leve transparência
+            texto: '#E5E7EB', // Texto claro para melhor visibilidade
+            border: 'rgba(255, 255, 255, 0.1)', // Borda sutil e translúcida
+            erro: '#FF3B30', // Vermelho iOS para erros
+            analisar: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa mantido
+            limpar: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa mantido
+            atualizar: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa mantido
             copiar: '#60a5fa' // Azul para o botão "Copiar URL"
         }
     };
@@ -23,13 +23,13 @@
     const getResponsiveSize = () => {
         const width = window.innerWidth;
         const height = window.innerHeight;
-        const baseWidth = width < 768 ? 200 : 260; // Reduzido: 240 -> 200 (mobile), 320 -> 260 (desktop)
-        const baseHeight = height < 600 ? 50 : 60; // Reduzido: 60 -> 50 (mobile), 70 -> 60 (desktop)
+        const baseWidth = width < 768 ? 200 : 260;
+        const baseHeight = height < 600 ? 50 : 60;
         return {
             width: `${baseWidth}px`,
             textareaHeight: `${baseHeight}px`,
-            fontSize: width < 768 ? '12px' : '14px', // Reduzido: 13px -> 12px (mobile), 15px -> 14px (desktop)
-            buttonPadding: width < 768 ? '5px' : '6px' // Reduzido: 6px -> 5px (mobile), 8px -> 6px (desktop)
+            fontSize: width < 768 ? '12px' : '14px',
+            buttonPadding: width < 768 ? '5px' : '6px'
         };
     };
 
@@ -40,7 +40,7 @@
         bottom: 12px;
         right: 12px;
         z-index: 9999;
-        font-family: 'Roboto', sans-serif;
+        font-family: 'Inter', sans-serif;
     `;
 
     const toggleBtn = document.createElement('button');
@@ -48,12 +48,12 @@
     toggleBtn.style.cssText = `
         background: ${estilo.cores.principal};
         color: white;
-        padding: 6px 12px; // Reduzido: 8px 14px -> 6px 12px
+        padding: 6px 12px;
         border: none;
-        border-radius: 14px; // Aumentado: 12px -> 14px para mais arredondamento
+        border-radius: 16px; // Aumentado para estilo iOS
         cursor: pointer;
-        font-weight: 500;
-        font-size: 14px; // Reduzido: 15px -> 14px
+        font-weight: 600;
+        font-size: 14px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     `;
 
@@ -62,16 +62,17 @@
     menu.style.cssText = `
         background: ${estilo.cores.fundo};
         width: ${sizes.width};
-        padding: 10px; // Reduzido: 12px -> 10px
-        margin-top: 6px; // Reduzido: 8px -> 6px
-        border-radius: 20px; // Aumentado: 16px -> 20px para mais arredondamento
+        padding: 10px;
+        margin-top: 6px;
+        border-radius: 24px; // Aumentado para estilo iOS
         box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         display: none;
         border: 1px solid ${estilo.cores.border};
+        backdrop-filter: blur(10px); // Efeito de blur iOS
+        -webkit-backdrop-filter: blur(10px);
         opacity: 0;
-        transform: scale(0.95);
-        transform-origin: bottom right;
-        transition: opacity 0.3s ease, transform 0.3s ease; // Animação de aparecer/sumir
+        transform: translateY(10px);
+        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; // Animação suave
     `;
 
     const input = document.createElement('textarea');
@@ -79,13 +80,13 @@
     input.style.cssText = `
         width: 100%;
         height: ${sizes.textareaHeight};
-        padding: 8px; // Reduzido: 10px -> 8px
-        margin-bottom: 8px; // Reduzido: 10px -> 8px
+        padding: 8px;
+        margin-bottom: 8px;
         border: 1px solid ${estilo.cores.border};
-        border-radius: 12px; // Aumentado: 8px -> 12px para mais arredondamento
+        border-radius: 12px;
         resize: none;
         font-size: ${sizes.fontSize};
-        font-family: 'Roboto', sans-serif;
+        font-family: 'Inter', sans-serif;
         box-sizing: border-box;
         background: #2d2d44;
         color: ${estilo.cores.texto};
@@ -93,13 +94,13 @@
 
     const imagesContainer = document.createElement('div');
     imagesContainer.style.cssText = `
-        max-height: 80px; // Reduzido: 100px -> 80px
+        max-height: 80px;
         overflow-y: auto;
-        margin-bottom: 8px; // Reduzido: 10px -> 8px
+        margin-bottom: 8px;
         font-size: ${sizes.fontSize};
         border: 1px solid ${estilo.cores.border};
-        border-radius: 12px; // Aumentado: 8px -> 12px para mais arredondamento
-        padding: 6px; // Reduzido: 8px -> 6px
+        border-radius: 12px;
+        padding: 6px;
         color: ${estilo.cores.texto};
     `;
 
@@ -111,11 +112,11 @@
         background: ${estilo.cores.analisar};
         color: white;
         border: none;
-        border-radius: 12px; // Aumentado: 8px -> 12px para mais arredondamento
+        border-radius: 12px;
         cursor: pointer;
         font-size: ${sizes.fontSize};
         font-weight: 500;
-        margin-bottom: 8px; // Reduzido: 10px -> 8px
+        margin-bottom: 8px;
     `;
 
     const clearBtn = document.createElement('button');
@@ -126,11 +127,11 @@
         background: ${estilo.cores.limpar};
         color: white;
         border: none;
-        border-radius: 12px; // Aumentado: 8px -> 12px para mais arredondamento
+        border-radius: 12px;
         cursor: pointer;
         font-size: ${sizes.fontSize};
         font-weight: 500;
-        margin-bottom: 8px; // Reduzido: 10px -> 8px
+        margin-bottom: 8px;
     `;
 
     const updateImagesBtn = document.createElement('button');
@@ -141,23 +142,23 @@
         background: ${estilo.cores.atualizar};
         color: white;
         border: none;
-        border-radius: 12px; // Aumentado: 8px -> 12px para mais arredondamento
+        border-radius: 12px;
         cursor: pointer;
         font-size: ${sizes.fontSize};
         font-weight: 500;
-        margin-bottom: 8px; // Reduzido: 10px -> 8px
+        margin-bottom: 8px;
     `;
 
     const responsePanel = document.createElement('div');
     responsePanel.style.cssText = `
-        padding: 6px; // Reduzido: 8px -> 6px
+        padding: 6px;
         background: #2d2d44;
-        border-radius: 12px; // Aumentado: 8px -> 12px para mais arredondamento
+        border-radius: 12px;
         display: none;
         font-size: ${sizes.fontSize};
         border-left: 3px solid ${estilo.cores.principal};
         word-wrap: break-word;
-        margin-bottom: 8px; // Reduzido: 10px -> 8px
+        margin-bottom: 8px;
         color: ${estilo.cores.texto};
     `;
 
@@ -165,20 +166,20 @@
     credits.textContent = 'Desenvolvido por Hackermoon';
     credits.style.cssText = `
         text-align: center;
-        font-size: 10px; // Reduzido: 11px -> 10px
-        color: ${estilo.cores.texto};
-        margin-top: 4px; // Reduzido: 6px -> 4px
+        font-size: 10px;
+        color: #A1A1AA; // Cor mais clara para melhor visibilidade
+        margin-top: 4px;
     `;
 
     menu.append(input, imagesContainer, analyzeBtn, clearBtn, updateImagesBtn, responsePanel, credits);
     container.append(toggleBtn, menu);
     document.body.append(container);
 
-    // Animação de aparecer e sumir
+    // Animação de abrir e fechar
     toggleBtn.addEventListener('click', () => {
         if (menu.style.display === 'block') {
             menu.style.opacity = '0';
-            menu.style.transform = 'scale(0.95)';
+            menu.style.transform = 'translateY(10px)';
             setTimeout(() => {
                 menu.style.display = 'none';
             }, 300); // Tempo da animação
@@ -186,7 +187,7 @@
             menu.style.display = 'block';
             setTimeout(() => {
                 menu.style.opacity = '1';
-                menu.style.transform = 'scale(1)';
+                menu.style.transform = 'translateY(0)';
             }, 10); // Pequeno delay para garantir que o display block seja aplicado antes da animação
         }
     });
