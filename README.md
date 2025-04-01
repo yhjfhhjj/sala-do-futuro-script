@@ -7,7 +7,7 @@ O **HCK - Prova Paulista** é uma ferramenta auxiliar desenvolvida para facilita
 ## ✨ Principais Funcionalidades
 
 ### � Análise Inteligente
-- Processamento automatizado de questões de múltipla escolha
+- Processamento automatizado de questões de alternativa/múltipla escolha
 - Integração com API Gemini 2.0 para geração de respostas
 - Suporte a análise contextual avançada
 
