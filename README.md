@@ -73,4 +73,4 @@ Este projeto é disponibilizado como ferramenta educacional, sem garantias de fu
 ---
 
 **Desenvolvido por:** [Hackermoon](https://github.com/hackermoon1)  
-**Última atualização:** [INSERIR DATA]
+**Última atualização:** [31/03/2025]
