@@ -1,5 +1,5 @@
 (function() {
-    // Injetar Google Fonts (SF Pro, para estilo iOS)
+    // Injetar Google Fonts (Inter, similar à SF Pro do iOS)
     const fontLink = document.createElement('link');
     fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap';
     fontLink.rel = 'stylesheet';
@@ -7,15 +7,15 @@
 
     const estilo = {
         cores: {
-            principal: '#007AFF', // Azul iOS para o botão "HCK V5"
-            fundo: 'rgba(30, 30, 47, 0.95)', // Fundo preto escuro com leve transparência
-            texto: '#E5E7EB', // Texto claro para melhor visibilidade
-            border: 'rgba(255, 255, 255, 0.1)', // Borda sutil e translúcida
+            principal: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa para o botão "HCK V5"
+            fundo: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa para o fundo do menu
+            texto: '#FFFFFF', // Texto branco para melhor contraste com o fundo gradiente
+            border: 'rgba(255, 255, 255, 0.2)', // Borda branca translúcida para harmonizar
             erro: '#FF3B30', // Vermelho iOS para erros
-            analisar: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa mantido
-            limpar: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa mantido
-            atualizar: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa mantido
-            copiar: '#60a5fa' // Azul para o botão "Copiar URL"
+            analisar: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa para botões
+            limpar: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa para botões
+            atualizar: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa para botões
+            copiar: '#FFFFFF' // Texto branco para o botão "Copiar URL"
         }
     };
 
@@ -50,7 +50,7 @@
         color: white;
         padding: 6px 12px;
         border: none;
-        border-radius: 16px; // Aumentado para estilo iOS
+        border-radius: 16px;
         cursor: pointer;
         font-weight: 600;
         font-size: 14px;
@@ -64,15 +64,15 @@
         width: ${sizes.width};
         padding: 10px;
         margin-top: 6px;
-        border-radius: 24px; // Aumentado para estilo iOS
+        border-radius: 24px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         display: none;
         border: 1px solid ${estilo.cores.border};
-        backdrop-filter: blur(10px); // Efeito de blur iOS
+        backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         opacity: 0;
         transform: translateY(10px);
-        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; // Animação suave
+        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
     `;
 
     const input = document.createElement('textarea');
@@ -88,7 +88,7 @@
         font-size: ${sizes.fontSize};
         font-family: 'Inter', sans-serif;
         box-sizing: border-box;
-        background: #2d2d44;
+        background: rgba(255, 255, 255, 0.1); // Fundo translúcido para combinar
         color: ${estilo.cores.texto};
     `;
 
@@ -101,6 +101,7 @@
         border: 1px solid ${estilo.cores.border};
         border-radius: 12px;
         padding: 6px;
+        background: rgba(255, 255, 255, 0.1); // Fundo translúcido para combinar
         color: ${estilo.cores.texto};
     `;
 
@@ -152,7 +153,7 @@
     const responsePanel = document.createElement('div');
     responsePanel.style.cssText = `
         padding: 6px;
-        background: #2d2d44;
+        background: rgba(255, 255, 255, 0.1); // Fundo translúcido para combinar
         border-radius: 12px;
         display: none;
         font-size: ${sizes.fontSize};
@@ -167,7 +168,7 @@
     credits.style.cssText = `
         text-align: center;
         font-size: 10px;
-        color: #A1A1AA; // Cor mais clara para melhor visibilidade
+        color: #FFFFFF; // Texto branco para melhor visibilidade
         margin-top: 4px;
     `;
 
@@ -182,13 +183,13 @@
             menu.style.transform = 'translateY(10px)';
             setTimeout(() => {
                 menu.style.display = 'none';
-            }, 300); // Tempo da animação
+            }, 300);
         } else {
             menu.style.display = 'block';
             setTimeout(() => {
                 menu.style.opacity = '1';
                 menu.style.transform = 'translateY(0)';
-            }, 10); // Pequeno delay para garantir que o display block seja aplicado antes da animação
+            }, 10);
         }
     });
 
@@ -223,7 +224,7 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 3px 0; border-bottom: 1px solid ${estilo.cores.border};">
                     <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60%;" title="${img}">Imagem ${i+1}</span>
                     <button onclick="navigator.clipboard.writeText('${img}')" 
-                            style="background: #3b3b5b; color: ${estilo.cores.copiar}; border: none; border-radius: 8px; padding: 2px 6px; font-size: 11px; cursor: pointer;">
+                            style="background: rgba(255, 255, 255, 0.1); color: ${estilo.cores.copiar}; border: none; border-radius: 8px; padding: 2px 6px; font-size: 11px; cursor: pointer;">
                         Copiar URL
                     </button>
                 </div>
