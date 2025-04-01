@@ -48,7 +48,7 @@ javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743537918/bo
 
 ### 🛠️ Especificações:
 - **Tecnologia**: Gemini AI 2.0
-- **Precisão**: 98-99.8% em questões objetivas
+- **Precisão**: 98-99.8%
 - **Capacidade**:
   - Processa até 15 imagens simultâneas
   - Analisa textos complexos
