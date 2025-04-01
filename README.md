@@ -1,73 +1,76 @@
-# 🔍 HCK - Prova Paulista
+# 📚 HCK - Prova Paulista
 
-Como não tem script pra fazer prova paulista criei esse carinha pra dar uma ajuda.
+## 📌 Visão Geral
 
-Sim, ele tá usando IA, sendo mais específico o (Gemini 2.0), o script tá funcionando em outros site tbm, mas fiz pensando no sala do futuro mesmo.
+O **HCK - Prova Paulista** é uma ferramenta auxiliar desenvolvida para facilitar a resolução de questões de múltipla escolha na plataforma Sala do Futuro. Utilizando tecnologia de inteligência artificial (Gemini 2.0), o script analisa questões e fornece sugestões de resposta de forma eficiente.
 
-![Preview da Interface](https://cdn.discordapp.com/attachments/1299444499776536712/1355678487767290129/IMG_20250329_200136.jpg?ex=67e9cd7a&is=67e87bfa&hm=45e3656fce0f6989cdd69d073c2936f9e03340a3f6be9eb7f1d0d3da8eaffd53&)
+## ✨ Principais Funcionalidades
 
-## ✨ Funcionalidades:
+### � Análise Inteligente
+- Processamento automatizado de questões de múltipla escolha
+- Integração com API Gemini 2.0 para geração de respostas
+- Suporte a análise contextual avançada
 
-- 🧠 **Análise inteligente** de questões de múltipla escolha
-- 🖼️ **Suporte a imagens** (filtra conteúdo irrelevante e prioriza imagens de questões)
-- 📱 **Design responsivo** que funciona em desktop e mobile
-- 🔔 **Notificação elegante** com a resposta sugerida
-- 🗑️ **Limpeza rápida** para análise de novas perguntas
-- 🔄 **Atualização dinâmica** de imagens da página
+### 🖼️ Gerenciamento de Imagens
+- Detecção automática de imagens relevantes
+- Filtragem de elementos não relacionados (logos, interfaces)
+- Capacidade de processar até 10 imagens por análise
+- Recarregamento dinâmico de conteúdo visual
 
-## 🚀 Como Instalar:
+### 🖥️ Experiência do Usuário
+- Interface responsiva para desktop e dispositivos móveis
+- Sistema de notificação elegante para exibição de resultados
+- Mecanismo de limpeza rápida para novas análises
+- Design moderno com esquema de cores gradiente
 
-1. **Navegadores Desktop (Chrome/Firefox/Edge):**
-   - Crie um novo favorito/bookmark
-   - No campo URL, cole:
-     ```javascript
-     javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743499892/bookmarklet.js').then(r=>r.text()).then(r=>eval(r))
-     ```
+## 📥 Instalação
 
-2. **Navegadores Mobile:**
-   - Adicione a URL acima como um atalho na sua barra de favoritos
+### Para Navegadores Desktop (Chrome, Firefox, Edge)
+1. Crie um novo favorito/bookmark
+2. No campo de URL, insira:
+   ```javascript
+   javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743499892/bookmarklet.js').then(r=>r.text()).then(r=>eval(r))
+   ```
 
-## 🛠️ Como Usar:
+### Para Navegadores Mobile
+1. Adicione a URL acima como um atalho na barra de favoritos
 
-1. Acesse a questão na plataforma Sala do Futuro
-2. Clique no bookmarklet HCK
-3. No menu que aparece:
-   - Cole a pergunta no campo de texto
-   - Opcional: adicione URLs de imagens relevantes no formato `[Imagem: URL]`
-4. Clique em "Analisar"
-5. A resposta sugerida aparecerá como notificação
+## 🧑‍💻 Modo de Uso
 
-## 🖼️ Trabalhando com Imagens:
+1. Acesse a questão desejada na plataforma Sala do Futuro
+2. Acione o bookmarklet HCK
+3. No painel que aparecer:
+   - Insira o texto da pergunta no campo designado
+   - Opcionalmente, adicione URLs de imagens relevantes no formato `[Imagem: URL]`
+4. Selecione a opção "Analisar"
+5. A sugestão de resposta será exibida via notificação
 
-A ferramenta identifica automaticamente imagens relevantes na página:
-- Filtra automaticamente logos e elementos da interface
-- Permite copiar URLs de imagens com um clique
-- Inclui botão para recarregar imagens da página atual
-- Suporta até 10 imagens por análise
+## ⚠️ Considerações Importantes
 
-## 🎨 Design e Experiência:
+1. **Requisitos Técnicos**
+   - Coneexão ativa com a internet para acesso à API
+   - Navegador atualizado com suporte a JavaScript moderno
 
-- Interface minimalista e discreta
-- Animações suaves e feedback visual
-- Cores modernas com gradiente rosa-roxo
-- Tipografia elegante (Poppins)
-- Totalmente responsivo
+2. **Limitações**
+   - Eficácia dependente da qualidade do input fornecido
+   - Sujeito a políticas CORS de navegadores
+   - Não substitui o aprendizado tradicional
 
-## ⚠️ Limitações:
+3. **Aspectos Legais**
+   - Uso destinado exclusivamente para fins educacionais
+   - Responsabilidade de uso é integralmente do usuário final
 
-- Requer conexão com internet para acessar a API Gemini
-- Pode ser bloqueado por políticas CORS em alguns navegadores
-- Eficácia depende da qualidade da pergunta fornecida
+## 📮 Suporte e Contato
 
-## Contato:
+Para relatar issues ou obter suporte:
+- Plataforma: [GitHub Issues](https://github.com/hackermoon1)
+- Contato direto: Discord (@hackermoon)
 
-Discord: hackermoon
+## 📜 Licenciamento
 
-
-## 📜 Licença:
-
-Este projeto é disponibilizado para fins educacionais, use por sua própria conta e risco.
+Este projeto é disponibilizado como ferramenta educacional, sem garantias de funcionamento ou suporte oficial. O uso é de inteira responsabilidade do usuário.
 
 ---
 
-Desenvolvido por [Hackermoon](https://github.com/hackermoon1)
+**Desenvolvido por:** [Hackermoon](https://github.com/hackermoon1)  
+**Última atualização:** [INSERIR DATA]
