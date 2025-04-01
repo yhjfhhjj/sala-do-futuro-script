@@ -54,11 +54,11 @@ javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743537918/bo
   - Analisa textos complexos
   - Suporte multilíngue
 
-### 📞 Suporte Premium:
-```markdown
-Discord: @hackermoon (online 24/7)  
-Github: github.com/hackermoon1/issues
-```
+### 📞 Entre Contato:
+
+- **Discord**: hackermoon  
+- **Github**: [Github](https://github.com/hackermoon1/issues)
+
 
 ---
 
