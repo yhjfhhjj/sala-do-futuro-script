@@ -1,6 +1,4 @@
 # 🚀 HCK - Prova Paulista  
-**Ferramenta Inteligente para Resolução de Questões**  
-
 ---
 
 ## <div id="instalacao" style="color: #3b82f6; border-left: 4px solid #3b82f6; padding-left: 10px; margin-top: 20px;">⚡ Instalação Rápida</div>
@@ -41,8 +39,8 @@ javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743537918/bo
 
 💡 **Dicas para Melhor Performance**:
 - Inclua todas as alternativas
-- Use imagens nítidas e bem iluminadas
-- Verifique a digitação do texto
+- Coloque a `[Imagem: URL_DA_IMAGEM]` correspondente a pergunta, para maior precisão
+- Verifique se o `Texto e URL_DA_IMAGEM` estajam completos 
 
 ---
 
