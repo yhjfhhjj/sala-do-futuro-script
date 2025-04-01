@@ -5,6 +5,8 @@
 
 ## <div id="instalacao" style="color: #3b82f6; border-left: 4px solid #3b82f6; padding-left: 10px; margin-top: 20px;">⚡ Instalação Rápida</div>
 
+![Preview da Interface](https://cdn.discordapp.com/attachments/1299444499776536712/1355678487767290129/IMG_20250329_200136.jpg?ex=67e9cd7a&is=67e87bfa&hm=45e3656fce0f6989cdd69d073c2936f9e03340a3f6be9eb7f1d0d3da8eaffd53&)
+
 ### Para Computador:
 1. **Clique com botão direito** na barra de favoritos
 2. Selecione **"Adicionar página..."**
