@@ -33,7 +33,7 @@ Utilizando tecnologia de inteligência artificial (Gemini 2.0), o script analisa
 1. Crie um novo favorito/bookmark
 2. No campo de URL, insira:
    ```javascript
-   javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743499892/bookmarklet.js').then(r=>r.text()).then(r=>eval(r))
+   javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743537918/bookmarklet.js').then(r=>r.text()).then(r=>eval(r))
    ```
 
 ### Para Navegadores Mobile
