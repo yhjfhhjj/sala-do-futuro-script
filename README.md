@@ -1,7 +1,8 @@
 # 🚀 HCK - Prova Paulista
 
 **Solução inteligente para questões da plataforma Sala do Futuro**  
-*Powered by Gemini AI 2.0*
+
+*Usando Gemini AI 2.0*
 
 ---
 
