@@ -47,7 +47,7 @@ Utilizando tecnologia de inteligência artificial (Gemini 2.0), o script analisa
    - Insira o texto da pergunta no campo designado
    - Opcionalmente, adicione URLs de imagens relevantes no formato `[Imagem: URL]`
 4. Selecione a opção "Analisar"
-5. A sugestão de resposta será exibida via notificação
+5. A sugestão de resposta será exibida via notificação dentro do menu 
 
 ## ⚠️ Considerações Importantes
 
