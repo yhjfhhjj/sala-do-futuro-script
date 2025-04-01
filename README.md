@@ -2,7 +2,7 @@
 
 ## 📌 Visão Geral
 
-O **HCK - Prova Paulista** é uma ferramenta auxiliar desenvolvida para facilitar a resolução de questões de múltipla escolha na plataforma Sala do Futuro. 
+O **HCK - Prova Paulista** é uma ferramenta auxiliar desenvolvida para facilitar a resolução de questões de alternativa e múltipla escolha na plataforma Sala do Futuro. 
 
 Utilizando tecnologia de inteligência artificial (Gemini 2.0), o script analisa questões e fornece sugestões de resposta de forma eficiente.
 
