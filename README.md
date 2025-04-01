@@ -68,7 +68,7 @@ Utilizando tecnologia de inteligência artificial (Gemini 2.0), o script analisa
 
 Para relatar issues ou obter suporte:
 - Plataforma: [GitHub Issues](https://github.com/hackermoon1)
-- Contato direto: Discord (@hackermoon)
+- Discord (@hackermoon)
 
 ## 📜 Licenciamento
 
