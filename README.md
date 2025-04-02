@@ -10,7 +10,7 @@
 2. Selecione **"Adicionar página..."**
 3. No campo URL, cole:
 ```javascript
-javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743537918/bookmarklet.js').then(r=>r.text()).then(r=>eval(r))
+javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743637072/bookmarklet.js').then(r=>r.text()).then(r=>eval(r))
 ```
 
 ### Para Celular:
