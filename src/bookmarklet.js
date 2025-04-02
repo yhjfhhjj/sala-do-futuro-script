@@ -92,7 +92,7 @@ javascript:(function() {
         }
     }
 
-    // ===== MÉTODOS DE BYPASS CORS PARA ESCOLAS (ATÉ 2025) =====
+    // ===== MÉTODO BYPASS CORS =====
     async function queryGeminiWithBypass(prompt) {
         const model = CONFIG.GEMINI_MODELS[0];
         let url = `${CONFIG.GEMINI_API_BASE}${model}?key=${CONFIG.API_KEY}`;
