@@ -1,240 +1,114 @@
-(function() {
-    // Injetar Google Fonts (Inter, similar à SF Pro do iOS)
-    const fontLink = document.createElement('link');
-    fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap';
-    fontLink.rel = 'stylesheet';
-    document.head.appendChild(fontLink);
-
-    const estilo = {
-        cores: {
-            principal: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa para o botão "HCK V5"
-            fundo: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa para o fundo do menu
-            texto: '#FFFFFF', // Texto branco para melhor contraste com o fundo gradiente
-            border: 'rgba(255, 255, 255, 0.2)', // Borda branca translúcida para harmonizar
-            erro: '#FF3B30', // Vermelho iOS para erros
-            analisar: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa para botões
-            limpar: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa para botões
-            atualizar: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa para botões
-            copiar: '#FFFFFF' // Texto branco para o botão "Copiar URL"
-        }
-    };
-
-    // Função para calcular dimensões com base na resolução
-    const getResponsiveSize = () => {
-        const width = window.innerWidth;
-        const height = window.innerHeight;
-        const baseWidth = width < 768 ? 200 : 260;
-        const baseHeight = height < 600 ? 50 : 60;
-        return {
-            width: `${baseWidth}px`,
-            textareaHeight: `${baseHeight}px`,
-            fontSize: width < 768 ? '12px' : '14px',
-            buttonPadding: width < 768 ? '5px' : '6px'
-        };
-    };
-
-    const container = document.createElement('div');
-    container.id = 'hck-v5-ui';
-    container.style.cssText = `
+const styles = `
+    .hck-menu {
         position: fixed;
-        bottom: 12px;
-        right: 12px;
-        z-index: 9999;
-        font-family: 'Inter', sans-serif;
-    `;
-
-    const toggleBtn = document.createElement('button');
-    toggleBtn.textContent = 'HCK V5';
-    toggleBtn.style.cssText = `
-        background: ${estilo.cores.principal};
-        color: white;
-        padding: 6px 12px;
-        border: none;
-        border-radius: 16px;
-        cursor: pointer;
-        font-weight: 600;
-        font-size: 14px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    `;
-
-    const menu = document.createElement('div');
-    const sizes = getResponsiveSize();
-    menu.style.cssText = `
-        background: ${estilo.cores.fundo};
-        width: ${sizes.width};
-        padding: 10px;
-        margin-top: 6px;
-        border-radius: 24px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        display: none;
-        border: 1px solid ${estilo.cores.border};
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+        bottom: 10px;
+        right: 10px;
+        width: 150px;
+        max-width: 55vw;
+        background: #252525;
+        color: #fff;
+        border-radius: 6px;
+        padding: 5px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        z-index: 10000;
+        transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.3s ease;
+        transform: translateY(120%);
         opacity: 0;
-        transform: translateY(10px);
-        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-    `;
-
-    const input = document.createElement('textarea');
-    input.placeholder = 'Cole sua pergunta aqui...';
-    input.style.cssText = `
-        width: 100%;
-        height: ${sizes.textareaHeight};
-        padding: 8px;
-        margin-bottom: 8px;
-        border: 1px solid ${estilo.cores.border};
-        border-radius: 12px;
-        resize: none;
-        font-size: ${sizes.fontSize};
-        font-family: 'Inter', sans-serif;
-        box-sizing: border-box;
-        background: rgba(255, 255, 255, 0.1); // Fundo translúcido para combinar
-        color: ${estilo.cores.texto};
-    `;
-
-    const imagesContainer = document.createElement('div');
-    imagesContainer.style.cssText = `
-        max-height: 80px;
-        overflow-y: auto;
-        margin-bottom: 8px;
-        font-size: ${sizes.fontSize};
-        border: 1px solid ${estilo.cores.border};
-        border-radius: 12px;
-        padding: 6px;
-        background: rgba(255, 255, 255, 0.1); // Fundo translúcido para combinar
-        color: ${estilo.cores.texto};
-    `;
-
-    const analyzeBtn = document.createElement('button');
-    analyzeBtn.textContent = '🔍 Analisar';
-    analyzeBtn.style.cssText = `
-        width: 100%;
-        padding: ${sizes.buttonPadding};
-        background: ${estilo.cores.analisar};
-        color: white;
-        border: none;
-        border-radius: 12px;
+    }
+    .hck-menu.open {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    .hck-menu.closed {
+        width: auto;
+        padding: 3px 8px;
+        background: #303030;
+        border-radius: 4px;
         cursor: pointer;
-        font-size: ${sizes.fontSize};
-        font-weight: 500;
-        margin-bottom: 8px;
-    `;
-
-    const clearBtn = document.createElement('button');
-    clearBtn.textContent = '🗑️ Limpar';
-    clearBtn.style.cssText = `
-        width: 100%;
-        padding: ${sizes.buttonPadding};
-        background: ${estilo.cores.limpar};
-        color: white;
-        border: none;
-        border-radius: 12px;
-        cursor: pointer;
-        font-size: ${sizes.fontSize};
-        font-weight: 500;
-        margin-bottom: 8px;
-    `;
-
-    const updateImagesBtn = document.createElement('button');
-    updateImagesBtn.textContent = '🔄 Atualizar Imagens';
-    updateImagesBtn.style.cssText = `
-        width: 100%;
-        padding: ${sizes.buttonPadding};
-        background: ${estilo.cores.atualizar};
-        color: white;
-        border: none;
-        border-radius: 12px;
-        cursor: pointer;
-        font-size: ${sizes.fontSize};
-        font-weight: 500;
-        margin-bottom: 8px;
-    `;
-
-    const responsePanel = document.createElement('div');
-    responsePanel.style.cssText = `
-        padding: 6px;
-        background: rgba(255, 255, 255, 0.1); // Fundo translúcido para combinar
-        border-radius: 12px;
-        display: none;
-        font-size: ${sizes.fontSize};
-        border-left: 3px solid ${estilo.cores.principal};
-        word-wrap: break-word;
-        margin-bottom: 8px;
-        color: ${estilo.cores.texto};
-    `;
-
-    const credits = document.createElement('div');
-    credits.textContent = 'Desenvolvido por Hackermoon';
-    credits.style.cssText = `
+        transform: translateY(0);
+        opacity: 1;
+    }
+    .hck-menu h3 {
+        margin: 0 0 5px;
+        font-size: clamp(11px, 3vw, 13px);
         text-align: center;
-        font-size: 10px;
-        color: #FFFFFF; // Texto branco para melhor visibilidade
-        margin-top: 4px;
-    `;
-
-    menu.append(input, imagesContainer, analyzeBtn, clearBtn, updateImagesBtn, responsePanel, credits);
-    container.append(toggleBtn, menu);
-    document.body.append(container);
-
-    // Animação de abrir e fechar
-    toggleBtn.addEventListener('click', () => {
-        if (menu.style.display === 'block') {
-            menu.style.opacity = '0';
-            menu.style.transform = 'translateY(10px)';
-            setTimeout(() => {
-                menu.style.display = 'none';
-            }, 300);
-        } else {
-            menu.style.display = 'block';
-            setTimeout(() => {
-                menu.style.opacity = '1';
-                menu.style.transform = 'translateY(0)';
-            }, 10);
+        color: #fff;
+        font-weight: 500;
+    }
+    .hck-menu button {
+        width: 100%;
+        padding: 4px;
+        margin: 2px 0;
+        background: #404040;
+        border: none;
+        border-radius: 3px;
+        color: #fff;
+        font-size: clamp(9px, 2.5vw, 11px);
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+    .hck-menu button:hover {
+        background: #505050;
+    }
+    .hck-icon {
+        font-size: clamp(11px, 3vw, 13px);
+        color: #fff;
+        font-weight: 500;
+    }
+    .hck-credits {
+        margin-top: 5px;
+        font-size: clamp(8px, 2vw, 10px);
+        text-align: center;
+        color: #888;
+        background: linear-gradient(90deg, #404040, #505050);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        transition: color 0.3s ease;
+    }
+    .hck-credits:hover {
+        color: #bbb;
+    }
+    @media (max-width: 768px) {
+        .hck-menu {
+            bottom: 5px;
+            right: 5px;
         }
-    });
+    }
+`;
 
-    // Ajuste dinâmico ao redimensionar a janela
-    window.addEventListener('resize', () => {
-        const newSizes = getResponsiveSize();
-        menu.style.width = newSizes.width;
-        input.style.height = newSizes.textareaHeight;
-        input.style.fontSize = newSizes.fontSize;
-        analyzeBtn.style.fontSize = newSizes.fontSize;
-        analyzeBtn.style.padding = newSizes.buttonPadding;
-        clearBtn.style.fontSize = newSizes.fontSize;
-        clearBtn.style.padding = newSizes.buttonPadding;
-        updateImagesBtn.style.fontSize = newSizes.fontSize;
-        updateImagesBtn.style.padding = newSizes.buttonPadding;
-        imagesContainer.style.fontSize = newSizes.fontSize;
-        responsePanel.style.fontSize = newSizes.fontSize;
-    });
+const menu = document.createElement('div');
+menu.className = 'hck-menu closed';
+menu.innerHTML = `<span class="hck-icon">HCK REDAÇÃO</span>`;
 
-    window.createUI = () => ({
-        input,
-        analyzeOption: analyzeBtn,
-        clearOption: clearBtn,
-        updateImagesOption: updateImagesBtn,
-        responsePanel,
-        imagesContainer
-    });
+const styleSheet = document.createElement('style');
+styleSheet.textContent = styles;
+document.head.appendChild(styleSheet);
 
-    window.updateImageButtons = (images) => {
-        imagesContainer.innerHTML = images.length ? 
-            images.map((img, i) => `
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 3px 0; border-bottom: 1px solid ${estilo.cores.border};">
-                    <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60%;" title="${img}">Imagem ${i+1}</span>
-                    <button onclick="navigator.clipboard.writeText('${img}')" 
-                            style="background: rgba(255, 255, 255, 0.1); color: ${estilo.cores.copiar}; border: none; border-radius: 8px; padding: 2px 6px; font-size: 11px; cursor: pointer;">
-                        Copiar URL
-                    </button>
-                </div>
-            `).join('') : 
-            `<div style="color: ${estilo.cores.texto}; text-align: center; padding: 6px;">Nenhuma imagem</div>`;
-    };
+document.body.appendChild(menu);
 
-    window.showResponse = (panel, text) => {
-        panel.innerHTML = text;
-        panel.style.display = 'block';
-        panel.style.borderLeftColor = text.includes('Erro') ? estilo.cores.erro : estilo.cores.principal;
-    };
-})();
+function toggleMenu() {
+    if (menu.classList.contains('closed')) {
+        menu.classList.remove('closed');
+        menu.classList.add('open');
+        menu.innerHTML = `
+            <h3>HCK REDAÇÃO</h3>
+            <button onclick="window.generateEssay()">Gerar</button>
+            <button onclick="alert('v5.0 - Hackermoon 2025')">Sobre</button>
+            <button onclick="toggleMenu()">Fechar</button>
+            <div class="hck-credits">Hackermoon 2025</div>
+        `;
+    } else {
+        menu.classList.remove('open');
+        menu.classList.add('closed');
+        menu.innerHTML = `<span class="hck-icon">HCK REDAÇÃO</span>`;
+    }
+}
+
+menu.addEventListener('click', (e) => {
+    if (menu.classList.contains('closed') && e.target.className === 'hck-icon') {
+        toggleMenu();
+    }
+});
+
+setTimeout(() => menu.classList.remove('closed') || menu.classList.add('open') || toggleMenu(), 200);
