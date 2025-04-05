@@ -1,5 +1,5 @@
 (function() {
-    // Injetar Google Fonts (Inter, similar à SF Pro do iOS)
+    // Injetar Google Fonts (Inter, para um visual limpo)
     const fontLink = document.createElement('link');
     fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap';
     fontLink.rel = 'stylesheet';
@@ -7,19 +7,19 @@
 
     const estilo = {
         cores: {
-            principal: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa para o botão "HCK V5"
-            fundo: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa para o fundo do menu
-            texto: '#FFFFFF', // Texto branco para melhor contraste com o fundo gradiente
-            border: 'rgba(255, 255, 255, 0.2)', // Borda branca translúcida para harmonizar
-            erro: '#FF3B30', // Vermelho iOS para erros
-            analisar: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa para botões
-            limpar: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa para botões
-            atualizar: 'linear-gradient(to right, #ff6f61, #a855f7)', // Gradiente roxo-rosa para botões
+            principal: '#FFFFFF', // Branco para o botão "HCK V5"
+            textoPrincipal: '#000000', // Preto para o texto do botão "HCK V5"
+            fundo: '#000000', // Preto para o fundo do menu
+            texto: '#FFFFFF', // Branco para o texto geral
+            border: '#FFFFFF', // Borda branca
+            erro: '#FF3B30', // Vermelho para erros
+            analisar: '#000000', // Preto para botões
+            limpar: '#000000', // Preto para botões
+            atualizar: '#000000', // Preto para botões
             copiar: '#FFFFFF' // Texto branco para o botão "Copiar URL"
         }
     };
 
-    // Função para calcular dimensões com base na resolução
     const getResponsiveSize = () => {
         const width = window.innerWidth;
         const height = window.innerHeight;
@@ -47,10 +47,10 @@
     toggleBtn.textContent = 'HCK V5';
     toggleBtn.style.cssText = `
         background: ${estilo.cores.principal};
-        color: white;
+        color: ${estilo.cores.textoPrincipal};
         padding: 6px 12px;
-        border: none;
-        border-radius: 16px;
+        border: 1px solid ${estilo.cores.border};
+        border-radius: 20px;
         cursor: pointer;
         font-weight: 600;
         font-size: 14px;
@@ -64,12 +64,10 @@
         width: ${sizes.width};
         padding: 10px;
         margin-top: 6px;
-        border-radius: 24px;
+        border-radius: 28px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         display: none;
         border: 1px solid ${estilo.cores.border};
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
         opacity: 0;
         transform: translateY(10px);
         transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
@@ -88,7 +86,7 @@
         font-size: ${sizes.fontSize};
         font-family: 'Inter', sans-serif;
         box-sizing: border-box;
-        background: rgba(255, 255, 255, 0.1); // Fundo translúcido para combinar
+        background: ${estilo.cores.fundo};
         color: ${estilo.cores.texto};
     `;
 
@@ -101,7 +99,7 @@
         border: 1px solid ${estilo.cores.border};
         border-radius: 12px;
         padding: 6px;
-        background: rgba(255, 255, 255, 0.1); // Fundo translúcido para combinar
+        background: ${estilo.cores.fundo};
         color: ${estilo.cores.texto};
     `;
 
@@ -111,9 +109,9 @@
         width: 100%;
         padding: ${sizes.buttonPadding};
         background: ${estilo.cores.analisar};
-        color: white;
-        border: none;
-        border-radius: 12px;
+        color: ${estilo.cores.texto};
+        border: 1px solid ${estilo.cores.border};
+        border-radius: 16px;
         cursor: pointer;
         font-size: ${sizes.fontSize};
         font-weight: 500;
@@ -126,9 +124,9 @@
         width: 100%;
         padding: ${sizes.buttonPadding};
         background: ${estilo.cores.limpar};
-        color: white;
-        border: none;
-        border-radius: 12px;
+        color: ${estilo.cores.texto};
+        border: 1px solid ${estilo.cores.border};
+        border-radius: 16px;
         cursor: pointer;
         font-size: ${sizes.fontSize};
         font-weight: 500;
@@ -141,9 +139,9 @@
         width: 100%;
         padding: ${sizes.buttonPadding};
         background: ${estilo.cores.atualizar};
-        color: white;
-        border: none;
-        border-radius: 12px;
+        color: ${estilo.cores.texto};
+        border: 1px solid ${estilo.cores.border};
+        border-radius: 16px;
         cursor: pointer;
         font-size: ${sizes.fontSize};
         font-weight: 500;
@@ -153,11 +151,11 @@
     const responsePanel = document.createElement('div');
     responsePanel.style.cssText = `
         padding: 6px;
-        background: rgba(255, 255, 255, 0.1); // Fundo translúcido para combinar
+        background: ${estilo.cores.fundo};
         border-radius: 12px;
         display: none;
         font-size: ${sizes.fontSize};
-        border-left: 3px solid ${estilo.cores.principal};
+        border-left: 3px solid ${estilo.cores.border};
         word-wrap: break-word;
         margin-bottom: 8px;
         color: ${estilo.cores.texto};
@@ -168,7 +166,7 @@
     credits.style.cssText = `
         text-align: center;
         font-size: 10px;
-        color: #FFFFFF; // Texto branco para melhor visibilidade
+        color: ${estilo.cores.texto}; // Branco para os créditos
         margin-top: 4px;
     `;
 
@@ -176,7 +174,6 @@
     container.append(toggleBtn, menu);
     document.body.append(container);
 
-    // Animação de abrir e fechar
     toggleBtn.addEventListener('click', () => {
         if (menu.style.display === 'block') {
             menu.style.opacity = '0';
@@ -193,7 +190,6 @@
         }
     });
 
-    // Ajuste dinâmico ao redimensionar a janela
     window.addEventListener('resize', () => {
         const newSizes = getResponsiveSize();
         menu.style.width = newSizes.width;
@@ -224,7 +220,7 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 3px 0; border-bottom: 1px solid ${estilo.cores.border};">
                     <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60%;" title="${img}">Imagem ${i+1}</span>
                     <button onclick="navigator.clipboard.writeText('${img}')" 
-                            style="background: rgba(255, 255, 255, 0.1); color: ${estilo.cores.copiar}; border: none; border-radius: 8px; padding: 2px 6px; font-size: 11px; cursor: pointer;">
+                            style="background: ${estilo.cores.fundo}; color: ${estilo.cores.copiar}; border: 1px solid ${estilo.cores.border}; border-radius: 8px; padding: 2px 6px; font-size: 11px; cursor: pointer;">
                         Copiar URL
                     </button>
                 </div>
@@ -235,6 +231,6 @@
     window.showResponse = (panel, text) => {
         panel.innerHTML = text;
         panel.style.display = 'block';
-        panel.style.borderLeftColor = text.includes('Erro') ? estilo.cores.erro : estilo.cores.principal;
+        panel.style.borderLeftColor = text.includes('Erro') ? estilo.cores.erro : estilo.cores.border;
     };
 })();
