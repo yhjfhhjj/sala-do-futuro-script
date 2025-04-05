@@ -57,7 +57,8 @@ javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743864079/bo
 ### 📞 Entre Contato:
 
 - **Discord**: hackermoon  
-- **Github**: [Github](https://github.com/hackermoon1/sala-do-futuro-script/issues)
+- [Sugestões ou Perguntas](https://github.com/hackermoon1/sala-do-futuro-script/issues)
+- [@hackermoon1](https://github.com/hackermoon1)
 
 
 ---
