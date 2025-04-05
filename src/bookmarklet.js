@@ -5,7 +5,7 @@ javascript:(function() {
         GEMINI_API_BASE: 'https://generativelanguage.googleapis.com/v1beta/models/',
         GEMINI_MODELS: ['gemini-2.0-flash:generateContent', 'gemini-pro:generateContent'],
         API_KEY: 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY',
-        UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743802533/ui.js',
+        UI_SCRIPT_URL: 'AQUI',
         TIMEOUT: 15000,
         MAX_RETRIES: 3,
         TEMPERATURE: 0.5,
@@ -38,7 +38,7 @@ javascript:(function() {
         blocked: [
             /edusp-static\.ip\.tv\/sala-do-futuro\//i,
             /s3\.sa-east-1\.amazonaws\.com\/edusp-static\.ip\.tv\/sala-do-futuro\//i,
-            /s3\.sa-east-1\.amazonaws\.com\/edusp-static\.ip\.tv\/room\/cards\//i, // Ignora URLs de cards
+            /s3\.sa-east-1\.amazonaws\.com\/edusp-static\.ip\.tv\/room\/cards\//i,
             /conteudo_logo\.png$/i,
             /\/icons?\//i,
             /\/logos?\//i,
@@ -114,10 +114,8 @@ javascript:(function() {
 
                 const data = await response.json();
                 const answer = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sem resposta';
-                const match = answer.match(/[A-Ea-e]\)\s*.+/) || 
-                             answer.match(/Alternativa\s*([A-Ea-e])/i);
                 STATE.currentProxyIndex = i;
-                return match ? match[0] : answer.substring(0, 100);
+                return answer;
             } catch (error) {
                 console.error(`Erro com proxy ${CORS_PROXIES[i]}:`, error);
                 if (i === CORS_PROXIES.length - 1) {
@@ -136,9 +134,7 @@ javascript:(function() {
             });
             const data = await response.json();
             const answer = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sem resposta';
-            const match = answer.match(/[A-Ea-e]\)\s*.+/) || 
-                         answer.match(/Alternativa\s*([A-Ea-e])/i);
-            return match ? match[0] : answer.substring(0, 100);
+            return answer;
         } catch (error) {
             console.error('Erro com JSONP:', error);
         }
@@ -155,14 +151,32 @@ javascript:(function() {
             });
             const data = await response.json();
             const answer = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sem resposta';
-            const match = answer.match(/[A-Ea-e]\)\s*.+/) || 
-                         answer.match(/Alternativa\s*([A-Ea-e])/i);
-            return match ? match[0] : answer.substring(0, 100);
+            return answer;
         } catch (error) {
             console.error('Erro com WebRTC:', error);
         }
 
         return `Erro: Não foi possível contornar CORS. Tente configurar um túnel local (ex.: ngrok).`;
+    }
+
+    // ===== FUNÇÕES DE FORMATAÇÃO E ANÁLISE =====
+    function detectAlternativesFormat(input) {
+        const alternativesPattern = /[A-E]\)\s*[^A-E\)]+/g; // Ex.: "A) 10", "B) 15", "C) Texto"
+        const matches = input.match(alternativesPattern);
+        return matches ? matches : null; // Retorna as alternativas ou null se não houver
+    }
+
+    function formatResponse(answer, alternatives) {
+        if (!alternatives) {
+            // Se não houver alternativas no formato "A) 10", retorna apenas o valor
+            return answer;
+        }
+        // Se houver alternativas, retorna no formato "C) 10" correspondente ao valor da resposta
+        const matchedAlternative = alternatives.find(alt => {
+            const value = alt.split(')')[1].trim();
+            return value == answer || parseFloat(value) == parseFloat(answer);
+        });
+        return matchedAlternative || answer; // Retorna a alternativa correspondente ou o valor bruto
     }
 
     // ===== FUNÇÕES PRINCIPAIS =====
@@ -174,12 +188,19 @@ javascript:(function() {
         return STATE.images;
     }
 
-    function buildPrompt(question) {
+    function buildPrompt(question, images) {
         return {
             contents: [{
                 parts: [{
-                    text: `Responda diretamente com a alternativa completa (exemplo: "B) 120"), sem explicações adicionais ou texto desnecessário. Questão: ${question}${STATE.images.length ? `\nImagens associadas: ${STATE.images.slice(0, 2).join(' | ')}` : ''}`
-                }]
+                    text: `
+                        Você é um assistente especializado em resolver questões de provas acadêmicas. Analise a questão abaixo e forneça a resposta correta. Se houver alternativas no formato "A) valor", "B) valor", etc., retorne apenas o valor ou texto da alternativa correta (ex.: "10" ou "Texto"). Se não houver alternativas, retorne apenas o resultado final (ex.: "10"). Forneça uma explicação breve e clara, se aplicável.
+
+                        Questão: ${question}
+
+                        ${images.length ? 'Imagens relacionadas: ' + images.join(', ') : ''}
+                    `
+                },
+                ...images.map(url => ({ inlineData: { mimeType: 'image/jpeg', data: url } }))]
             }],
             generationConfig: {
                 temperature: CONFIG.TEMPERATURE,
@@ -209,7 +230,7 @@ javascript:(function() {
         script.src = CONFIG.UI_SCRIPT_URL;
         script.onerror = () => alert('Erro ao carregar UI');
         script.onload = () => {
-            const { input, analyzeOption, clearOption, updateImagesOption, responsePanel } = window.createUI();
+            const { input, analyzeOption, clearOption, updateImagesOption, responsePanel, imagesContainer } = window.createUI();
 
             analyzeOption.onclick = async () => {
                 if (STATE.isAnalyzing || !input.value.trim()) {
@@ -219,21 +240,36 @@ javascript:(function() {
 
                 STATE.isAnalyzing = true;
                 analyzeOption.disabled = true;
-                analyzeOption.textContent = 'Analisando...';
+                analyzeOption.textContent = '🔍 Analisando...';
 
                 try {
-                    const prompt = buildPrompt(input.value.trim());
+                    const images = extractImages();
+                    const alternatives = detectAlternativesFormat(input.value.trim());
+                    const prompt = buildPrompt(input.value.trim(), images);
                     const answer = await queryGemini(prompt);
-                    window.showResponse(responsePanel, answer);
+
+                    // Separa a resposta e a explicação (assumindo que a IA retorna "resposta\nexplicação")
+                    const [answerValue, ...explanationParts] = answer.split('\n').filter(line => line.trim());
+                    const explanation = explanationParts.join('\n');
+
+                    // Formata a resposta com base nas alternativas
+                    const formattedAnswer = formatResponse(answerValue, alternatives);
+
+                    // Monta a resposta final com explicação
+                    const finalResponse = `${formattedAnswer}${explanation ? '\n\nExplicação: ' + explanation : ''}`;
+                    window.showResponse(responsePanel, finalResponse);
+                } catch (error) {
+                    window.showResponse(responsePanel, `Erro: ${error.message}`);
                 } finally {
                     STATE.isAnalyzing = false;
                     analyzeOption.disabled = false;
-                    analyzeOption.textContent = 'Analisar';
+                    analyzeOption.textContent = '🔍 Analisar';
                 }
             };
 
             clearOption.onclick = () => {
                 input.value = '';
+                imagesContainer.innerHTML = '<div style="color: #FFFFFF; text-align: center; padding: 6px;">Nenhuma imagem</div>';
                 responsePanel.style.display = 'none';
             };
 
