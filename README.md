@@ -64,7 +64,7 @@ javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743864079/bo
 
 ### 📢 Última Atualização:
 
-  **DATA: 31/03/2025**
+  **DATA: 05/04/2025**
   
    **Versão: HCK V5**
 
