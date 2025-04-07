@@ -32,8 +32,8 @@ Solução educacional premium para análise automática de questões com tecnolo
 | Google Chrome   | ✅ 100% | [Instalar](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) |
 | Mozilla Firefox | ✅ 100% | [Instalar](https://addons.mozilla.org/firefox/addon/tampermonkey/) |
 | Microsoft Edge  | ✅ 100% | [Instalar](https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd) |
-| Opera           | ⚠️ 85% | [Instalar](https://addons.opera.com/extensions/details/tampermonkey-beta/) |
-| Kiwi Browser    | ✅ 100 |[Instalar](https://chromewebstore.google.com/detail/tampermonkey-legacy/lcmhijbkigalmkeommnijlpobloojgfn?pli=1) |
+| Opera           | ✅ 100% | [Instalar](https://addons.opera.com/extensions/details/tampermonkey-beta/) |
+| Kiwi Browser    | ✅ 100% |[Instalar](https://chromewebstore.google.com/detail/tampermonkey-legacy/lcmhijbkigalmkeommnijlpobloojgfn?pli=1) |
 
 ---
 
