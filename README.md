@@ -18,10 +18,10 @@ Solução educacional premium para análise automática de questões com tecnolo
    → [Edge](https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd)
 
 2. **Instalar o Script HCK**  
-   🔗 [Link Direto de Instalação](https://greasyfork.org/pt-BR/scripts/532137-hck-v5-prova-paulista)
+   [Link Direto de Instalação](https://greasyfork.org/pt-BR/scripts/532137-hck-v5-prova-paulista)
 
 3. **Acessar a Plataforma**  
-   🌐 [Sala do Futuro](https://saladofuturo.educacao.sp.gov.br)
+   [Sala do Futuro](https://saladofuturo.educacao.sp.gov.br)
 
 ---
 
