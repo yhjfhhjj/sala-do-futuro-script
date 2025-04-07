@@ -68,9 +68,7 @@ Solução educacional premium para análise automática de questões com tecnolo
 ---
 
 ## Desenvolvimento:
-
-**Desenvolvedor Principal:**  
-[Hackermoon](https://github.com/hackermoon1)  
+Discord: hackermoon
 
 **Tecnologias Utilizadas:**  
 - Gemini AI 2.0 (Google Cloud)  
