@@ -1,5 +1,4 @@
 (function() {
-    // Injetar Google Fonts (Inter, para um visual limpo)
     const fontLink = document.createElement('link');
     fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap';
     fontLink.rel = 'stylesheet';
@@ -7,16 +6,16 @@
 
     const estilo = {
         cores: {
-            principal: '#FFFFFF', // Branco para o botão "HCK V5"
-            textoPrincipal: '#000000', // Preto para o texto do botão "HCK V5"
-            fundo: '#000000', // Preto para o fundo do menu
-            texto: '#FFFFFF', // Branco para o texto geral
-            border: '#FFFFFF', // Borda branca
-            erro: '#FF3B30', // Vermelho para erros
-            analisar: '#000000', // Preto para botões
-            limpar: '#000000', // Preto para botões
-            atualizar: '#000000', // Preto para botões
-            copiar: '#FFFFFF' // Texto branco para o botão "Copiar URL"
+            principal: '#FFFFFF',
+            textoPrincipal: '#000000',
+            fundo: '#000000',
+            texto: '#FFFFFF',
+            border: '#FFFFFF',
+            erro: '#FF3B30',
+            analisar: '#000000',
+            limpar: '#000000',
+            atualizar: '#000000',
+            copiar: '#FFFFFF'
         }
     };
 
@@ -166,7 +165,7 @@
     credits.style.cssText = `
         text-align: center;
         font-size: 10px;
-        color: ${estilo.cores.texto}; // Branco para os créditos
+        color: ${estilo.cores.texto};
         margin-top: 4px;
     `;
 
