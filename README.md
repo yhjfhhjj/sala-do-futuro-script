@@ -79,5 +79,5 @@ Discord: hackermoon
 📜 MIT License - Uso livre para fins educacionais
 
 <div align="center" style="margin-top: 20px">
-  <sub>Versão 5.6.0 - Atualizado em 10/04/2025</sub>
+  <sub>Versão 5.6.0 - Atualizado em 07/04/2025</sub>
 </div>
