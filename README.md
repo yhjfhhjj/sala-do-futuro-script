@@ -1,26 +1,26 @@
 # 🚀 HCK - PROVA PAULISTA
 
-## 📌 Visão Geral
+## 📌 Visão Geral:
 Solução educacional premium para análise automática de questões com tecnologia Gemini AI 2.0
 
-### 🎯 Principais Recursos
+### 🎯 Principais Recursos:
 - ✅ Precisão de 98-99.8% nas respostas
 - ⚡ Processamento em 2-5 segundos
 - 📚 Suporte completo à plataforma Sala do Futuro
 
 ---
 
-## 📥 Instalação em 3 Passos
+## 📥 Instalação em 3 Passos:
 
 1. **Instalar o Tampermonkey**  
    → [Chrome](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)  
    → [Firefox](https://addons.mozilla.org/firefox/addon/tampermonkey/)  
    → [Edge](https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd)
 
-2. **Instalar o Script HCK**  
+2. **Instalar o Script HCK:**  
    [Link Direto de Instalação](https://greasyfork.org/pt-BR/scripts/532137-hck-v5-prova-paulista)
 
-3. **Acessar a Plataforma**  
+3. **Acessar a Plataforma:**  
    [Sala do Futuro](https://saladofuturo.educacao.sp.gov.br)
 
 ---
