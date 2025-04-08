@@ -20,9 +20,9 @@ Solução educacional premium para análise automática de questões com tecnolo
 
 ### 1. Instalar o Tampermonkey
 Escolha seu navegador:
-- [<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/chrome/chrome-original.svg" width="14"> Chrome](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
-- [<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firefox/firefox-original.svg" width="14"> Firefox](https://addons.mozilla.org/firefox/addon/tampermonkey/)
-- [<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/edge/edge-original.svg" width="14"> Edge](https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd)
+- [Chrome](https://chromewebstore.google.com/detail/tampermonkey-legacy/lcmhijbkigalmkeommnijlpobloojgfn?pli=1)
+- [Firefox](https://addons.mozilla.org/firefox/addon/tampermonkey/)
+- [Edge](https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd)
 
 ### 2. Instalar o Script HCK
 •  [Download Direto](https://greasyfork.org/pt-BR/scripts/532137-hck-v5-prova-paulista)
@@ -32,7 +32,7 @@ Escolha seu navegador:
 
 ---
 
-## 🌐 Compatibilidade Total
+## Compatibilidade Total:
 
 | Navegador | Status | Versão Testada |
 |-----------|--------|----------------|
