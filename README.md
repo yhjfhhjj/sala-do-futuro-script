@@ -76,7 +76,7 @@ Escolha seu navegador:
 
 ## Desenvolvimento:
 
-**Contato**: Discord: `hackermoon`
+**Discord**: `hackermoon`
 
 • Mande mensagens para sugestões, ajustes, ideias para novos scripts.
 
