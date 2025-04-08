@@ -1,8 +1,7 @@
 # 🚀 HCK - PROVA PAULISTA
 
-## PREVIEW DO SCRIPT
-
 ![Preview da Interface](https://cdn.discordapp.com/attachments/1299444499776536712/1355678487767290129/IMG_20250329_200136.jpg?ex=67f25f3a&is=67f10dba&hm=5baf953d855e05b64f70a60c6f6997b4f95d1a91585466b3dfeb587bdff7a02f&)
+
 
 ---
 
