@@ -36,11 +36,11 @@ Escolha seu navegador:
 
 | Navegador | Status | Versão Testada |
 |-----------|--------|----------------|
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/chrome/chrome-original.svg" width="14"> Chrome | ✅ 100% | v120+ |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firefox/firefox-original.svg" width="14"> Firefox | ✅ 100% | v115+ |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/edge/edge-original.svg" width="14"> Edge | ✅ 100% | v110+ |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/opera/opera-original.svg" width="14"> Opera | ✅ 100% | v95+ |
-| Kiwi Browser | ✅ 100% | v120+ |
+| Chrome | 100% | v120+ |
+| Firefox | 100% | v115+ |
+| Edge | 100% | v110+ |
+| Opera | 100% | v95+ |
+| Kiwi Browser | 100% | v120+ |
 
 ---
 
