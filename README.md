@@ -1,7 +1,7 @@
 # 🚀 HCK - PROVA PAULISTA
 
 ---
-ATUALIZAÇÃO EM ANDAMENTO...
+## ATUALIZAÇÃO EM DESENVOLVIMENTO
 ---
 
 ## 📌 Visão Geral
