@@ -86,7 +86,7 @@ Escolha seu navegador:
 - Tampermonkey API
 
 **Licença**:  
-📜 [MIT License](LICENSE) - Uso livre para fins educacionais
+📜 MIT License - Uso livre para fins educacionais
 
 <div align="center" style="margin-top:20px">
   <sub>Versão 5.6.0 | Atualizado em 07/04/2025</sub>
