@@ -44,7 +44,7 @@ Escolha seu navegador:
 
 ---
 
-## 🛠 Atualização v5.6 (Abril/2025)
+## Atualização v5.6 (Abril/2025)
 
 ### Melhorias Técnicas:
 | Área | Melhoria | Impacto |
