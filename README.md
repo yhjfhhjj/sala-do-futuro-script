@@ -1,6 +1,8 @@
 # 🚀 HCK - PROVA PAULISTA
 
 ---
+ATUALIZAÇÃO EM ANDAMENTO...
+---
 
 ## 📌 Visão Geral
 Solução educacional premium para análise automática de questões com tecnologia Gemini AI 2.0
