@@ -80,7 +80,9 @@ Escolha seu navegador:
 
 **Discord**: `hackermoon`
 
-• Mande mensagens para sugestões, ajustes, ideias para novos scripts.
+• Mande mensagem para sugestões, ajustes, ideias para novos scripts.
+
+**Github**: [Reportar aqui](https://github.com/hackermoon1/sala-do-futuro-script/issues)
 
 **Tecnologias**:
 - <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/googlecloud/googlecloud-original.svg" width="14"> Gemini AI 2.0
