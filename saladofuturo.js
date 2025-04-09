@@ -185,7 +185,6 @@
 
     // ===== FUNÇÃO DE FORMATAÇÃO E ANÁLISE =====
     function formatResponse(answer) {
-        // Simplificado: retorna a resposta direta, sem formatação de alternativas
         return answer.trim();
     }
 
@@ -248,8 +247,8 @@
 
         const estilo = {
             cores: {
-                principal: 'transparent',
-                textoPrincipal: '#D946EF',
+                principal: '#000000', // Fundo preto para o botão "HCK"
+                textoPrincipal: 'linear-gradient(to right, #FF6F61, #D946EF)', // Gradiente igual aos botões
                 fundo: '#2A2A2A',
                 texto: '#FFFFFF',
                 border: 'transparent',
@@ -262,10 +261,10 @@
         const getResponsiveSize = () => {
             const width = window.innerWidth;
             return {
-                menuWidth: width < 768 ? '180px' : '200px',
-                fontSize: width < 768 ? '11px' : '12px',
-                buttonPadding: '4px',
-                textareaHeight: '30px' // Reduzido para corresponder à imagem
+                menuWidth: width < 768 ? '160px' : '160px', // Largura fixa para corresponder à imagem
+                fontSize: width < 768 ? '13px' : '13px', // Aumentado para melhor legibilidade
+                buttonPadding: '6px', // Aumentado para botões mais visíveis
+                textareaHeight: '40px' // Aumentado para corresponder à imagem
             };
         };
 
@@ -279,11 +278,29 @@
             font-family: 'Inter', sans-serif;
         `;
 
+        const sizes = getResponsiveSize();
+        const menu = document.createElement('div');
+        menu.style.cssText = `
+            background: ${estilo.cores.fundo};
+            width: ${sizes.menuWidth};
+            padding: 6px;
+            border-radius: 16px; /* Ajustado para corresponder à imagem */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            display: none;
+            border: 1px solid ${estilo.cores.border};
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        `;
+
         const toggleBtn = document.createElement('button');
         toggleBtn.textContent = 'HCK';
         toggleBtn.style.cssText = `
             background: ${estilo.cores.principal};
-            color: ${estilo.cores.textoPrincipal};
+            color: transparent;
+            background-clip: text;
+            -webkit-background-clip: text;
+            background-image: ${estilo.cores.textoPrincipal};
             padding: 4px 8px;
             border: none;
             border-radius: 12px;
@@ -291,22 +308,9 @@
             font-weight: 600;
             font-size: 14px;
             box-shadow: none;
-        `;
-
-        const sizes = getResponsiveSize();
-        const menu = document.createElement('div');
-        menu.style.cssText = `
-            background: ${estilo.cores.fundo};
-            width: ${sizes.menuWidth};
-            padding: 6px;
-            margin-top: 4px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            display: none;
-            border: 1px solid ${estilo.cores.border};
-            opacity: 0;
-            transform: translateY(10px);
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            display: block;
+            margin: 0 auto 4px auto; /* Centralizado no menu */
+            text-align: center;
         `;
 
         const input = document.createElement('textarea');
@@ -328,7 +332,7 @@
 
         const imagesContainer = document.createElement('div');
         imagesContainer.style.cssText = `
-            max-height: 50px; /* Reduzido para corresponder à imagem */
+            max-height: 60px; /* Aumentado para corresponder à imagem */
             overflow-y: auto;
             margin-bottom: 4px;
             font-size: ${sizes.fontSize};
@@ -406,8 +410,8 @@
             margin-top: 2px;
         `;
 
-        menu.append(input, updateImagesBtn, imagesContainer, analyzeBtn, clearBtn, responsePanel, credits);
-        container.append(toggleBtn, menu);
+        menu.append(toggleBtn, input, updateImagesBtn, imagesContainer, analyzeBtn, clearBtn, responsePanel, credits);
+        container.append(menu);
         document.body.append(container);
 
         toggleBtn.addEventListener('click', () => {
