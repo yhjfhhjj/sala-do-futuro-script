@@ -1,7 +1,7 @@
 # 🚀 HCK - PROVA PAULISTA
 
 ---
-## ATUALIZAÇÃO EM DESENVOLVIMENTO
+## 📢 NEW VERSION (v5.7.1)
 ---
 
 ## 📌 Visão Geral
