@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HCK V5 - Prova Paulista
 // @namespace    http://tampermonkey.net/
-// @version      5.7.3
+// @version      5.7.4
 // @description  Ferramenta de análise acadêmica assistida por IA para o site saladofuturo.educacao.sp.gov.br
 // @author       Hackermoon
 // @match        https://saladofuturo.educacao.sp.gov.br/*
@@ -264,7 +264,7 @@
         const getResponsiveSize = () => {
             const width = window.innerWidth;
             return {
-                menuWidth: width < 768 ? '160px' : '160px',
+                menuWidth: width < 768 ? '180px' : '180px',
                 fontSize: width < 768 ? '13px' : '13px',
                 buttonPadding: '6px',
                 textareaHeight: '40px'
@@ -277,10 +277,30 @@
             position: fixed;
             bottom: 12px;
             right: 12px;
-            z-index: 10000; /* Aumentado para garantir visibilidade */
+            z-index: 10000;
             font-family: 'Inter', sans-serif;
         `;
         console.log('Container criado e adicionado ao body.');
+
+        const toggleBtn = document.createElement('button');
+        toggleBtn.textContent = 'HCK';
+        toggleBtn.style.cssText = `
+            background: #000000; /* Fundo preto sólido */
+            color: #FFFFFF;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            display: block;
+            margin: 0 auto;
+            text-align: center;
+            width: 60px; /* Mais largo */
+            height: 30px; /* Altura ajustada */
+        `;
+        console.log('Botão de toggle criado com texto "HCK", com estilo iOS (fundo preto, mais largo).');
 
         const sizes = getResponsiveSize();
         const menu = document.createElement('div');
@@ -291,34 +311,48 @@
             padding: 6px;
             border-radius: 16px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            display: block; /* Alterado para block para aparecer inicialmente */
+            display: none; /* Inicia escondido */
             border: 1px solid ${estilo.cores.border};
-            opacity: 1; /* Alterado para 1 para aparecer inicialmente */
-            transform: translateY(0);
+            opacity: 0; /* Inicia escondido */
+            transform: translateY(10px);
             transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            margin-top: 4px;
+            position: relative;
         `;
-        console.log('Menu criado com display: block e opacity: 1.');
+        console.log('Menu criado com display: none e opacity: 0.');
 
-        const toggleBtn = document.createElement('button');
-        toggleBtn.textContent = 'HCK';
-        toggleBtn.style.cssText = `
-            background: ${estilo.cores.principal};
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = '×';
+        closeBtn.style.cssText = `
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: none;
+            border: none;
+            color: ${estilo.cores.texto};
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        `;
+        console.log('Botão de fechar (X) criado.');
+
+        const title = document.createElement('div');
+        title.textContent = 'HCK';
+        title.style.cssText = `
             color: transparent;
             background-clip: text;
             -webkit-background-clip: text;
             background-image: ${estilo.cores.textoPrincipal};
-            padding: 4px 8px;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            box-shadow: none;
-            display: block;
-            margin: 0 auto 4px auto;
+            font-size: 18px;
+            font-weight: 700;
             text-align: center;
+            margin-bottom: 8px;
+            text-shadow: 0 0 8px rgba(255, 111, 97, 0.5);
+            letter-spacing: 1px;
         `;
-        console.log('Botão HCK criado.');
+        console.log('Título "HCK" criado dentro do menu.');
 
         const input = document.createElement('textarea');
         input.placeholder = 'Cole sua pergunta aqui...';
@@ -417,30 +451,43 @@
             margin-top: 2px;
         `;
 
-        menu.append(toggleBtn, input, updateImagesBtn, imagesContainer, analyzeBtn, clearBtn, responsePanel, credits);
-        container.append(menu);
+        menu.append(closeBtn, title, input, updateImagesBtn, imagesContainer, analyzeBtn, clearBtn, responsePanel, credits);
+        container.append(toggleBtn, menu);
         document.body.appendChild(container);
-        console.log('Menu e seus elementos adicionados ao container e ao body.');
+        console.log('Menu e botão de toggle adicionados ao container e ao body.');
 
         toggleBtn.addEventListener('click', () => {
-            console.log('Botão HCK clicado.');
+            console.log('Botão de toggle clicado.');
             if (menu.style.display === 'block') {
                 console.log('Escondendo menu...');
                 menu.style.opacity = '0';
                 menu.style.transform = 'translateY(10px)';
                 setTimeout(() => {
                     menu.style.display = 'none';
-                    console.log('Menu escondido.');
+                    toggleBtn.style.display = 'block'; // Mostra o toggle quando o menu fecha
+                    console.log('Menu escondido e toggle exibido.');
                 }, 300);
             } else {
                 console.log('Exibindo menu...');
                 menu.style.display = 'block';
+                toggleBtn.style.display = 'none'; // Esconde o toggle quando o menu abre
                 setTimeout(() => {
                     menu.style.opacity = '1';
                     menu.style.transform = 'translateY(0)';
-                    console.log('Menu exibido.');
+                    console.log('Menu exibido e toggle escondido.');
                 }, 10);
             }
+        });
+
+        closeBtn.addEventListener('click', () => {
+            console.log('Botão de fechar (X) clicado.');
+            menu.style.opacity = '0';
+            menu.style.transform = 'translateY(10px)';
+            setTimeout(() => {
+                menu.style.display = 'none';
+                toggleBtn.style.display = 'block'; // Mostra o toggle quando o menu fecha
+                console.log('Menu escondido pelo botão X e toggle exibido.');
+            }, 300);
         });
 
         window.addEventListener('resize', () => {
