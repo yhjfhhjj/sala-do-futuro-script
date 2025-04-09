@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HCK V5 - Prova Paulista
 // @namespace    http://tampermonkey.net/
-// @version      5.6
+// @version      5.7
 // @description  Ferramenta de análise acadêmica assistida por IA para o site saladofuturo.educacao.sp.gov.br
 // @author       Hackermoon
 // @match        https://saladofuturo.educacao.sp.gov.br/*
@@ -48,7 +48,7 @@
         ],
         verify(src) {
             if (!src || !src.startsWith('http')) return false;
-            return !this.blocked.some(r => r.test(src)) &&
+            return !this.blocked.some(r => r.test(src)) && 
                    this.allowed.some(r => r.test(src));
         }
     };
@@ -56,7 +56,8 @@
     // ===== ESTADO GLOBAL =====
     const STATE = {
         isAnalyzing: false,
-        images: []
+        images: [],
+        imageCache: {} // Cache para imagens em Base64
     };
 
     // ===== UTILITÁRIOS =====
@@ -80,6 +81,11 @@
 
     // ===== FUNÇÃO PARA BAIXAR IMAGEM E CONVERTER PARA BASE64 =====
     async function fetchImageAsBase64(url) {
+        // Verifica se a imagem já está no cache
+        if (STATE.imageCache[url]) {
+            return STATE.imageCache[url];
+        }
+
         return new Promise((resolve, reject) => {
             GM_xmlhttpRequest({
                 method: 'GET',
@@ -94,6 +100,7 @@
                             binary += String.fromCharCode(bytes[i]);
                         }
                         const base64 = window.btoa(binary);
+                        STATE.imageCache[url] = base64; // Armazena no cache
                         resolve(base64);
                     } catch (error) {
                         reject(new Error(`Erro ao converter imagem para Base64: ${error.message}`));
@@ -179,11 +186,11 @@
         // Se a resposta for apenas o valor (ex.: "20" ou "Sim"), encontra a alternativa correspondente
         const matchedAlternatives = alternatives.filter(alt => {
             const value = alt.split(')')[1].trim();
-            return value == answer || parseFloat(value) == parseFloat(answer);
+            return value === answer || parseFloat(value) === parseFloat(answer);
         });
 
         // Retorna todas as alternativas correspondentes (para múltiplas escolhas)
-        return matchedAlternatives.length > 0 ? matchedAlternatives.join(', ') : answer;
+        return matchedAlternatives.length > 0 ? matchedAlternatives.join(', ') : 'Resposta inválida';
     }
 
     // ===== FUNÇÃO PARA EXTRair IMAGENS =====
@@ -219,7 +226,7 @@
             contents: [{
                 parts: [{
                     text: `
-                        Você é um assistente especializado em resolver questões de provas acadêmicas. Analise a questão abaixo e forneça a resposta correta. Se houver alternativas no formato "A) valor", "B) valor", etc., retorne apenas a alternativa completa (ex.: "A) 20" ou "A) Sim"). Se a questão permitir múltiplas escolhas (ex.: "Quais das alternativas são verdadeiras?"), retorne todas as alternativas corretas separadas por vírgula (ex.: "A) Sim, C) Não"). Não forneça explicações, apenas a resposta no formato especificado.
+                        Você é um assistente especializado em resolver questões de provas acadêmicas, com foco em precisão lógica e matemática. Analise a questão abaixo e retorne apenas a alternativa correta no formato "A) Texto". Se a questão permitir múltiplas escolhas (ex.: "Quais das alternativas são verdadeiras?"), retorne todas as alternativas corretas separadas por vírgula (ex.: "A) Sim, C) Não"). Não inclua explicações ou texto adicional, apenas a resposta no formato especificado.
 
                         Questão: ${question}
 
@@ -229,7 +236,7 @@
             }],
             generationConfig: {
                 temperature: CONFIG.TEMPERATURE,
-                maxOutputTokens: 100
+                maxOutputTokens: 50 // Reduzido para respostas mais curtas e precisas
             }
         };
     }
@@ -242,33 +249,20 @@
         fontLink.rel = 'stylesheet';
         document.head.appendChild(fontLink);
 
-        // Estilo da interface
+        // Estilo da interface (nova coloração e compactação)
         const estilo = {
             cores: {
-                principal: '#FFFFFF',
-                textoPrincipal: '#000000',
-                fundo: '#000000',
-                texto: '#FFFFFF',
-                border: '#FFFFFF',
-                erro: '#FF3B30',
-                analisar: '#000000',
-                limpar: '#000000',
-                atualizar: '#000000',
+                principal: '#60A5FA', // Azul claro para o botão "HCK V5"
+                textoPrincipal: '#1E3A8A', // Azul escuro para texto do botão "HCK V5"
+                fundo: '#1E3A8A', // Azul escuro para o fundo do menu
+                texto: '#FFFFFF', // Branco para textos
+                border: '#60A5FA', // Azul claro para bordas
+                erro: '#EF4444', // Vermelho para erros
+                analisar: '#1E3A8A', // Azul escuro para botões
+                limpar: '#1E3A8A',
+                atualizar: '#1E3A8A',
                 copiar: '#FFFFFF'
             }
-        };
-
-        const getResponsiveSize = () => {
-            const width = window.innerWidth;
-            const height = window.innerHeight;
-            const baseWidth = width < 768 ? 200 : 260;
-            const baseHeight = height < 600 ? 50 : 60;
-            return {
-                width: `${baseWidth}px`,
-                textareaHeight: `${baseHeight}px`,
-                fontSize: width < 768 ? '12px' : '14px',
-                buttonPadding: width < 768 ? '5px' : '6px'
-            };
         };
 
         const container = document.createElement('div');
@@ -286,23 +280,22 @@
         toggleBtn.style.cssText = `
             background: ${estilo.cores.principal};
             color: ${estilo.cores.textoPrincipal};
-            padding: 6px 12px;
+            padding: 4px 8px;
             border: 1px solid ${estilo.cores.border};
-            border-radius: 20px;
+            border-radius: 16px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 12px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         `;
 
         const menu = document.createElement('div');
-        const sizes = getResponsiveSize();
         menu.style.cssText = `
             background: ${estilo.cores.fundo};
-            width: ${sizes.width};
-            padding: 10px;
-            margin-top: 6px;
-            border-radius: 28px;
+            width: 220px;
+            padding: 6px;
+            margin-top: 4px;
+            border-radius: 16px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             display: none;
             border: 1px solid ${estilo.cores.border};
@@ -315,13 +308,13 @@
         input.placeholder = 'Cole sua pergunta aqui...';
         input.style.cssText = `
             width: 100%;
-            height: ${sizes.textareaHeight};
-            padding: 8px;
-            margin-bottom: 8px;
+            height: 40px;
+            padding: 6px;
+            margin-bottom: 4px;
             border: 1px solid ${estilo.cores.border};
-            border-radius: 12px;
+            border-radius: 8px;
             resize: none;
-            font-size: ${sizes.fontSize};
+            font-size: 12px;
             font-family: 'Inter', sans-serif;
             box-sizing: border-box;
             background: ${estilo.cores.fundo};
@@ -330,13 +323,13 @@
 
         const imagesContainer = document.createElement('div');
         imagesContainer.style.cssText = `
-            max-height: 80px;
+            max-height: 60px;
             overflow-y: auto;
-            margin-bottom: 8px;
-            font-size: ${sizes.fontSize};
+            margin-bottom: 4px;
+            font-size: 12px;
             border: 1px solid ${estilo.cores.border};
-            border-radius: 12px;
-            padding: 6px;
+            border-radius: 8px;
+            padding: 4px;
             background: ${estilo.cores.fundo};
             color: ${estilo.cores.texto};
         `;
@@ -345,57 +338,57 @@
         analyzeBtn.textContent = '🔍 Analisar';
         analyzeBtn.style.cssText = `
             width: 100%;
-            padding: ${sizes.buttonPadding};
+            padding: 4px;
             background: ${estilo.cores.analisar};
             color: ${estilo.cores.texto};
             border: 1px solid ${estilo.cores.border};
-            border-radius: 16px;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: ${sizes.fontSize};
+            font-size: 12px;
             font-weight: 500;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         `;
 
         const clearBtn = document.createElement('button');
         clearBtn.textContent = '🗑️ Limpar';
         clearBtn.style.cssText = `
             width: 100%;
-            padding: ${sizes.buttonPadding};
+            padding: 4px;
             background: ${estilo.cores.limpar};
             color: ${estilo.cores.texto};
             border: 1px solid ${estilo.cores.border};
-            border-radius: 16px;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: ${sizes.fontSize};
+            font-size: 12px;
             font-weight: 500;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         `;
 
         const updateImagesBtn = document.createElement('button');
         updateImagesBtn.textContent = '🔄 Atualizar Imagens';
         updateImagesBtn.style.cssText = `
             width: 100%;
-            padding: ${sizes.buttonPadding};
+            padding: 4px;
             background: ${estilo.cores.atualizar};
             color: ${estilo.cores.texto};
             border: 1px solid ${estilo.cores.border};
-            border-radius: 16px;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: ${sizes.fontSize};
+            font-size: 12px;
             font-weight: 500;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         `;
 
         const responsePanel = document.createElement('div');
         responsePanel.style.cssText = `
-            padding: 6px;
+            padding: 4px;
             background: ${estilo.cores.fundo};
-            border-radius: 12px;
+            border-radius: 8px;
             display: none;
-            font-size: ${sizes.fontSize};
-            border-left: 3px solid ${estilo.cores.border};
+            font-size: 12px;
+            border-left: 2px solid ${estilo.cores.border};
             word-wrap: break-word;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             color: ${estilo.cores.texto};
         `;
 
@@ -405,7 +398,7 @@
             text-align: center;
             font-size: 10px;
             color: ${estilo.cores.texto};
-            margin-top: 4px;
+            margin-top: 2px;
         `;
 
         menu.append(input, imagesContainer, analyzeBtn, clearBtn, updateImagesBtn, responsePanel, credits);
@@ -428,21 +421,6 @@
             }
         });
 
-        window.addEventListener('resize', () => {
-            const newSizes = getResponsiveSize();
-            menu.style.width = newSizes.width;
-            input.style.height = newSizes.textareaHeight;
-            input.style.fontSize = newSizes.fontSize;
-            analyzeBtn.style.fontSize = newSizes.fontSize;
-            analyzeBtn.style.padding = newSizes.buttonPadding;
-            clearBtn.style.fontSize = newSizes.fontSize;
-            clearBtn.style.padding = newSizes.buttonPadding;
-            updateImagesBtn.style.fontSize = newSizes.fontSize;
-            updateImagesBtn.style.padding = newSizes.buttonPadding;
-            imagesContainer.style.fontSize = newSizes.fontSize;
-            responsePanel.style.fontSize = newSizes.fontSize;
-        });
-
         const createUI = () => ({
             input,
             analyzeOption: analyzeBtn,
@@ -453,17 +431,17 @@
         });
 
         const updateImageButtons = (images) => {
-            imagesContainer.innerHTML = images.length ?
+            imagesContainer.innerHTML = images.length ? 
                 images.map((img, i) => `
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 3px 0; border-bottom: 1px solid ${estilo.cores.border};">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 2px 0; border-bottom: 1px solid ${estilo.cores.border};">
                         <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60%;" title="${img}">Imagem ${i+1}</span>
-                        <button onclick="navigator.clipboard.writeText('${img}')"
-                                style="background: ${estilo.cores.fundo}; color: ${estilo.cores.copiar}; border: 1px solid ${estilo.cores.border}; border-radius: 8px; padding: 2px 6px; font-size: 11px; cursor: pointer;">
+                        <button onclick="navigator.clipboard.writeText('${img}')" 
+                                style="background: ${estilo.cores.fundo}; color: ${estilo.cores.copiar}; border: 1px solid ${estilo.cores.border}; border-radius: 6px; padding: 2px 4px; font-size: 10px; cursor: pointer;">
                             Copiar URL
                         </button>
                     </div>
-                `).join('') :
-                `<div style="color: ${estilo.cores.texto}; text-align: center; padding: 6px;">Nenhuma imagem</div>`;
+                `).join('') : 
+                `<div style="color: ${estilo.cores.texto}; text-align: center; padding: 4px;">Nenhuma imagem</div>`;
         };
 
         const showResponse = (panel, text) => {
@@ -497,9 +475,19 @@
             try {
                 const images = extractImages();
                 const alternatives = detectAlternativesFormat(input.value.trim());
+                if (!alternatives) {
+                    throw new Error('Nenhuma alternativa detectada. Inclua as alternativas no formato "A) Texto".');
+                }
+
                 const prompt = await buildPrompt(input.value.trim(), images);
                 const answer = await fetchWithRetry(() => queryGemini(prompt));
+
+                // Validação adicional: verifica se a resposta corresponde a uma alternativa
                 const formattedAnswer = formatResponse(answer, alternatives);
+                if (formattedAnswer === 'Resposta inválida') {
+                    throw new Error('A resposta não corresponde a nenhuma alternativa fornecida.');
+                }
+
                 showResponse(responsePanel, formattedAnswer);
             } catch (error) {
                 showResponse(responsePanel, `Erro: ${error.message}`);
@@ -512,7 +500,7 @@
 
         clearOption.onclick = () => {
             input.value = '';
-            imagesContainer.innerHTML = '<div style="color: #FFFFFF; text-align: center; padding: 6px;">Nenhuma imagem</div>';
+            imagesContainer.innerHTML = '<div style="color: #FFFFFF; text-align: center; padding: 4px;">Nenhuma imagem</div>';
             responsePanel.style.display = 'none';
         };
 
