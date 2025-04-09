@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HCK V5 - Prova Paulista
 // @namespace    http://tampermonkey.net/
-// @version      5.7.2
+// @version      5.7.3
 // @description  Ferramenta de análise acadêmica assistida por IA para o site saladofuturo.educacao.sp.gov.br
 // @author       Hackermoon
 // @match        https://saladofuturo.educacao.sp.gov.br/*
@@ -240,15 +240,18 @@
 
     // ===== FUNÇÃO PARA CRIAR A INTERFACE =====
     function setupUI() {
+        console.log('Iniciando setupUI...');
+
         const fontLink = document.createElement('link');
         fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap';
         fontLink.rel = 'stylesheet';
         document.head.appendChild(fontLink);
+        console.log('Fonte Inter adicionada ao head.');
 
         const estilo = {
             cores: {
-                principal: '#000000', // Fundo preto para o botão "HCK"
-                textoPrincipal: 'linear-gradient(to right, #FF6F61, #D946EF)', // Gradiente igual aos botões
+                principal: '#000000',
+                textoPrincipal: 'linear-gradient(to right, #FF6F61, #D946EF)',
                 fundo: '#2A2A2A',
                 texto: '#FFFFFF',
                 border: 'transparent',
@@ -261,10 +264,10 @@
         const getResponsiveSize = () => {
             const width = window.innerWidth;
             return {
-                menuWidth: width < 768 ? '160px' : '160px', // Largura fixa para corresponder à imagem
-                fontSize: width < 768 ? '13px' : '13px', // Aumentado para melhor legibilidade
-                buttonPadding: '6px', // Aumentado para botões mais visíveis
-                textareaHeight: '40px' // Aumentado para corresponder à imagem
+                menuWidth: width < 768 ? '160px' : '160px',
+                fontSize: width < 768 ? '13px' : '13px',
+                buttonPadding: '6px',
+                textareaHeight: '40px'
             };
         };
 
@@ -274,24 +277,27 @@
             position: fixed;
             bottom: 12px;
             right: 12px;
-            z-index: 9999;
+            z-index: 10000; /* Aumentado para garantir visibilidade */
             font-family: 'Inter', sans-serif;
         `;
+        console.log('Container criado e adicionado ao body.');
 
         const sizes = getResponsiveSize();
         const menu = document.createElement('div');
+        menu.id = 'hck-menu';
         menu.style.cssText = `
             background: ${estilo.cores.fundo};
             width: ${sizes.menuWidth};
             padding: 6px;
-            border-radius: 16px; /* Ajustado para corresponder à imagem */
+            border-radius: 16px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            display: none;
+            display: block; /* Alterado para block para aparecer inicialmente */
             border: 1px solid ${estilo.cores.border};
-            opacity: 0;
-            transform: translateY(10px);
+            opacity: 1; /* Alterado para 1 para aparecer inicialmente */
+            transform: translateY(0);
             transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
         `;
+        console.log('Menu criado com display: block e opacity: 1.');
 
         const toggleBtn = document.createElement('button');
         toggleBtn.textContent = 'HCK';
@@ -309,9 +315,10 @@
             font-size: 14px;
             box-shadow: none;
             display: block;
-            margin: 0 auto 4px auto; /* Centralizado no menu */
+            margin: 0 auto 4px auto;
             text-align: center;
         `;
+        console.log('Botão HCK criado.');
 
         const input = document.createElement('textarea');
         input.placeholder = 'Cole sua pergunta aqui...';
@@ -332,7 +339,7 @@
 
         const imagesContainer = document.createElement('div');
         imagesContainer.style.cssText = `
-            max-height: 60px; /* Aumentado para corresponder à imagem */
+            max-height: 60px;
             overflow-y: auto;
             margin-bottom: 4px;
             font-size: ${sizes.fontSize};
@@ -412,25 +419,32 @@
 
         menu.append(toggleBtn, input, updateImagesBtn, imagesContainer, analyzeBtn, clearBtn, responsePanel, credits);
         container.append(menu);
-        document.body.append(container);
+        document.body.appendChild(container);
+        console.log('Menu e seus elementos adicionados ao container e ao body.');
 
         toggleBtn.addEventListener('click', () => {
+            console.log('Botão HCK clicado.');
             if (menu.style.display === 'block') {
+                console.log('Escondendo menu...');
                 menu.style.opacity = '0';
                 menu.style.transform = 'translateY(10px)';
                 setTimeout(() => {
                     menu.style.display = 'none';
+                    console.log('Menu escondido.');
                 }, 300);
             } else {
+                console.log('Exibindo menu...');
                 menu.style.display = 'block';
                 setTimeout(() => {
                     menu.style.opacity = '1';
                     menu.style.transform = 'translateY(0)';
+                    console.log('Menu exibido.');
                 }, 10);
             }
         });
 
         window.addEventListener('resize', () => {
+            console.log('Evento de resize disparado.');
             const newSizes = getResponsiveSize();
             menu.style.width = newSizes.menuWidth;
             input.style.height = newSizes.textareaHeight;
@@ -479,64 +493,71 @@
 
     // ===== INICIALIZAÇÃO =====
     function init() {
-        const { createUI, updateImageButtons, showResponse } = setupUI();
-        const { input, analyzeOption, clearOption, updateImagesOption, responsePanel, imagesContainer } = createUI();
+        console.log('Iniciando script HCK V5...');
+        try {
+            const { createUI, updateImageButtons, showResponse } = setupUI();
+            console.log('UI configurada com sucesso.');
 
-        analyzeOption.onclick = async () => {
-            if (STATE.isAnalyzing || !input.value.trim()) {
-                showResponse(responsePanel, 'Digite uma questão válida!');
-                return;
-            }
+            const { input, analyzeOption, clearOption, updateImagesOption, responsePanel, imagesContainer } = createUI();
+            console.log('Elementos da UI criados.');
 
-            STATE.isAnalyzing = true;
-            analyzeOption.disabled = true;
-            analyzeOption.textContent = '🔍 Analisando...';
+            analyzeOption.onclick = async () => {
+                if (STATE.isAnalyzing || !input.value.trim()) {
+                    showResponse(responsePanel, 'Digite uma questão válida!');
+                    return;
+                }
 
-            try {
-                const images = extractImages();
-                const question = input.value.trim();
+                STATE.isAnalyzing = true;
+                analyzeOption.disabled = true;
+                analyzeOption.textContent = '🔍 Analisando...';
 
-                // Consulta à API do Gemini
-                const prompt = await buildPrompt(question, images);
-                const geminiAnswer = await fetchWithRetry(() => queryGemini(prompt));
-                const formattedAnswer = formatResponse(geminiAnswer);
+                try {
+                    const images = extractImages();
+                    const question = input.value.trim();
 
-                // Consulta à API de busca (Outscraper) para validação
-                const searchResults = await fetchWithRetry(() => searchWeb(question));
-                const webValidation = searchResults.some(result => 
-                    result.snippet && result.snippet.toLowerCase().includes(formattedAnswer.toLowerCase())
-                );
+                    const prompt = await buildPrompt(question, images);
+                    const geminiAnswer = await fetchWithRetry(() => queryGemini(prompt));
+                    const formattedAnswer = formatResponse(geminiAnswer);
 
-                // Exibe a resposta com validação
-                const finalAnswer = webValidation 
-                    ? `${formattedAnswer} (validado pela busca na web)`
-                    : `${formattedAnswer} (não validado pela busca na web)`;
+                    const searchResults = await fetchWithRetry(() => searchWeb(question));
+                    const webValidation = searchResults.some(result => 
+                        result.snippet && result.snippet.toLowerCase().includes(formattedAnswer.toLowerCase())
+                    );
 
-                showResponse(responsePanel, finalAnswer);
-            } catch (error) {
-                showResponse(responsePanel, `Erro: ${error.message}`);
-            } finally {
-                STATE.isAnalyzing = false;
-                analyzeOption.disabled = false;
-                analyzeOption.textContent = '🔍 Analisar';
-            }
-        };
+                    const finalAnswer = webValidation 
+                        ? `${formattedAnswer} (validado pela busca na web)`
+                        : `${formattedAnswer} (não validado pela busca na web)`;
 
-        clearOption.onclick = () => {
-            input.value = '';
-            imagesContainer.innerHTML = '<div style="color: #FFFFFF; text-align: center; padding: 4px;">Nenhuma imagem</div>';
-            responsePanel.style.display = 'none';
-        };
+                    showResponse(responsePanel, finalAnswer);
+                } catch (error) {
+                    showResponse(responsePanel, `Erro: ${error.message}`);
+                } finally {
+                    STATE.isAnalyzing = false;
+                    analyzeOption.disabled = false;
+                    analyzeOption.textContent = '🔍 Analisar';
+                }
+            };
 
-        updateImagesOption.onclick = () => {
+            clearOption.onclick = () => {
+                input.value = '';
+                imagesContainer.innerHTML = '<div style="color: #FFFFFF; text-align: center; padding: 4px;">Nenhuma imagem</div>';
+                responsePanel.style.display = 'none';
+            };
+
+            updateImagesOption.onclick = () => {
+                extractImages();
+                updateImageButtons(STATE.images);
+                showResponse(responsePanel, `${STATE.images.length} imagens atualizadas`);
+            };
+
             extractImages();
             updateImageButtons(STATE.images);
-            showResponse(responsePanel, `${STATE.images.length} imagens atualizadas`);
-        };
-
-        extractImages();
-        updateImageButtons(STATE.images);
+            console.log('Imagens extraídas e botões atualizados.');
+        } catch (error) {
+            console.error('Erro na inicialização do script:', error);
+        }
     }
 
+    // Executa a inicialização
     init();
 })();
