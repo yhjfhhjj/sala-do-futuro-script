@@ -1,10 +1,8 @@
+
 # 🚀 HCK - PROVA PAULISTA
 
 ---
-## 📢 NEW VERSION!!
-
-• EM MANUTENÇÃO
-
+## 📢 NEW VERSION (v5.7.4)
 ---
 
 ## 📌 Visão Geral
@@ -46,6 +44,19 @@ Escolha seu navegador:
 | Edge | 100% | v110+ |
 | Opera | 100% | v95+ |
 | Kiwi Browser | 100% | v120+ |
+
+---
+
+## Atualização v5.7.4 (Abril/2025)
+
+### Principais Melhorias:
+| Área | Melhoria | Impacto |
+|------|----------|---------|
+| Prompt | Ajuste para maior precisão | +10% acurácia |
+| Validação | Nova API Outscraper | Respostas mais confiáveis |
+| UI/UX | Retorno ao design inicial | Visual limpo e intuitivo |
+| UI/UX | Fundo preto removido | Melhor estética |
+| Funcionalidade | Toggle "HCK" condicional | Aparece só com menu fechado |
 
 ---
 
@@ -98,5 +109,7 @@ Escolha seu navegador:
 📜 MIT License - Uso livre para fins educacionais
 
 <div align="center" style="margin-top:20px">
-  <sub>Versão 5.6.0 | Atualizado em 07/04/2025</sub>
+  <sub>Versão 5.7.4 | Atualizado em 09/04/2025</sub>
 </div>
+
+---
