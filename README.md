@@ -2,9 +2,9 @@
 # 🚀 HCK - PROVA PAULISTA
 
 ---
-## 📢 NEW VERSION (SOON)
+### 📢 | CÓDIGO EM MANUTENÇÃO 
 
-### EM DESENVOLVIMENTO
+Não recomendo utilizar por enquanto.
 
 ---
 
