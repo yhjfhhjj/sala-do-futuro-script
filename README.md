@@ -8,7 +8,9 @@
 ## 📌 Visão Geral
 Solução educacional premium para análise automática de questões com tecnologia Gemini AI 2.0
 
-![Preview da Interface](https://cdn.discordapp.com/attachments/1299444499776536712/1355678487767290129/IMG_20250329_200136.jpg?ex=67f25f3a&is=67f10dba&hm=5baf953d855e05b64f70a60c6f6997b4f95d1a91585466b3dfeb587bdff7a02f&)
+
+![Preview da Interface](https://cdn.discordapp.com/attachments/1348685602345979938/1359503463289065572/IMG_20250409_092116.jpg?ex=67f7b7c4&is=67f66644&hm=8f32a03358d78497f6b3d8668cad421731d0fa598db22e156d084378f1e0ab66&)
+
 
 ### 🎯 Principais Recursos
 | Recurso | Detalhe |
