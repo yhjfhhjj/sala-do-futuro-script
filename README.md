@@ -4,7 +4,7 @@
 ---
 ## 📢 NEW VERSION (SOON)
 
-**EM DESENVOLVIMENTO**
+### EM DESENVOLVIMENTO
 
 ---
 
