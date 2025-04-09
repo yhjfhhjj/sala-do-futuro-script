@@ -3,6 +3,9 @@
 
 ---
 ## 📢 NEW VERSION (v5.7.4)
+
+**AJUSTES SENDO FEITOS!!**
+
 ---
 
 ## 📌 Visão Geral
