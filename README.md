@@ -1,120 +1,91 @@
-
-# 🚀 HCK - PROVA PAULISTA
-
----
-### 📢 | CÓDIGO EM MANUTENÇÃO 
-
-Não recomendo utilizar por enquanto.
+# 🚀 HCK - PROVA PAULISTA (v7.4+)
 
 ---
+### 📢 Importante:
 
-## 📌 Visão Geral
-Solução educacional premium para análise automática de questões com tecnologia Gemini AI 2.0
-
-
-![Preview da Interface](https://cdn.discordapp.com/attachments/1348685602345979938/1359503463289065572/IMG_20250409_092116.jpg?ex=67f7b7c4&is=67f66644&hm=8f32a03358d78497f6b3d8668cad421731d0fa598db22e156d084378f1e0ab66&)
-
-
-### 🎯 Principais Recursos
-| Recurso | Detalhe |
-|---------|---------|
-| Precisão | 98-99.8% de acurácia |
-| Velocidade | Respostas em 2-5 segundos |
-| Integração | Compatibilidade total com a plataforma |
+O script está funcional, mas otimizações e ajustes de precisão são contínuos. Use com atenção e reporte bugs.
 
 ---
 
-## 📥 Instalação em 3 Passos
+## 📌 Visão Geral:
+Solução educacional avançada para análise de questões da Prova Paulista/Sala do Futuro, utilizando múltiplos modelos de IA (Gemini 1.5 Pro & Flash) com foco em precisão, usabilidade e um design refinado estilo iOS.
+
+### ✨ Principais Recursos Atuais (v7.4)
+| Recurso                  | Detalhe                                                                   |
+| :----------------------- | :------------------------------------------------------------------------ |
+| 🧠 **Análise Multi-Modelo**  | Usa Gemini 1.5 Pro + Flash para consenso e maior confiabilidade.            |
+| 🎯 **Alta Precisão**       | Foco em retornar a alternativa correta (A-E) para questões da plataforma. |
+| ⚡ **Respostas Rápidas**    | Otimizado para velocidade, geralmente em poucos segundos.                   |
+| 📱 **UI Refinada (iOS)**   | Interface dark mode limpa, compacta e intuitiva, inspirada no iOS.          |
+| 🔔 **Notificações**      | Feedback visual externo (sucesso, erro, aviso, info) com auto-close.      |
+| 📋 **Logs Detalhados**     | Ferramenta de diagnóstico com botão "Copiar Logs" e dicas de erros.       |
+| 🖼️ **Extração de Imagens** | Detecta e inclui imagens relevantes da questão na análise AI.             |
+| ✅ **Integração Total**    | Funciona diretamente na plataforma Sala do Futuro.                          |
+
+---
+
+## 📥 Instalação Rápida:
 
 ### 1. Instalar o Tampermonkey
-Escolha seu navegador:
-- [Chrome](https://chromewebstore.google.com/detail/tampermonkey-legacy/lcmhijbkigalmkeommnijlpobloojgfn?pli=1)
-- [Firefox](https://addons.mozilla.org/firefox/addon/tampermonkey/)
-- [Edge](https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd)
+Adicione a extensão ao seu navegador:
+- [Chrome](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) / [Firefox](https://addons.mozilla.org/firefox/addon/tampermonkey/) / [Edge](https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd)
 
 ### 2. Instalar o Script HCK
-•  [Download Direto](https://greasyfork.org/pt-BR/scripts/532137-hck-v5-prova-paulista)
+- **Opção 1:** [Instalar via GreasyFork (Link Atualizado)](https://greasyfork.org/pt-BR/scripts/XXXXXX-hck-prova-paulista) <!-- <<<<<<<<<<< SUBSTITUA XXXXXX PELO ID CORRETO DO SCRIPT NO GREASYFORK -->
+- **Opção 2:** Crie um novo script no Tampermonkey e cole o código-fonte mais recente.
 
 ### 3. Acessar a Plataforma
-•  [Sala do Futuro](https://saladofuturo.educacao.sp.gov.br)
+- Navegue até [Sala do Futuro](https://saladofuturo.educacao.sp.gov.br) e o ícone "HCK" aparecerá.
 
 ---
 
-## Compatibilidade Total:
+## ✅ Compatibilidade
+Testado e funcional nos principais navegadores com suporte a Tampermonkey:
 
-| Navegador | Status | Versão Testada |
-|-----------|--------|----------------|
-| Chrome | 100% | v120+ |
-| Firefox | 100% | v115+ |
-| Edge | 100% | v110+ |
-| Opera | 100% | v95+ |
-| Kiwi Browser | 100% | v120+ |
-
----
-
-## Atualização v5.7.4 (Abril/2025)
-
-### Principais Melhorias:
-| Área | Melhoria | Impacto |
-|------|----------|---------|
-| Prompt | Ajuste para maior precisão | +10% acurácia |
-| Validação | Nova API Outscraper | Respostas mais confiáveis |
-| UI/UX | Retorno ao design inicial | Visual limpo e intuitivo |
-| UI/UX | Fundo preto removido | Melhor estética |
-| Funcionalidade | Toggle "HCK" condicional | Aparece só com menu fechado |
-
----
-
-## Atualização v5.7.2 & v5.7.3 (Abril/2025)
-
-### Melhorias Técnicas:
-| Área | Melhoria | Impacto |
-|------|----------|---------|
-| **Análise** | Novo algoritmo de respostas | +40% velocidade |
-| **UI/UX** | Interface redesenhada | Melhor usabilidade |
-| **Estabilidade** | Otimização de recursos | -30% consumo de RAM |
-
-### Correções Críticas:
-| Problema | Solução |
-|----------|---------|
-| Carregamento de imagens | Novo sistema Base64 |
-| Conexões instáveis | Mecanismo de retentativa |
-| Compatibilidade | Testes extensivos |
+| Navegador    | Status | Versão Testada |
+| :----------- | :----- | :------------- |
+| Chrome       | 👍     | v120+          |
+| Firefox      | 👍     | v115+          |
+| Edge         | 👍     | v120+          |
+| Opera        | 👍     | v95+           |
+| Kiwi Browser | 👍     | v120+ (Android)|
 
 ---
 
 ## 💡 Dicas de Uso
-1. **Para melhores resultados**:
-   - Inclua todas as alternativas da questão
-   - Adicione imagens no formato:  
-     `[Imagem: URL_DA_IMAGEM]`
-   - Verifique a completude dos dados
 
-2. **Performance ideal**:
-   - Conexão estável com a internet
-   - Navegador atualizado
-   - Evite múltiplas abas pesadas
+1.  **Input Completo:**
+    - Cole o texto **completo** da questão, incluindo o enunciado e **todas** as alternativas (A, B, C, D, E) na área designada. A precisão depende disso!
+2.  **Verificar Imagens:**
+    - O script tenta detectar imagens automaticamente. Clique no botão **"Imagens"** para confirmar quais foram encontradas antes de analisar.
+3.  **Performance:**
+    - Uma conexão estável com a internet é recomendada.
+    - Mantenha seu navegador atualizado.
+    - Evite executar muitas abas/extensões pesadas simultaneamente.
+4.  **Feedback e Logs:**
+    - Observe as **notificações** para o resultado final (✅, ❌, ⚠️, ℹ️).
+    - Se ocorrer um erro ou resultado inesperado, use o botão **"Logs"** e depois **"Copiar Logs"** para facilitar o reporte de bugs.
 
 ---
 
-## Desenvolvimento:
+## 🛠️ Desenvolvimento
 
-**Discord**: `hackermoon`
+**Discord**: `hackermoon` (Mande sugestões, reporte bugs ou troque ideias!)
 
-• Mande mensagem para sugestões, ajustes, ideias para novos scripts.
+**Github**: [Reportar Issues](https://github.com/hackermoon1/sala-do-futuro-script/issues)
 
-**Github**: [Reportar aqui](https://github.com/hackermoon1/sala-do-futuro-script/issues)
-
-**Tecnologias**:
-- <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/googlecloud/googlecloud-original.svg" width="14"> Gemini AI 2.0
-- <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" width="14"> JavaScript ES6+
+**Tecnologias Utilizadas**:
+- <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/googlecloud/googlecloud-original.svg" width="14"> Gemini AI (1.5 Pro & 1.5 Flash)
+- <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" width="14"> JavaScript (ES6+)
 - Tampermonkey API
 
-**Licença**:  
-📜 MIT License - Uso livre para fins educacionais
+**Licença**:
+📜 MIT License - Uso livre, principalmente para fins educacionais. Modifique e distribua com responsabilidade.
 
 <div align="center" style="margin-top:20px">
-  <sub>Versão 5.7.4 | Atualizado em 09/04/2025</sub>
+  <sub>Versão 7.4.0 | Atualizado em 09/04/2025</sub>
+  <br>
+  <strong>by Hackermoon</strong>
 </div>
 
 ---
