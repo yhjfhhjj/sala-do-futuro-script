@@ -2,6 +2,9 @@
 
 ---
 ## 📢 NEW VERSION!!
+
+• EM MANUTENÇÃO
+
 ---
 
 ## 📌 Visão Geral
