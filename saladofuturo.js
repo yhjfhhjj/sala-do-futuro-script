@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HCK V5 - Prova Paulista
 // @namespace    http://tampermonkey.net/
-// @version      5.7.1
+// @version      5.7.2
 // @description  Ferramenta de análise acadêmica assistida por IA para o site saladofuturo.educacao.sp.gov.br
 // @author       Hackermoon
 // @match        https://saladofuturo.educacao.sp.gov.br/*
