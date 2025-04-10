@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         HCK - Prova Paulista (iOS Refined)
+// @name         HCK - Prova Paulista
 // @namespace    http://tampermonkey.net/
 // @version      7.4.0
 // @description  Análise multi-IA com UI refinada estilo iOS, notificações e logs aprimorados.
@@ -19,7 +19,7 @@
     const CONFIG = {
         GEMINI_API_BASE_URL: 'https://generativelanguage.googleapis.com/v1beta/models/',
         MODELS: [ { name: 'Pro 1.5', id: 'gemini-1.5-pro' }, { name: 'Flash 1.5', id: 'gemini-1.5-flash' } ],
-        API_KEY_GEMINI: 'AIzaSyBwEiziXQ79LP7IKq93pmLM8b3qnwXn6bQ', // WARNING: Insecure
+        API_KEY_GEMINI: 'AIzaSyBwEiziXQ79LP7IKq93pmLM8b3qnwXn6bQ',
         TIMEOUT: 25000, MAX_RETRIES: 1, TEMPERATURE: 0.4,
         NOTIFICATION_TIMEOUT: 5000, // Default dismiss time (ms)
         NOTIFICATION_TIMEOUT_LONG: 8000 // Longer time for errors/warnings
