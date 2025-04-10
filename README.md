@@ -31,7 +31,7 @@ Adicione a extensão ao seu navegador:
 - [Chrome](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) / [Firefox](https://addons.mozilla.org/firefox/addon/tampermonkey/) / [Edge](https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd)
 
 ### 2. Instalar o Script HCK
-- **Opção 1:** [Instalar via GreasyFork (Link Atualizado)](https://greasyfork.org/pt-BR/scripts/532137-hck-v5-prova-paulista) 
+- **Opção 1:** [Instalar via GreasyFork (Link Atualizado)](https://greasyfork.org/pt-BR/scripts/532137-hck-prova-paulista-enhanced) 
 - **Opção 2:** Crie um novo script no Tampermonkey e cole o código-fonte mais recente.
 
 ### 3. Acessar a Plataforma
