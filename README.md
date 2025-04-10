@@ -87,7 +87,7 @@ Testado e funcional nos principais navegadores com suporte a Tampermonkey:
 📜 MIT License - Uso livre, principalmente para fins educacionais. Modifique e distribua com responsabilidade.
 
 <div align="center" style="margin-top:20px">
-  <sub>Versão 7.6.1 | Atualizado em 10/05/2024</sub>
+  <sub>Versão 7.5.4 | Atualizado em 10/05/2024</sub>
   <br>
   <strong>by Hackermoon</strong>
 </div>
