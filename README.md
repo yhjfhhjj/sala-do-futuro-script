@@ -76,7 +76,7 @@ Testado e funcional nos principais navegadores com suporte a Tampermonkey:
 
 **Discord**: `hackermoon` (Mande sugestões, reporte bugs ou troque ideias!)
 
-**Github**: [Reportar Issues](https://github.com/hackermoon1/sala-do-futuro-script/issues) (Verificar se este é o repo correto)
+**Github**: [Reportar Issues](https://github.com/hackermoon1/sala-do-futuro-script/issues)
 
 **Tecnologias Utilizadas**:
 - <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/googlecloud/googlecloud-original.svg" width="14"> Google Gemini AI (`gemini-1.5-pro-latest`, `gemini-1.5-flash-latest`)
