@@ -3,7 +3,7 @@
 ---
 ### 📢 Aviso Importante:
 
-• NOVA VERSÃO (EM BREVE)
+• EM MANUTENÇÃO 
 
 ---
 
