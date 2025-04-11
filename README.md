@@ -3,7 +3,9 @@
 ---
 # 📢 Aviso Importante:
 
-• EM MANUTENÇÃO 
+• O código está passando por uma manutenção, logo mais deve estar estável e melhorado.
+
+Discord: hackermoon
 
 ---
 
@@ -74,7 +76,7 @@ Testado e funcional nos principais navegadores com suporte a Tampermonkey:
 
 ## 🛠️ Desenvolvimento
 
-**Discord**: `hackermoon` (Mande sugestões, reporte bugs ou troque ideias!)
+**Discord**: `hackermoon`
 
 **Github**: [Reportar Issues](https://github.com/hackermoon1/sala-do-futuro-script/issues)
 
