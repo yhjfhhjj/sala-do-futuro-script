@@ -1,9 +1,9 @@
 # 🚀 HCK - PROVA PAULISTA ENHANCED (v7.5+)
 
 ---
-# 📢 Aviso Importante:
+# 📢 ATENÇÃO:
 
-• O código está passando por uma manutenção, logo mais deve estar estável e melhorado.
+- O código está passando por alguns ajustes e manutenção, logo mais deve estar estável e melhorado.
 
 Discord: hackermoon
 
