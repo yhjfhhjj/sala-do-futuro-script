@@ -1,7 +1,7 @@
 # 🚀 HCK - PROVA PAULISTA ENHANCED (v7.5+)
 
 ---
-### 📢 Aviso Importante:
+# 📢 Aviso Importante:
 
 • EM MANUTENÇÃO 
 
