@@ -1,9 +1,9 @@
 # 🚀 HCK - PROVA PAULISTA ENHANCED (v7.5+)
 
 ---
-### 📢 Importante:
+### 📢 Aviso Importante:
 
-O script está funcional e otimizado, mas a precisão absoluta depende da qualidade da questão e das respostas da IA. Use com atenção e reporte bugs.
+• NOVA VERSÃO (EM BREVE)
 
 ---
 
