@@ -11,7 +11,8 @@ javascript:(function() {
 
     console.log('[HCK Bookmarklet] Iniciando...');
 
-    const SCRIPT_VERSION = '8.0.1-beta-bookmarklet-nocomments';
+    // --- VERSÃO ATUALIZADA ---
+    const SCRIPT_VERSION = '8.0.1-alpha';
     const CONFIG = {
         GEMINI_API_BASE_URL: 'https://generativelanguage.googleapis.com/v1beta/models/',
         MODELS: [
@@ -19,9 +20,9 @@ javascript:(function() {
             { name: 'Flash 1.5', id: 'gemini-1.5-flash-latest' }
         ],
         API_KEYS_GEMINI: [
-             // CHAVES K
-            'AIzaSyBDdSZkgQphf5BORTDLcEUbJWcIAIo0Yr8',
-            'AIzaSyANp5yxdrdGL7RtOXy0LdIdkoKZ7cVPIsc'
+            // 002
+            'AIzaSyBDdSZkgQphf5BORTDLcEUbJWcIAIo0Yr8', // 001
+            'AIzaSyANp5yxdrdGL7RtOXy0LdIdkoKZ7cVPIsc'  // 003
         ],
         TIMEOUT: 28000,
         MAX_RETRIES: 2,
@@ -36,10 +37,47 @@ javascript:(function() {
     };
 
     const IMAGE_FILTERS = {
-        blocked: [ /edusp-static\.ip\.tv\/sala-do-futuro\/(?:assets|icons?|logos?|buttons?|banners?)\//i, /s3\.sa-east-1\.amazonaws\.com\/edusp-static\.ip\.tv\/sala-do-futuro\/(?:assets|icons?|logos?|buttons?|banners?)\//i, /s3\.sa-east-1\.amazonaws\.com\/edusp-static\.ip\.tv\/room\/cards\//i, /conteudo_logo\.png$/i, /_thumb(?:nail)?\./i, /\.svg$/i ],
-        allowed: [ /edusp-static\.ip\.tv\/(?:tms|tarefas|exercicios)\//i, /\/atividade\/\d+\?eExame=true/i, /\.(?:jpg|png|jpeg|gif|webp)$/i, /lh[0-9]+(?:- G*)*\.googleusercontent\.com/i, /\/media\//i, /\/questao_\d+/i, /image\?/i ],
-        verify(src) { if (!src || typeof src !== 'string' || !src.startsWith('http')) return false; if (this.blocked.some(r => r.test(src))) return false; return this.allowed.some(r => r.test(src)); }
+        blocked: [
+            // Regras gerais para pastas comuns de assets
+            /edusp-static\.ip\.tv\/sala-do-futuro\/(?:assets|icons?|logos?|buttons?|banners?)\//i,
+            /s3\.sa-east-1\.amazonaws\.com\/edusp-static\.ip\.tv\/sala-do-futuro\/(?:assets|icons?|logos?|buttons?|banners?)\//i,
+            /s3\.sa-east-1\.amazonaws\.com\/edusp-static\.ip\.tv\/room\/cards\//i,
+            // Logos específicos e padrões comuns a serem bloqueados
+            /conteudo_logo\.png$/i,
+            // --- REGRA ADICIONADA PARA BLOQUEAR O LOGO ESPECÍFICO ---
+            /logo_sala_do_futuro\.png$/i,
+            // Thumbnails e SVGs
+            /_thumb(?:nail)?\./i,
+            /\.svg$/i
+        ],
+        allowed: [
+            // Padrões comuns para imagens de questões
+            /edusp-static\.ip\.tv\/(?:tms|tarefas|exercicios)\//i,
+            /\/atividade\/\d+\?eExame=true/i,
+            /\.(?:jpg|png|jpeg|gif|webp)$/i,
+            /lh[0-9]+(?:- G*)*\.googleusercontent\.com/i, // Imagens do Google Drive/Classroom
+            /\/media\//i, // Pastas de mídia genéricas
+            /\/questao_\d+/i, // Padrão de nome de arquivo de questão
+            /image\?/i // URLs que terminam com 'image?' (comum em alguns sistemas)
+        ],
+        verify(src) {
+            if (!src || typeof src !== 'string' || !src.startsWith('http')) return false;
+            // Verifica se está na lista de bloqueados PRIMEIRO
+            if (this.blocked.some(r => r.test(src))) {
+                logMessage('DEBUG', `Image blocked by filter: ${src.substring(0,80)}...`);
+                return false;
+            }
+            // Se não bloqueado, verifica se está na lista de permitidos
+            if (this.allowed.some(r => r.test(src))) {
+                 logMessage('DEBUG', `Image allowed by filter: ${src.substring(0,80)}...`);
+                return true;
+            }
+            // Se não está em nenhuma das listas (ou não explicitamente permitido), bloqueia por padrão
+            logMessage('DEBUG', `Image implicitly blocked (not in allow list): ${src.substring(0,80)}...`);
+            return false;
+        }
     };
+
 
     const STATE = {
         isAnalyzing: false,
@@ -91,7 +129,7 @@ javascript:(function() {
                      if (isCorsError) logMessage('ERROR', `[${modelName}] Falha de Rede/CORS. Não é possível continuar esta requisição.`);
                      else if (isTimeoutError) logMessage('ERROR', `[${modelName}] Timeout atingido.`);
                      else logMessage('ERROR', `[${modelName}] Máximo de tentativas atingido. Falhando requisição.`);
-                    throw error; // Lança o erro final (CORS, Timeout ou último erro)
+                    throw error;
                 }
 
                 let delay;
@@ -109,7 +147,7 @@ javascript:(function() {
                                  const btn = document.getElementById('hck-analyze-btn');
                                  btn.disabled = false;
                                  btn.textContent = `Analisar Questão`;
-                                 btn.style.backgroundColor = '#007AFF'; // Reset style
+                                 btn.style.backgroundColor = '#007AFF';
                                  document.getElementById('hck-toggle-btn')?.style.setProperty('border-color', '#38383A');
                              }
                          }, 30000);
@@ -123,7 +161,7 @@ javascript:(function() {
                 await new Promise(resolve => setTimeout(resolve, delay));
             }
         }
-         throw new Error(`[${modelName}] FetchWithRetry falhou após ${retries + 1} tentativas.`); // Should not be reached if loop logic is correct
+         throw new Error(`[${modelName}] FetchWithRetry falhou após ${retries + 1} tentativas.`);
     }
 
     function getNextApiKey() {
@@ -182,7 +220,7 @@ javascript:(function() {
     }
 
     function extractImages() {
-        logMessage('DEBUG', "Extraindo imagens relevantes...");
+        logMessage('DEBUG', "Extraindo URLs de imagem da página...");
         const urls = new Set();
         document.querySelectorAll('img[src], [style*="background-image"], [data-image], .card-img-top, .questao-imagem').forEach(el => {
             let src = null;
@@ -193,16 +231,19 @@ javascript:(function() {
 
                 if (src) {
                     const absUrl = new URL(src, window.location.href).toString();
+                    // A validação agora acontece DENTRO do IMAGE_FILTERS.verify
                     if (IMAGE_FILTERS.verify(absUrl)) {
                         urls.add(absUrl);
                     }
+                    // O log de bloqueio/permissão já acontece dentro do verify
                 }
             } catch (e) { logMessage('WARN', `Erro ao processar URL de imagem: ${src || 'desconhecido'}. ${e.message}`); }
         });
         STATE.images = Array.from(urls).slice(0, 10);
-        logMessage('INFO', `Extração concluída. ${STATE.images.length} imagens relevantes encontradas.`);
+        logMessage('INFO', `Extração concluída. ${STATE.images.length} imagens válidas e permitidas encontradas.`);
         return STATE.images;
     }
+
 
     async function queryGemini(modelInfo, prompt) {
         const { id: modelId, name: modelName } = modelInfo;
@@ -229,11 +270,10 @@ javascript:(function() {
 
             let data;
             try {
-                 // Tenta ler mesmo em erro para obter detalhes
                  const responseText = await response.text();
                  if (!responseText) {
                     if (!response.ok) throw new Error(`API Error ${response.status}: ${response.statusText || 'Empty Response Body'}`);
-                    data = {}; // Resposta OK mas vazia? Estranho, mas continua.
+                    data = {};
                  } else {
                     data = JSON.parse(responseText);
                  }
@@ -353,7 +393,7 @@ javascript:(function() {
         const sortedVotes = Object.entries(validAnswers).sort(([, v1], [, v2]) => v2 - v1);
         const topAnswer = sortedVotes[0][0];
         const topVotes = sortedVotes[0][1];
-        const totalValidModels = numModelsQueried - errors; // Modelos que não deram erro de rede/formato
+        const totalValidModels = numModelsQueried - errors;
 
         if (topVotes >= majorityThreshold && totalValidModels > 0) {
              const detail = (topVotes === totalValidModels) ? `(Consenso ${topVotes}/${totalValidModels})` : `(Maioria ${topVotes}/${totalValidModels})`;
@@ -444,7 +484,8 @@ ${imageParts.length > 0 ? '\nIMAGENS (Analise cuidadosamente):\n' : (imageFetchE
         const sizes = getResponsiveSize();
         const menu = document.createElement('div'); menu.id = 'hck-menu'; menu.style.cssText = ` background: ${estilo.cores.fundo}; width: ${sizes.menuWidth}; padding: 10px; border-radius: ${estilo.radius}; box-shadow: ${estilo.sombras.menu}; display: none; flex-direction: column; gap: 8px; border: 1px solid ${estilo.cores.borda}; opacity: 0; transform: translateY(15px) scale(0.95); transition: opacity 0.35s ease-out, transform 0.35s ease-out; position: relative; margin-bottom: 8px; max-height: 75vh; overflow-y: auto; scrollbar-width: none; &::-webkit-scrollbar { display: none; } `;
         const header = document.createElement('div'); header.style.cssText = `display: flex; align-items: center; justify-content: center; position: relative; width: 100%; margin-bottom: 4px;`;
-        const title = document.createElement('div'); title.textContent = 'HCK Bmk'; title.style.cssText = ` font-size: ${sizes.titleSize}; font-weight: 600; text-align: center; flex-grow: 1; color: ${estilo.cores.texto}; `;
+        // --- TÍTULO DO MENU ATUALIZADO ---
+        const title = document.createElement('div'); title.textContent = 'HCK'; title.style.cssText = ` font-size: ${sizes.titleSize}; font-weight: 600; text-align: center; flex-grow: 1; color: ${estilo.cores.texto}; `;
         const closeBtn = document.createElement('button'); closeBtn.innerHTML = '×'; closeBtn.setAttribute('aria-label', 'Fechar Menu'); closeBtn.style.cssText = ` position: absolute; top: -4px; right: -4px; background: ${estilo.cores.fundoSecundario}; border: none; color: ${estilo.cores.textoSecundario}; font-size: 18px; font-weight: 600; cursor: pointer; padding: 0; line-height: 1; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; &:hover { background-color: ${estilo.cores.fundoTerciario}; color: ${estilo.cores.texto}; } `;
         header.append(title, closeBtn);
         const input = document.createElement('textarea'); input.id = 'hck-question-input'; input.placeholder = 'Cole a questão aqui...'; input.setAttribute('rows', '2'); input.style.cssText = ` width: 100%; min-height: ${sizes.textareaHeight}; padding: 8px; margin-bottom: 0; border: 1px solid ${estilo.cores.borda}; border-radius: ${estilo.radiusSmall}; resize: vertical; font-size: ${sizes.fontSize}; font-family: inherit; box-sizing: border-box; background: ${estilo.cores.fundoTerciario}; color: ${estilo.cores.texto}; transition: border-color 0.2s ease, box-shadow 0.2s ease; &::placeholder {color: ${estilo.cores.textoSecundario};} &:focus { outline: none; border-color: ${estilo.cores.accentBg}; box-shadow: 0 0 0 1px ${estilo.cores.accentBg}80; } `;
@@ -456,7 +497,10 @@ ${imageParts.length > 0 ? '\nIMAGENS (Analise cuidadosamente):\n' : (imageFetchE
         const analyzeBtn = document.createElement('button'); analyzeBtn.id = 'hck-analyze-btn'; analyzeBtn.textContent = `Analisar Questão`; analyzeBtn.style.cssText = buttonPrimaryStyle;
         const clearBtn = document.createElement('button'); clearBtn.textContent = `Limpar Tudo`; clearBtn.style.cssText = buttonSecondaryStyle;
         const logsBtn = document.createElement('button'); logsBtn.textContent = `Ver Logs`; logsBtn.style.cssText = buttonSecondaryStyle;
-        const credits = document.createElement('div'); credits.textContent = `v${SCRIPT_VERSION} by Hackermoon`; credits.style.cssText = ` text-align: center; font-size: 10px; font-weight: 500; color: ${estilo.cores.textoSecundario}; margin-top: 8px; padding-top: 6px; border-top: 1px solid ${estilo.cores.borda}; opacity: 0.7; `;
+        // --- FORMATAÇÃO DOS CRÉDITOS ATUALIZADA ---
+        const credits = document.createElement('div');
+        credits.innerHTML = `<span style="font-weight: 600; letter-spacing: 0.5px;">v${SCRIPT_VERSION}</span> <span style="margin: 0 4px;">|</span> <span style="opacity: 0.7;">by Hackermoon</span>`;
+        credits.style.cssText = ` text-align: center; font-size: 10px; font-weight: 500; color: ${estilo.cores.textoSecundario}; margin-top: 8px; padding-top: 6px; border-top: 1px solid ${estilo.cores.borda}; opacity: 0.9; `;
         const notificationContainer = document.createElement('div'); notificationContainer.id = 'hck-notifications'; notificationContainer.style.cssText = ` position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); z-index: 10002; display: flex; flex-direction: column; align-items: center; gap: 10px; width: auto; max-width: 90%; `;
         STATE.notificationContainer = notificationContainer;
         menu.append(header, input, updateImagesBtn, imagesContainer, analyzeBtn, clearBtn, logsBtn, credits);
@@ -565,7 +609,7 @@ ${imageParts.length > 0 ? '\nIMAGENS (Analise cuidadosamente):\n' : (imageFetchE
                         fetchWithRetry(modelInfo.name, () => queryGemini(modelInfo, prompt))
                             .catch(e => {
                                 logMessage('ERROR', `[${modelInfo.name}] FALHA FINAL após retentativas: ${e.message}`);
-                                return Promise.reject(e); // Propaga a rejeição final
+                                return Promise.reject(e);
                             })
                     );
 
@@ -587,7 +631,6 @@ ${imageParts.length > 0 ? '\nIMAGENS (Analise cuidadosamente):\n' : (imageFetchE
                      const corsFailure = results.some(r => r.status === 'rejected' && (r.reason?.message?.toLowerCase().includes('cors') || r.reason?.message?.toLowerCase().includes('failed to fetch')));
                      if (corsFailure) {
                         logMessage('ERROR', 'Uma ou mais requisições falharam devido a CORS ou problemas de rede.');
-                        // A notificação de erro já será dada pelo determineConsensus se necessário
                      }
 
                     logMessage('INFO', 'Determinando consenso...');
@@ -599,7 +642,7 @@ ${imageParts.length > 0 ? '\nIMAGENS (Analise cuidadosamente):\n' : (imageFetchE
                     showResponse({ answer: "Erro Crítico", detail: `Falha: ${error.message.substring(0,100)}`, type: 'error' });
                 } finally {
                     STATE.isAnalyzing = false;
-                    setAnalyzeButtonState(false, STATE.rateLimitActive); // Atualiza estado final do botão
+                    setAnalyzeButtonState(false, STATE.rateLimitActive);
                     logMessage("INFO", "----- Análise Finalizada -----");
                 }
             };
