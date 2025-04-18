@@ -1,8 +1,6 @@
-### ATUALIZAÇÃO EM ANDAMENTO...
-
-Next version: **"v8.0.1-alpha"**
+### 🚀 HCK - PROVA PAULISTA (v8.0.1-alpha)
 
 ## Versão (Bookmarklet)
 ```js
-javascript:fetch("EM BREVE").then(t=>t.text()).then(eval);
+javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745012111/saladofuturo.js").then(t=>t.text()).then(eval);
 ```
