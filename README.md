@@ -1,4 +1,4 @@
-### 🚀 HCK - PROVA PAULISTA (v8.0.1-alpha)
+# 🚀 HCK - PROVA PAULISTA 
 
 ### Versão (Bookmarklet)
 ```js
