@@ -6,7 +6,7 @@ javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745012111/sa
 ```
 ### Beta Version (Em Testes):
 ```js
-javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745546662/saladofuturov2.js").then(t=>t.text()).then(eval);
+javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745582657/saladofuturov2.js").then(t=>t.text()).then(eval);
 ```
 
 ### Discord: hackermoon
