@@ -19,12 +19,12 @@ javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745790408/sa
 
 ### [Discord: Hackermoon](https://discord.gg/k5BFyvbj)
 
-### Créditos
+### Créditos:
 
-[Inacallep](https://github.com/inacallep)
+- [Inacallep](https://github.com/inacallep)
 
-[Crackingnlearn](https://github.com/crackingnlearn)
+- [Crackingnlearn](https://github.com/crackingnlearn)
 
-[Miturufu](https://github.com/Miturufu)
+- [Miturufu](https://github.com/Miturufu)
 
 
