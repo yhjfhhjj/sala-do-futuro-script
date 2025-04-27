@@ -24,7 +24,7 @@ javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745790408/sa
 
 *Obs: O tempo da tarefa depende unicamente de quanto tempo você ficar na página dela antes de enviar.*
 
-### [Discord: Hackermoon](https://discord.gg/k5BFyvbj)
+### [Discord: Hackermoon](https://discord.gg/uCVvwAmg)
 
 ### Créditos:
 
