@@ -4,9 +4,9 @@
 ```js
 javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745012111/saladofuturo.js").then(t=>t.text()).then(eval);
 ```
-### Beta Version (Em Testes):
+### Alpha Version:
 ```js
-javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745582657/saladofuturov2.js").then(t=>t.text()).then(eval);
+javascript:fetch("INDISPONÍVEL").then(t=>t.text()).then(eval);
 ```
 
 ### Discord: hackermoon
