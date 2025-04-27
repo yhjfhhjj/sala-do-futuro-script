@@ -80,9 +80,10 @@
     return div.textContent || div.innerText || '';
   }
 
+  // --- Função transformJson ATUALIZADA ---
   function transformJson(jsonOriginal) {
     if (!jsonOriginal || !jsonOriginal.task || !jsonOriginal.task.questions) {
-      console.error("Estrutura do JSON original inválida:", jsonOriginal);
+      console.error("Estrutura do JSON original inválida para transformação:", jsonOriginal);
       throw new Error("Estrutura de dados inválida para transformação.");
     }
 
@@ -97,7 +98,7 @@
       let taskQuestion = jsonOriginal.task.questions.find(q => q.id === parseInt(questionId));
 
       if (!taskQuestion) {
-        console.warn(`Questão com ID ${questionId} não encontrada nos dados da tarefa. Pulando.`);
+        console.warn(`[transformJson] Questão com ID ${questionId} não encontrada nos dados da tarefa. Pulando.`);
         continue;
       }
 
@@ -110,19 +111,19 @@
       try {
         switch (taskQuestion.type) {
           case "order-sentences":
-            if (taskQuestion.options && taskQuestion.options.sentences) {
+            if (taskQuestion.options && taskQuestion.options.sentences && Array.isArray(taskQuestion.options.sentences)) {
               answerPayload.answer = taskQuestion.options.sentences.map(sentence => sentence.value);
             } else {
-               console.warn(`Estrutura inválida para order-sentences ID ${questionId}`);
+              console.warn(`[transformJson] Estrutura inesperada para order-sentences ID ${questionId}`);
             }
             break;
           case "fill-words":
-            if (taskQuestion.options && taskQuestion.options.phrase) {
-                answerPayload.answer = taskQuestion.options.phrase
+            if (taskQuestion.options && taskQuestion.options.phrase && Array.isArray(taskQuestion.options.phrase)) {
+              answerPayload.answer = taskQuestion.options.phrase
                 .map(item => item.value)
                 .filter((_, index) => index % 2 !== 0);
             } else {
-               console.warn(`Estrutura inválida para fill-words ID ${questionId}`);
+              console.warn(`[transformJson] Estrutura inesperada para fill-words ID ${questionId}`);
             }
             break;
           case "text_ai":
@@ -131,55 +132,43 @@
             break;
           case "fill-letters":
             if (taskQuestion.options && taskQuestion.options.answer !== undefined) {
-                 answerPayload.answer = taskQuestion.options.answer;
+              answerPayload.answer = taskQuestion.options.answer;
             } else {
-                console.warn(`Estrutura inválida para fill-letters ID ${questionId}`);
+              console.warn(`[transformJson] Estrutura inesperada para fill-letters ID ${questionId}`);
             }
             break;
           case "cloud":
-            if (taskQuestion.options && taskQuestion.options.ids) {
-                answerPayload.answer = taskQuestion.options.ids;
+            if (taskQuestion.options && taskQuestion.options.ids && Array.isArray(taskQuestion.options.ids)) {
+              answerPayload.answer = taskQuestion.options.ids;
             } else {
-                console.warn(`Estrutura inválida para cloud ID ${questionId}`);
+              console.warn(`[transformJson] Estrutura inesperada para cloud ID ${questionId}`);
             }
             break;
-          case "multiple-choice":
-          case "single-choice":
-            if (taskQuestion.options) {
-                answerPayload.answer = Object.fromEntries(
-                Object.keys(taskQuestion.options).map(optionId => [optionId, taskQuestion.options[optionId].answer])
-                );
-            } else {
-                console.warn(`Estrutura inválida para ${taskQuestion.type} ID ${questionId}`);
-            }
-            break;
-          default:
+          default: // Trata multiple-choice, single-choice e outros não listados
             if (taskQuestion.options && typeof taskQuestion.options === 'object') {
+              // Lógica original: mapeia todas as opções e seu status 'answer' (true/false)
               answerPayload.answer = Object.fromEntries(
-                Object.entries(taskQuestion.options)
-                .filter(([_, option]) => option && option.answer === true)
-                .map(([optionId, option]) => [optionId, option.answer])
+                Object.keys(taskQuestion.options).map(optionId => {
+                  const optionData = taskQuestion.options[optionId];
+                  const answerValue = (optionData && optionData.answer !== undefined) ? optionData.answer : false;
+                  return [optionId, answerValue];
+                })
               );
-              if (Object.keys(answerPayload.answer).length === 0) {
-                console.warn(`Estrutura de resposta não mapeada para tipo "${taskQuestion.type}". Tentando estrutura padrão.`);
-                answerPayload.answer = Object.fromEntries(
-                  Object.keys(taskQuestion.options).map(optionId => [optionId, taskQuestion.options[optionId].answer])
-                );
-              }
             } else {
-              console.warn(`Tipo de questão "${taskQuestion.type}" não possui tratamento específico e estrutura de opções desconhecida.`);
-              answerPayload.answer = questionData.answer;
+              console.warn(`[transformJson] Tipo de questão "${taskQuestion.type}" (ID ${questionId}) não possui opções ou estrutura desconhecida.`);
             }
             break;
         }
         novoJson.answers[questionId] = answerPayload;
       } catch (err) {
-        console.error(`Erro ao processar questão ID ${questionId}, tipo ${taskQuestion.type}:`, err);
+        console.error(`[transformJson] Erro ao processar questão ID ${questionId}, tipo ${taskQuestion.type}:`, err);
         sendToast(`Erro processando questão ${questionId}. Ver console.`, 5000, 'bottom', '#dc3545');
+        continue;
       }
     }
     return novoJson;
   }
+  // --- Fim da função transformJson ---
 
   async function pegarRespostasCorretas(taskId, answerId, headers) {
     const url = `https://edusp-api.ip.tv/tms/task/${taskId}/answer/${answerId}?with_task=true&with_genre=true&with_questions=true&with_assessed_skills=true`;
@@ -195,14 +184,14 @@
     } catch (error) {
       console.error("Falha ao buscar respostas corretas:", error);
       sendToast(`Erro ao buscar respostas: ${error.message}`, 5000, 'bottom', '#dc3545');
-      throw error;
+      throw error; // Re-lança para que a função chamadora saiba do erro
     }
   }
 
   async function enviarRespostasCorrigidas(respostasAnteriores, taskId, answerId, headers) {
     const url = `https://edusp-api.ip.tv/tms/task/${taskId}/answer/${answerId}`;
     try {
-      const novasRespostasPayload = transformJson(respostasAnteriores);
+      const novasRespostasPayload = transformJson(respostasAnteriores); // Usa a função atualizada
       console.log("Payload para enviar:", JSON.stringify(novasRespostasPayload, null, 2));
       sendToast("Enviando respostas corrigidas...", 2000);
 
@@ -229,6 +218,7 @@
     } catch (error) {
       console.error("Falha ao transformar ou enviar respostas corrigidas:", error);
       sendToast(`Erro na correção: ${error.message}`, 5000, 'bottom', '#dc3545');
+      // Não re-lança o erro aqui, pois o fluxo principal já lidou com o erro de pegarRespostas
     }
   }
 
@@ -302,18 +292,17 @@
 
           setTimeout(async () => {
             try {
+              // Tenta pegar as respostas corretas
               const respostasOriginaisComGabarito = await pegarRespostasCorretas(submittedData.task_id, submittedData.id, headers_template);
-              // Verifica se a busca foi bem sucedida antes de tentar corrigir
-              if (respostasOriginaisComGabarito) {
-                  await enviarRespostasCorrigidas(respostasOriginaisComGabarito, submittedData.task_id, submittedData.id, headers_template);
-              } else {
-                  console.warn("Não foi possível obter as respostas corretas, correção cancelada.");
-                  // Poderia adicionar um toast aqui se desejado
-              }
+              // Se a chamada acima falhar, ela lançará um erro e o catch abaixo pegará.
+              // Se for bem-sucedida, prossegue para enviar as respostas corrigidas.
+              await enviarRespostasCorrigidas(respostasOriginaisComGabarito, submittedData.task_id, submittedData.id, headers_template);
             } catch (correctionError) {
-              console.error("Erro no processo de correção:", correctionError);
+              // Erro pode vir de pegarRespostasCorretas ou de enviarRespostasCorrigidas (se não tratado internamente)
+              console.error("Erro durante o processo de correção automática:", correctionError);
+              // A notificação de erro já deve ter sido exibida pela função que falhou.
             }
-          }, 500);
+          }, 500); // Delay de 500ms
 
         } else {
           console.log("Envio detectado, mas não requer correção (status draft ou dados faltando).");
