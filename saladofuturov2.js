@@ -1,141 +1,364 @@
 javascript:(function() {
-    'use strict';
+    const SCRIPT_VERSION = "1.1-revised";
+    const TARGET_URL_REGEX = /https:\/\/saladofuturo\.educacao\.sp\.gov\.br\/resultado\/tarefa\/\d+\/resposta\/\d+/;
+    const TOASTIFY_CSS_URL = 'https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css';
+    const TOASTIFY_JS_URL = 'https://cdn.jsdelivr.net/npm/toastify-js';
+    const API_BASE_URL = "https://edusp-api.ip.tv";
 
-    // --- VERIFICAÇÃO DE INSTÂNCIA ---
-    if (document.getElementById('hck-beta-ui-bookmarklet')) {
-        console.warn('[HCK BETA Bookmarklet] Já está em execução.');
-        try { document.getElementById('hck-beta-toggle-btn')?.focus(); } catch(e) {}
+    if (typeof _dadosLogin === 'undefined' || !_dadosLogin.auth_token) {
+        alert('Erro Crítico: Informações de login (_dadosLogin) não encontradas. O script não pode continuar.');
         return;
     }
-    console.log('[HCK BETA Bookmarklet] Iniciando...');
+    if (!TARGET_URL_REGEX.test(document.location.href)) {
+        console.warn("Script executado fora da URL alvo esperada:", document.location.href);
+        // alert('Aviso: Este script deve ser executado na página de resultado de uma tarefa.');
+    }
 
-    // --- CONFIGURAÇÃO HCK BETA ---
-    const SCRIPT_VERSION = '9.2.4-hck-beta-bb-libmimic'; // <- Nova Versão
-    const API_USER_AGENT = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36`; // UA genérico, sem ref ao HCK talvez?
-    const CONFIG = { /* ... (Config igual v9.2.3) ... */
-        BLACKBOX_API_URL: 'https://www.blackbox.ai/api/chat', MODELS: [ { name: 'Blackbox Default', id: 'blackbox', type: 'blackbox' }, { name: 'Llama 3.1 70B Turbo', id: 'meta-llama/Llama-3.1-70B-Instruct-Turbo', type: 'blackbox' }, { name: 'Deepseek Chat', id: 'deepseek-chat', type: 'blackbox' }, { name: 'Deepseek Coder', id: 'deepseek-coder', type: 'blackbox' }, { name: 'Deepseek Math', id: 'deepseek-math', type: 'blackbox' }, { name: 'Deepseek V2', id: 'deepseek-v2', type: 'blackbox' }, { name: 'Command R', id: 'command-r', type: 'blackbox' }, { name: 'Command R Plus', id: 'command-r-plus', type: 'blackbox' }, { name: 'Gemini 1.5 Pro', id: 'gemini-1.5-pro', type: 'blackbox' }, { name: 'Claude 3 Opus', id: 'claude-3-opus', type: 'blackbox' }, { name: 'Claude 3 Sonnet', id: 'claude-3-sonnet', type: 'blackbox' }, { name: 'GPT-4o', id: 'gpt-4o', type: 'blackbox' }, { name: 'GPT-4 Turbo', id: 'gpt-4-turbo', type: 'blackbox' }, { name: 'GPT-3.5 Turbo', id: 'gpt-3.5-turbo', type: 'blackbox' } ], TIMEOUT: 40000, MAX_RETRIES: 1, API_RETRY_DELAY_BASE: 2500, API_RATE_LIMIT_DELAY_MULTIPLIER: 5.0, TEMPERATURE: 0.25, TOP_P: 0.9, MAX_OUTPUT_TOKENS: 15, NOTIFICATION_TIMEOUT: 5500, NOTIFICATION_TIMEOUT_LONG: 10000, };
-    const IMAGE_FILTERS = { /* ... (código igual) ... */
-        blocked: [ /edusp-static\.ip\.tv\/sala-do-futuro\/(?:assets|icons?|logos?|buttons?|banners?)\//i, /s3\.sa-east-1\.amazonaws\.com\/edusp-static\.ip\.tv\/sala-do-futuro\/(?:assets|icons?|logos?|buttons?|banners?)\//i, /s3\.sa-east-1\.amazonaws\.com\/edusp-static\.ip\.tv\/room\/cards\//i, /conteudo_logo\.png$/i, /logo_sala_do_futuro\.png$/i, /_thumb(?:nail)?\./i, /\.svg$/i ], allowed: [ /edusp-static\.ip\.tv\/(?:tms|tarefas|exercicios)\//i, /\/atividade\/\d+\?eExame=true/i, /\.(?:jpg|png|jpeg|gif|webp)$/i, /lh[0-9]+(?:- G*)*\.googleusercontent\.com/i, /\/media\//i, /\/questao_\d+/i, /image\?/i ], verify(src) { if (!src || typeof src !== 'string' || !src.startsWith('http')) return false; if (this.blocked.some(r => r.test(src))) return false; if (this.allowed.some(r => r.test(src))) return true; return false; } };
-    const STATE = { /* ... (código igual) ... */
-        isAnalyzing: false, images: [], logMessages: [], logModal: null, notificationContainer: null, rateLimitActive: false, rateLimitTimeoutId: null, selectedModelId: CONFIG.MODELS[0]?.id || 'blackbox' };
-    const estilo = { /* ... (código igual) ... */
-        cores: { fundo: '#1A1B1E', fundoSecundario: '#2A2B2E', fundoTerciario: '#3A3B3E', texto: '#EAEAEA', textoSecundario: '#9A9A9E', accent: '#000000', accentBg: '#57FFC1', secondaryAccent: '#EAEAEA', secondaryAccentBg: '#3A3B3E', erro: '#FF5F57', sucesso: '#57FFC1', warn: '#FFBD2E', info: '#5AC8FA', logDebug: '#8A8A8E', borda: '#4A4B4E', notificationBg: 'rgba(32, 33, 36, 0.9)', copyBtnBg: '#555555', spinner: '#000000' }, sombras: { menu: '0 10px 35px rgba(0, 0, 0, 0.45)', botao: '0 2px 5px rgba(0, 0, 0, 0.25)', notification: '0 5px 20px rgba(0, 0, 0, 0.35)' }, radius: '8px', radiusSmall: '5px' };
-    const generateUUID = () => (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : `fallback-${Date.now()}-${Math.random().toString(16).substring(2)}`;
-    const getLogColor = (level) => { const cores = { ERROR: estilo.cores.erro, WARN: estilo.cores.warn, INFO: estilo.cores.info, DEBUG: estilo.cores.logDebug, TEXT: estilo.cores.texto, DEFAULT: estilo.cores.textoSecundario }; return cores[level?.toUpperCase()] || cores.DEFAULT; };
-    const sanitizeHtml = (str) => { const temp = document.createElement('div'); temp.textContent = str; return temp.innerHTML; };
+    const AUTH_TOKEN = _dadosLogin.auth_token;
+    const HEADERS_TEMPLATE = {
+        "x-api-realm": "edusp",
+        "x-api-platform": "webclient",
+        "x-api-key": AUTH_TOKEN,
+        "content-type": "application/json"
+    };
 
-    // --- LOGGING ---
-    // ... (logMessage e updateLogAreaContent - código igual v9.2.3) ...
-    const logMessage = (level, ...args) => { const timestamp = new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit', fractionalSecondDigits:1 }); const message = args.map(arg => { try { return typeof arg === 'object' ? JSON.stringify(arg, (k, v)=>(typeof v==='bigint'?v.toString():v), 2) : String(arg); } catch { return '[Object Non-Serializable]'; } }).join(' '); STATE.logMessages.push({ timestamp, level, message }); if (STATE.logMessages.length > 600) STATE.logMessages.shift(); const consoleArgs = [`[HCK ${timestamp}]`, ...args]; switch(level.toUpperCase()){ case 'ERROR': console.error(...consoleArgs); break; case 'WARN': console.warn(...consoleArgs); break; case 'INFO': console.info(...consoleArgs); break; case 'DEBUG': console.debug(...consoleArgs); break; default: console.log(...consoleArgs); } if (STATE.logModal && STATE.logModal.style.display === 'flex') { const logArea = STATE.logModal.querySelector('#hck-log-area'); if (logArea) { const scrollThreshold = 100; const isScrolledToBottom = logArea.scrollHeight - logArea.clientHeight <= logArea.scrollTop + scrollThreshold; updateLogAreaContent(logArea, isScrolledToBottom); } } };
-    const updateLogAreaContent = (logArea, scrollToBottom = false) => { if (!logArea) return; logArea.innerHTML = STATE.logMessages.map(logEntry => { const color = getLogColor(logEntry.level); const timestamp = logEntry.timestamp; const level = logEntry.level; const sanitizedMsg = sanitizeHtml(logEntry.message); return `<div style="margin-bottom:3px;line-height:1.5;word-break:break-word;"><span style="color:${color};font-weight:500;margin-right:6px;user-select:none;display:inline-block;width:95px;">[${timestamp} ${level}]</span><span style="color:${getLogColor('TEXT')};">${sanitizedMsg}</span></div>`; }).join(''); if (scrollToBottom) logArea.scrollTop = logArea.scrollHeight; };
-
-    // --- FUNÇÕES DE REDE, EXTRAÇÃO, FORMAT RESPONSE ---
-    // ... (withTimeout, fetchWithRetry, extractImages, formatResponse - código igual v9.2.3) ...
-    const withTimeout = (promise, ms) => Promise.race([ promise, new Promise((_, reject) => setTimeout(() => reject(new Error(`Timeout ${ms}ms`)), ms)) ]);
-    async function fetchWithRetry(modelName, apiType, callback, retries = CONFIG.MAX_RETRIES) { logMessage('DEBUG', `[${modelName}/${apiType}] FetchRetry (Max ${retries})...`); for (let attempt = 0; attempt <= retries; attempt++) { try { if (STATE.rateLimitActive && attempt === 0) { const d=1500; logMessage('WARN', `[${modelName}] RateLimit Global. Delay ${d}ms`); await new Promise(r=>setTimeout(r,d)); } return await withTimeout(callback(), CONFIG.TIMEOUT); } catch (error) { logMessage('ERROR', `[${modelName}/${apiType}] Tentativa ${attempt + 1}/${retries + 1} Falha: ${error.message}`, error.stack ? `\nStack: ${error.stack}` : ''); const isCors = error instanceof TypeError && (error.message.toLowerCase().includes('fetch')||error.message.toLowerCase().includes('network')); const isTimeout = error.message.toLowerCase().includes('timeout'); const isAbort = error.name === 'AbortError'; if (isCors || isTimeout || isAbort || attempt === retries) { if(isCors)logMessage('ERROR', `[${modelName}/${apiType}] Falha Rede/CORS.`); else if(isTimeout)logMessage('ERROR', `[${modelName}/${apiType}] Timeout (${CONFIG.TIMEOUT}ms).`); else if(isAbort)logMessage('ERROR', `[${modelName}/${apiType}] Abortado.`); else logMessage('ERROR', `[${modelName}/${apiType}] Max ${retries + 1} tentativas.`); throw error; } let delay; const isRL = error.message.includes('429') || error.message.toLowerCase().includes('rate limit') || error.message.toLowerCase().includes('too many requests') || error.message.toLowerCase().includes('cloudflare'); if (isRL) { if (!STATE.rateLimitActive) { logMessage('WARN', `[${modelName}/${apiType}] RateLimit/Block (${error.message}). Backoff Global ON.`); STATE.rateLimitActive = true; if (STATE.rateLimitTimeoutId) clearTimeout(STATE.rateLimitTimeoutId); STATE.rateLimitTimeoutId = setTimeout(() => { logMessage('INFO', 'Backoff Global OFF.'); STATE.rateLimitActive = false; STATE.rateLimitTimeoutId = null; if (!STATE.isAnalyzing) setAnalyzeButtonState(false, false); }, 75000); } delay = CONFIG.API_RETRY_DELAY_BASE * CONFIG.API_RATE_LIMIT_DELAY_MULTIPLIER * (attempt + 1); logMessage('WARN', `[${modelName}/${apiType}] RateLimit/Block. Backoff ${delay}ms`); } else { delay = CONFIG.API_RETRY_DELAY_BASE * (attempt + 1); logMessage('INFO', `[${modelName}/${apiType}] Erro (${error.message}). Tentando ${delay}ms`); } await new Promise(resolve => setTimeout(resolve, delay)); } } throw new Error(`[${modelName}/${apiType}] Falha fetchWithRetry.`); }
-    function extractImages() { /* ... */ const urls=new Set();document.querySelectorAll('img[src], [style*="background-image"], [data-image], .card-img-top, .questao-imagem').forEach(el=>{let s=null;try{if(el.tagName==='IMG'&&el.src)s=el.src;else if(el.dataset.image)s=el.dataset.image;else if(el.style.backgroundImage){const m=el.style.backgroundImage.match(/url\("?(.+?)"?\)/);if(m&&m[1])s=m[1];}if(s){const abs=new URL(s,window.location.href).toString();if(IMAGE_FILTERS.verify(abs)){urls.add(abs);}}}catch(e){}});STATE.images=Array.from(urls).slice(0,8);return STATE.images; }
-    function formatResponse(answer) { /* ... */ if(typeof answer!=='string')return null;const cleaned=answer.trim().replace(/[\*`"']/g,'');let match=cleaned.match(/^(?:[\[\("]*)([A-E])(?:[\.\)\]"]*)$/i);if(match?.[1])return match[1].toUpperCase();match=cleaned.match(/(?:alternativa|letra|opção|resposta(?: correta)? é)\s*:?\s*([A-E])(?:\b|[.\)])/i);if(match?.[1])return match[1].toUpperCase();if(cleaned.length<=5){match=cleaned.match(/(?:^|\s)([A-E])(?:$|\s)/);if(match?.[1])return match[1].toUpperCase();}match=cleaned.match(/([A-E])/i);if(match?.[1])return match[1].toUpperCase();return null; }
-
-    // --- AJUSTE: CONSULTA BLACKBOX (Mimetizando Biblioteca) ---
-    async function queryBlackboxInternal(modelInfo, promptPayload) {
-        const { name: modelName, id: modelId } = modelInfo;
-        const apiUrl = CONFIG.BLACKBOX_API_URL;
-
-        logMessage('INFO', `[${modelName}/Blackbox] Consultando API (Modo Mimetizado)...`);
-        logMessage('DEBUG', `[${modelName}/Blackbox] Payload (trunc):`, JSON.stringify(promptPayload).substring(0, 500) + (JSON.stringify(promptPayload).length > 500 ? '...' : ''));
-
-        // --- HEADERS Mimetizando a Biblioteca Keva1z ---
-        const headers = {
-            'Accept': 'application/json, text/plain, */*',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Content-Type': 'application/json',
-            // 'Cookie': ??? // A biblioteca Python pode gerenciar cookies; difícil aqui. Tentamos sem.
-            'Origin': 'https://www.blackbox.ai', // ESSENCIAL para mimetizar
-            'Referer': 'https://www.blackbox.ai/', // ESSENCIAL para mimetizar
-            'User-Agent': API_USER_AGENT,
-            // Adicionar outros headers se a biblioteca Keva1z enviar algo mais específico
-        };
-        logMessage('DEBUG', `[${modelName}/Blackbox] Headers Mimetizados:`, headers);
-
+    function removeHtmlTags(htmlString) {
         try {
-            const t0 = performance.now();
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify(promptPayload),
-                mode: 'cors', // Necessário, mas o bloqueio CORS ainda acontecerá sem extensão
-                credentials: 'omit' // Não envia cookies do navegador automaticamente
-            });
-            const t1 = performance.now();
-            logMessage('DEBUG', `[${modelName}/Blackbox] Status: ${response.status}. Tempo: ${((t1 - t0)/1000).toFixed(2)}s`);
+            if (!htmlString) return '';
+            const div = document.createElement('div');
+            div.innerHTML = htmlString;
+            return div.textContent || div.innerText || '';
+        } catch (e) {
+            console.error("Erro ao remover tags HTML:", e);
+            return htmlString;
+        }
+    }
 
-            const body = await response.text();
-            logMessage('DEBUG', `[${modelName}/Blackbox] Resp Bruta (trunc):`, body.substring(0, 800) + (body.length > 800 ? '...' : ''));
+    function transformJson(jsonOriginal) {
+        if (!jsonOriginal || !jsonOriginal.task || !jsonOriginal.task.questions || !jsonOriginal.answers) {
+            throw new Error("Dados de resposta original inválidos ou incompletos para transformação.");
+        }
 
-            if (!response.ok) {
-                 // ... (tratamento de erro igual v9.2.3) ...
-                 logMessage('ERROR', `[${modelName}/Blackbox] HTTP ${response.status}: ${response.statusText}. Corpo: ${body.substring(0, 500)}`); if (response.status === 403 || response.status === 503 || body.toLowerCase().includes('cloudflare')) throw new Error(`API Blocked (CF ${response.status})`); if (response.status === 429) throw new Error(`API Rate Limit (429)`); throw new Error(`API Error ${response.status}: ${response.statusText}`);
+        let novoJson = {
+            accessed_on: jsonOriginal.accessed_on || new Date().toISOString(),
+            executed_on: jsonOriginal.executed_on || new Date().toISOString(),
+            answers: {}
+        };
+
+        for (let questionId in jsonOriginal.answers) {
+             if (!jsonOriginal.answers.hasOwnProperty(questionId)) continue;
+
+            let originalAnswerData = jsonOriginal.answers[questionId];
+            let taskQuestion = jsonOriginal.task.questions.find(q => q.id === parseInt(questionId));
+
+            if (!taskQuestion || !taskQuestion.type || !originalAnswerData) {
+                console.warn(`Dados incompletos para questão ID ${questionId}. Pulando.`);
+                continue;
             }
 
-            // ... (lógica de extração da resposta igual v9.2.3) ...
-            const answerMatch = body.match(/\$ANSWER\$(.*)/); if (answerMatch?.[1]) { const extr = answerMatch[1].trim(); logMessage('INFO', `[${modelName}/Blackbox] Resp ($ANSWER$): "${extr}"`); return extr; } const lines = body.split('\n').map(l => l.trim()).filter(l => l); if (lines.length > 0) { const last = lines[lines.length - 1]; try { const json = JSON.parse(last); if (json && typeof json === 'string') { logMessage('INFO', `[${modelName}/Blackbox] Resp (JSON str): "${json}"`); return json; } } catch (e) {} logMessage('INFO', `[${modelName}/Blackbox] Resp (last line): "${last}"`); return last; } logMessage('WARN', `[${modelName}/Blackbox] Extração falhou.`); return body;
+            let correctAnswer = null;
+            let questionType = taskQuestion.type;
 
-        } catch (error) {
-            // AVISO CORS MAIS CLARO AINDA
-            if (error instanceof TypeError && (error.message.toLowerCase().includes('fetch') || error.message.toLowerCase().includes('network'))) {
-                 logMessage('ERROR', `[${modelName}/Blackbox] FALHA DE FETCH/CORS: ${error.message}`);
-                 logMessage('ERROR', `================================================================`);
-                 logMessage('ERROR', `ERRO DE CORS! O navegador bloqueou a requisição.`);
-                 logMessage('ERROR', `VERIFIQUE SE SUA EXTENSÃO CORS ESTÁ ATIVA E CONFIGURADA`);
-                 logMessage('ERROR', `(Tente configurar a extensão para permitir '*' em Origin).`);
-                 logMessage('ERROR', `Sem isso, o acesso à API Blackbox pelo bookmarklet falhará.`);
-                 logMessage('ERROR', `================================================================`);
-                 throw new Error(`Falha Fetch/CORS (Extensão Ativa?): ${error.message}`);
+            try {
+                switch (questionType) {
+                    case "order-sentences":
+                        correctAnswer = taskQuestion.options?.sentences?.map(sentence => sentence.value) ?? [];
+                        break;
+                    case "fill-words":
+                        correctAnswer = taskQuestion.options?.phrase
+                            ?.map(item => item.value)
+                            ?.filter((_, index) => index % 2 !== 0) ?? [];
+                        break;
+                    case "text_ai":
+                        let rawAnswer = taskQuestion.comment || '';
+                        correctAnswer = { "0": removeHtmlTags(rawAnswer) };
+                        break;
+                    case "fill-letters":
+                        correctAnswer = taskQuestion.options?.answer;
+                        break;
+                    case "cloud":
+                        correctAnswer = taskQuestion.options?.ids;
+                        break;
+                    case "multiple-choice":
+                    case "single-choice":
+                    case "true-false":
+                    default:
+                         if(taskQuestion.options){
+                             correctAnswer = Object.fromEntries(
+                                Object.keys(taskQuestion.options)
+                                    .filter(optionId => taskQuestion.options[optionId] !== null && typeof taskQuestion.options[optionId] === 'object' && 'answer' in taskQuestion.options[optionId])
+                                    .map(optionId => [optionId, taskQuestion.options[optionId].answer])
+                             );
+                         } else {
+                             correctAnswer = {};
+                         }
+                        break;
+                }
+
+                 if (correctAnswer !== null && correctAnswer !== undefined) {
+                    novoJson.answers[questionId] = {
+                        question_id: originalAnswerData.question_id,
+                        question_type: questionType,
+                        answer: correctAnswer
+                    };
+                } else {
+                     console.warn(`Não foi possível determinar a resposta correta para a questão ${questionId} (Tipo: ${questionType}). Dados da questão:`, taskQuestion);
+                     novoJson.answers[questionId] = { // Enviar resposta vazia/default? Ou pular? Decidi incluir vazio.
+                         question_id: originalAnswerData.question_id,
+                         question_type: questionType,
+                         answer: (questionType === 'text_ai' ? {"0": ""} : (Array.isArray(correctAnswer) ? [] : {})) // Default baseado no tipo esperado
+                     };
+                }
+
+            } catch (error) {
+                console.error(`Erro ao processar questão ${questionId} (Tipo: ${questionType}):`, error, taskQuestion);
+                sendToast(`Erro processando questão ${questionId}. Verifique o console.`, 5000, 'error');
+                 novoJson.answers[questionId] = { // Inclui uma entrada vazia para não falhar o PUT?
+                     question_id: originalAnswerData.question_id,
+                     question_type: questionType,
+                     answer: (questionType === 'text_ai' ? {"0": ""} : {}) // Envia objeto vazio como fallback
+                 };
+            }
+        }
+        return novoJson;
+    }
+
+
+    function sendToast(text, duration = 5000, type = 'info') {
+        if (typeof Toastify === 'undefined') {
+            console.warn('Toastify não carregado:', `[${type.toUpperCase()}] ${text}`);
+            return;
+        }
+        const colors = {
+            info: "linear-gradient(to right, #0080FF, #0059B3)",
+            success: "linear-gradient(to right, #00b09b, #96c93d)",
+            error: "linear-gradient(to right, #ff5f6d, #ffc371)",
+            warning: "linear-gradient(to right, #f7b733, #fc4a1a)"
+        };
+        try {
+            Toastify({
+                text: text,
+                duration: duration,
+                gravity: "bottom",
+                position: "center",
+                stopOnFocus: true,
+                style: {
+                    background: colors[type] || colors.info,
+                    fontSize: "14px",
+                    borderRadius: "5px",
+                    padding: "12px 20px",
+                    boxShadow: "0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)",
+                    zIndex: 9999 // Ensure it's on top
+                },
+            }).showToast();
+        } catch (e) {
+            console.error("Erro ao exibir Toastify:", e);
+        }
+    }
+
+    function loadScript(url) {
+        return new Promise((resolve, reject) => {
+            if (document.querySelector(`script[src="${url}"]`)) {
+                resolve(); return;
+            }
+            const script = document.createElement('script');
+            script.src = url;
+            script.async = true;
+            script.onload = resolve;
+            script.onerror = (e) => reject(new Error(`Falha ao carregar script: ${url}. Evento: ${e.type}`));
+            document.head.appendChild(script);
+        });
+    }
+
+    async function loadCss(url) {
+        return new Promise((resolve, reject) => {
+             if (document.querySelector(`link[href="${url}"]`)) {
+                resolve(); return;
+            }
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = url;
+            link.onload = resolve;
+            link.onerror = (e) => reject(new Error(`Falha ao carregar CSS: ${url}. Evento: ${e.type}`));
+            document.head.appendChild(link);
+        });
+    }
+
+    async function pegarRespostas(answerId, taskId) {
+        const url = `${API_BASE_URL}/tms/task/${taskId}/answer/${answerId}?with_task=true&with_genre=true&with_questions=true&with_assessed_skills=true`;
+        console.log("Buscando respostas corretas de:", url);
+        try {
+            const response = await fetch(url, { method: "GET", headers: HEADERS_TEMPLATE });
+            if (!response.ok) {
+                let errorText = '';
+                try { errorText = await response.text(); } catch (e) { /* ignore */ }
+                throw new Error(`Erro HTTP ${response.status}: ${response.statusText}. URL: ${url}. Detalhes: ${errorText}`);
+            }
+            const data = await response.json();
+            console.log("Respostas corretas recebidas:", data);
+             if (!data || !data.task || !data.task.questions) {
+                 console.warn("Dados recebidos da API parecem incompletos:", data);
+                 throw new Error("Resposta da API recebida, mas dados essenciais (task.questions) estão faltando.");
              }
-            logMessage('ERROR', `[${modelName}/Blackbox] Falha Req/Proc: ${error.message}`);
+            return data;
+        } catch (error) {
+            console.error('Erro detalhado ao buscar respostas corretas:', error);
+            sendToast(`Erro ao buscar respostas: ${error.message}`, 6000, 'error');
             throw error;
         }
     }
 
-    // --- AJUSTE: CONSTRUÇÃO DO PROMPT (Mimetizando Biblioteca) ---
-    async function buildPrompt(question, imageUrls, modelInfo) {
-        logMessage('INFO', `Build Prompt Mimetizado para ${modelInfo.name} (ID: ${modelInfo.id})...`);
-        let imgWarn=''; if(imageUrls.length>0){imgWarn='\n(AVISO: Imagens NÃO enviadas.)\n';}
-        const promptText = `CONTEXTO: Questão múltipla escolha (A, B, C, D, E). OBJETIVO: Identificar a ÚNICA alternativa CORRETA. INSTRUÇÕES: Retorne APENAS a LETRA MAIÚSCULA da alternativa correta (A, B, C, D ou E). FORMATO ESTRITO: UMA LETRA MAIÚSCULA, NADA MAIS.\n\nQUESTÃO:\n${question}\n${imgWarn}`;
-        logMessage('DEBUG',"Prompt gerado.");
-
-        // --- Payload mimetizando a biblioteca Keva1z (campos comuns) ---
-        const payload = {
-            messages: [{ id: generateUUID(), content: promptText, role: "user" }],
-            id: generateUUID(), // A lib parece gerar um ID para o chat também
-            userId: generateUUID(), // User ID aleatório
-            model: modelInfo.id,
-            codeModelMode: false, // Assumindo não ser modo código por padrão
-            agentMode: {},
-            trendingAgentMode: {},
-            isMicMode: false,
-            isChromeExt: false, // Importante: Finge não ser a extensão
-            githubToken: null,
-            maxTokens: CONFIG.MAX_OUTPUT_TOKENS, // Tentar passar, pode ser ignorado
-            temperature: CONFIG.TEMPERATURE, // Tentar passar, pode ser ignorado
-            stream: false // A lib parece usar stream: false
-        };
-        logMessage('DEBUG', `Payload Mimetizado final com 'model: ${modelInfo.id}', 'stream: false'`);
-        return payload;
+    async function responderCorretamente(respostasCorrigidas, answerId, taskId) {
+        const url = `${API_BASE_URL}/tms/task/${taskId}/answer/${answerId}`;
+        console.log("Enviando respostas corrigidas para:", url);
+        // console.log("Payload:", JSON.stringify(respostasCorrigidas, null, 2)); // Uncomment for deep debug
+        try {
+            const response = await fetch(url, {
+                method: "PUT",
+                headers: HEADERS_TEMPLATE,
+                body: JSON.stringify(respostasCorrigidas)
+            });
+            if (!response.ok) {
+                let errorText = '';
+                try { errorText = await response.text(); } catch (e) { /* ignore */ }
+                throw new Error(`Erro HTTP ${response.status}: ${response.statusText}. URL: ${url}. Detalhes: ${errorText}`);
+            }
+            console.log("Respostas corrigidas enviadas com sucesso.");
+            // const result = await response.json(); // Process if needed
+        } catch (error) {
+            console.error('Erro detalhado ao enviar respostas corrigidas:', error);
+            sendToast(`Erro ao enviar respostas: ${error.message}`, 6000, 'error');
+            throw error;
+        }
     }
 
+    async function fetchAndResubmitCorrectAnswers(answerId, taskId) {
+        if (!answerId || !taskId) {
+             console.error("ID da resposta ou da tarefa inválido.", { answerId, taskId });
+             sendToast("Erro interno: ID da Resposta/Tarefa inválido.", 5000, 'error');
+             return;
+        }
+        try {
+            sendToast(`Buscando respostas corretas (Tarefa ${taskId})...`, 3000, 'info');
+            const respostasOriginaisComTarefa = await pegarRespostas(answerId, taskId);
 
-    // --- SETUP UI ---
-    // ... (setupUI e suas funções internas como createLogModal, showLogs, etc - código igual v9.2.3) ...
-    // Nenhuma mudança visual ou funcional necessária aqui em relação à v9.2.3
-    // Certifique-se de que a função 'showLogs' usa 'updateLogAreaContent' como na v9.2.3
-    function setupUI() { logMessage('INFO','Configurando UI...'); let uiElements = null; try { try { const link=document.createElement('link'); link.href='https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap'; link.rel='stylesheet'; document.head.appendChild(link); } catch (e) { logMessage('WARN','Falha injetar Font.'); } const getResponsiveSize = () => ({ menuWidth:(window.innerWidth<768?'190px':'210px'), fontSize:(window.innerWidth<768?'11px':'12px'), buttonPadding:'7px 9px', textareaHeight:'40px', titleSize:'15px' }); const container=document.createElement('div'); container.id='hck-beta-ui-bookmarklet'; container.style.cssText=` position:fixed; bottom:10px; right:10px; z-index:10000; font-family:'Inter', sans-serif; line-height:1.35; `; const toggleBtn=document.createElement('button'); toggleBtn.id='hck-beta-toggle-btn'; toggleBtn.innerHTML=`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${estilo.cores.accentBg}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin:auto;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>`; toggleBtn.style.cssText=` background:${estilo.cores.fundoSecundario}; border:1px solid ${estilo.cores.borda}; border-radius:50%; width:40px; height:40px; cursor:pointer; box-shadow:${estilo.sombras.botao}; display:flex; align-items:center; justify-content:center; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); &:hover { background:${estilo.cores.fundoTerciario}; border-color:${estilo.cores.accentBg}; transform:scale(1.05); } `; const sizes=getResponsiveSize(); const menu=document.createElement('div'); menu.id='hck-beta-menu'; menu.style.cssText=` background:${estilo.cores.fundo}; width:${sizes.menuWidth}; padding:8px; border-radius:${estilo.radius}; box-shadow:${estilo.sombras.menu}; display:none; flex-direction:column; gap:6px; border:1px solid ${estilo.cores.borda}; opacity:0; transform:translateY(15px) scale(0.95); transition:opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0.3s; position:relative; margin-bottom:6px; max-height:70vh; overflow-y:auto; scrollbar-width:thin; scrollbar-color:${estilo.cores.fundoTerciario} ${estilo.cores.fundo}; visibility:hidden; &::-webkit-scrollbar{width:4px;} &::-webkit-scrollbar-thumb{background-color:${estilo.cores.fundoTerciario}; border-radius:2px;} `; const header=document.createElement('div'); header.style.cssText=`display:flex; align-items:baseline; justify-content:space-between; width:100%; margin-bottom:5px;`; const titleGroup=document.createElement('div'); titleGroup.style.cssText=`display:flex; align-items:baseline; gap:6px;`; const title=document.createElement('div'); title.textContent='HCK β'; title.style.cssText=` font-size:${sizes.titleSize}; font-weight:600; color:${estilo.cores.accentBg}; font-family:'Roboto Mono', monospace; letter-spacing:0.5px; line-height:1;`; const versionSpanHeader=document.createElement('span'); versionSpanHeader.textContent=`v${SCRIPT_VERSION.split('-')[0]}`; versionSpanHeader.style.cssText=`font-size:9px; color:${estilo.cores.textoSecundario}; font-weight:400; line-height:1;`; titleGroup.append(title, versionSpanHeader); const closeBtn=document.createElement('button'); closeBtn.innerHTML='×'; closeBtn.setAttribute('aria-label','Fechar'); closeBtn.style.cssText=` background:transparent; border:none; color:${estilo.cores.textoSecundario}; font-size:20px; font-weight:400; cursor:pointer; padding:0; line-height:0.8; border-radius:50%; width:20px; height:20px; display:flex; align-items:center; justify-content:center; transition:all 0.2s ease; &:hover { background-color:${estilo.cores.fundoTerciario}; color:${estilo.cores.texto}; } `; header.append(titleGroup, closeBtn); const modelSelectorContainer=document.createElement('div'); modelSelectorContainer.style.cssText=`display:flex; flex-direction:column; gap:2px;`; const modelLabel=document.createElement('label'); modelLabel.textContent='Modelo:'; modelLabel.style.cssText=`font-size:calc(${sizes.fontSize} - 1px); color:${estilo.cores.textoSecundario}; font-weight:500; margin-left:1px;`; const modelSelect=document.createElement('select'); modelSelect.id='hck-beta-model-select'; modelSelect.style.cssText=` width:100%; padding:4px 6px; border:1px solid ${estilo.cores.borda}; border-radius:${estilo.radiusSmall}; font-size:${sizes.fontSize}; font-family:inherit; box-sizing:border-box; background:${estilo.cores.fundoTerciario}; color:${estilo.cores.texto}; appearance:none; background-image:url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23${estilo.cores.textoSecundario.substring(1)}%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat:no-repeat; background-position:right 6px center; background-size:8px auto; padding-right:20px; cursor:pointer; transition:border-color 0.2s ease, box-shadow 0.2s ease; &:focus { outline:none; border-color:${estilo.cores.accentBg}; box-shadow:0 0 0 1px ${estilo.cores.accentBg}80; }`; CONFIG.MODELS.forEach(model=>{const opt=document.createElement('option');opt.value=model.id;opt.textContent=model.name;modelSelect.appendChild(opt);}); modelSelect.value=STATE.selectedModelId; modelSelect.addEventListener('change',(e)=>{STATE.selectedModelId=e.target.value;logMessage('INFO',`Modelo: ${STATE.selectedModelId}`);const selMod=CONFIG.MODELS.find(m=>m.id===STATE.selectedModelId);document.getElementById('hck-beta-analyze-btn').textContent=`Analisar (${selMod?.name.split(' ')[0]||'?'})`;}); modelSelectorContainer.append(modelLabel, modelSelect); const input=document.createElement('textarea'); input.id='hck-beta-question-input'; input.placeholder='Cole a questão...'; input.setAttribute('rows','2'); input.style.cssText=` width:100%; min-height:${sizes.textareaHeight}; padding:6px; border:1px solid ${estilo.cores.borda}; border-radius:${estilo.radiusSmall}; resize:vertical; font-size:${sizes.fontSize}; font-family:inherit; box-sizing:border-box; background:${estilo.cores.fundoTerciario}; color:${estilo.cores.texto}; transition:border-color 0.2s ease, box-shadow 0.2s ease; &::placeholder{color:${estilo.cores.textoSecundario};} &:focus { outline:none; border-color:${estilo.cores.accentBg}; box-shadow:0 0 0 1px ${estilo.cores.accentBg}80; } `; const imagesContainer=document.createElement('div'); imagesContainer.id='hck-beta-images-container'; imagesContainer.style.cssText=` max-height:50px; overflow-y:auto; font-size:calc(${sizes.fontSize} - 1px); border:1px solid ${estilo.cores.borda}; border-radius:${estilo.radiusSmall}; padding:4px 7px; background:${estilo.cores.fundoSecundario}; color:${estilo.cores.textoSecundario}; scrollbar-width:thin; scrollbar-color:${estilo.cores.fundoTerciario} ${estilo.cores.fundoSecundario}; &::-webkit-scrollbar{width:4px;} &::-webkit-scrollbar-thumb{background-color:${estilo.cores.fundoTerciario}; border-radius:2px;} `; imagesContainer.innerHTML=`<div style="text-align:center; padding:1px; font-size:0.9em; color:${estilo.cores.textoSecundario};">Nenhuma imagem</div>`; const buttonBaseStyle=` width:100%; padding:${sizes.buttonPadding}; border:none; border-radius:${estilo.radiusSmall}; cursor:pointer; font-size:${sizes.fontSize}; font-weight:500; display:flex; align-items:center; justify-content:center; gap:4px; transition:all 0.2s ease; `; const buttonPrimaryStyle=` ${buttonBaseStyle} background:${estilo.cores.accentBg}; color:${estilo.cores.accent}; font-weight:600; &:hover:not(:disabled){filter:brightness(1.1); box-shadow:0 2px 6px rgba(87, 255, 193, 0.15);} &:disabled{background-color:${estilo.cores.fundoSecundario}; color:${estilo.cores.textoSecundario}; opacity:0.6; cursor:not-allowed; box-shadow:none;} `; const buttonSecondaryStyle=` ${buttonBaseStyle} background:${estilo.cores.secondaryAccentBg}; color:${estilo.cores.secondaryAccent}; border:1px solid ${estilo.cores.borda}; &:hover{background:${estilo.cores.fundoTerciario}; border-color:${estilo.cores.textoSecundario};} `; const updateImagesBtn=document.createElement('button'); updateImagesBtn.innerHTML=`🔄 <span style="margin-left:-2px;">Imgs</span>`; updateImagesBtn.style.cssText=buttonSecondaryStyle; const analyzeBtn=document.createElement('button'); analyzeBtn.id='hck-beta-analyze-btn'; const selModOnLoad=CONFIG.MODELS.find(m=>m.id===STATE.selectedModelId); analyzeBtn.textContent=`Analisar (${selModOnLoad?.name.split(' ')[0]||'?'})`; analyzeBtn.style.cssText=buttonPrimaryStyle; const clearBtn=document.createElement('button'); clearBtn.innerHTML=`🗑️ <span style="margin-left:-2px;">Limpar</span>`; clearBtn.style.cssText=buttonSecondaryStyle; const logsBtn=document.createElement('button'); logsBtn.innerHTML=`📄 <span style="margin-left:-2px;">Logs</span>`; logsBtn.style.cssText=buttonSecondaryStyle; const credits=document.createElement('div'); credits.style.cssText=` text-align:center; font-size:8px; font-weight:400; margin-top:6px; padding-top:5px; border-top:1px solid ${estilo.cores.borda}; opacity:0.6; `; const authorLink=document.createElement('a'); authorLink.href="https://github.com/notsopreety/blackbox-api-v2"; authorLink.target="_blank"; authorLink.rel="noopener noreferrer"; authorLink.style.cssText=`color:${estilo.cores.textoSecundario}; text-decoration:none; transition:color 0.2s ease; &:hover{color:${estilo.cores.info};}`; authorLink.textContent="by Hackermoon"; credits.append(authorLink); const notificationContainer=document.createElement('div'); notificationContainer.id='hck-beta-notifications'; notificationContainer.style.cssText=` position:fixed; bottom:15px; left:50%; transform:translateX(-50%); z-index:10002; display:flex; flex-direction:column; align-items:center; gap:8px; width:auto; max-width:90%; `; STATE.notificationContainer=notificationContainer; menu.append(header, modelSelectorContainer, input, updateImagesBtn, imagesContainer, analyzeBtn, clearBtn, logsBtn, credits); container.append(menu, toggleBtn); document.body.appendChild(container); document.body.appendChild(notificationContainer); logMessage('INFO','Elementos UI adicionados.'); const toggleMenu = (show) => { const duration=300; const menuEl=document.getElementById('hck-beta-menu'); const toggleBtnEl=document.getElementById('hck-beta-toggle-btn'); if(!menuEl||!toggleBtnEl){logMessage('ERROR','Menu/Toggle Btn NULL.');return;} if(show){logMessage('DEBUG','Show Menu'); menuEl.style.display='flex'; menuEl.style.visibility='visible'; toggleBtnEl.style.opacity='0'; toggleBtnEl.style.transform='scale(0.8) translateY(10px)'; setTimeout(()=>{menuEl.style.opacity='1';menuEl.style.transform='translateY(0) scale(1)';toggleBtnEl.style.display='none';}, 10);} else {logMessage('DEBUG','Hide Menu'); menuEl.style.opacity='0'; menuEl.style.transform='translateY(15px) scale(0.95)'; setTimeout(()=>{menuEl.style.visibility='hidden'; menuEl.style.display='none'; toggleBtnEl.style.display='flex'; requestAnimationFrame(()=>{toggleBtnEl.style.opacity='1';toggleBtnEl.style.transform='scale(1) translateY(0)';});}, duration);} }; toggleBtn.addEventListener('click', () => toggleMenu(true)); closeBtn.addEventListener('click', () => toggleMenu(false)); const hideLogs = () => { if(STATE.logModal){STATE.logModal.style.opacity='0'; STATE.logModal.querySelector('div').style.transform='scale(0.95)'; setTimeout(()=>STATE.logModal.style.display='none', 300); logMessage('DEBUG','Hide Logs.');} }; document.addEventListener('keydown', (e) => { const menuEl=document.getElementById('hck-beta-menu'); if(e.key==='Escape'){if(menuEl?.style.visibility==='visible')toggleMenu(false);if(STATE.logModal?.style.display!=='none')hideLogs();} }); window.addEventListener('resize', () => { const s=getResponsiveSize(); const menuEl=document.getElementById('hck-beta-menu'); if(menuEl)menuEl.style.width=s.menuWidth; const inputEl=document.getElementById('hck-beta-question-input'); if(inputEl){inputEl.style.minHeight=s.textareaHeight;inputEl.style.fontSize=s.fontSize;} const btns=['hck-beta-analyze-btn','hck-beta-clear-btn','hck-beta-update-images-btn','hck-beta-logs-btn']; btns.forEach(id=>{const b=document.getElementById(id); if(b){b.style.fontSize=s.fontSize;b.style.padding=s.buttonPadding;}}); const imgCont=document.getElementById('hck-beta-images-container'); if(imgCont)imgCont.style.fontSize=`calc(${s.fontSize} - 1px)`; const titleEl=menuEl?.querySelector('div > div'); if(titleEl)titleEl.style.fontSize=s.titleSize; const selEl=document.getElementById('hck-beta-model-select'); if(selEl)selEl.style.fontSize=s.fontSize; const lblEl=selEl?.previousElementSibling; if(lblEl)lblEl.style.fontSize=`calc(${s.fontSize} - 1px)`;}); const updateImageButtons = (images) => { const imgCont = document.getElementById('hck-beta-images-container'); if(!imgCont)return; if(images.length===0){imgCont.innerHTML=`<div style="text-align:center; padding:1px; font-size:0.9em; color:${estilo.cores.textoSecundario};">Nenhuma imagem</div>`;return;} imgCont.innerHTML = images.map((img, i) => ` <div style="display: flex; justify-content: space-between; align-items: center; padding: 1px 0; border-bottom: 1px solid ${estilo.cores.borda}; gap: 3px; &:last-child {border-bottom: none;}"> <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 55%; color: ${estilo.cores.texto}; font-size:0.8em;" title="${img}">Img ${i + 1}</span> <button data-url="${img}" title="Copiar URL" style="background: ${estilo.cores.fundoTerciario}; color: ${estilo.cores.textoSecundario}; border: none; border-radius: 3px; padding: 0px 3px; font-size: 8px; cursor: pointer; white-space: nowrap; transition: all 0.2s ease; font-weight: 500; line-height: 1.2; &:hover{color: ${estilo.cores.texto}; background: ${estilo.cores.borda}}">Copiar</button> </div> `).join(''); imgCont.querySelectorAll('button[data-url]').forEach(b => { b.addEventListener('click', (e) => { navigator.clipboard.writeText(e.target.dataset.url).then(() => { e.target.textContent='Ok!'; setTimeout(()=>e.target.textContent='Copiar',1000); }).catch(err=>{ logMessage('ERROR','Falha copiar URL:', err); e.target.textContent='Erro!'; setTimeout(()=>e.target.textContent='Copiar',1200); }); }); }); }; const showResponse = (result, duration) => { if(!STATE.notificationContainer){logMessage('ERROR',"Notif container NULL!"); return;} const { answer="Info", detail="", type='info', modelName='' } = result || {}; let icon='ℹ️'; let titleText=answer; let detailText = detail + (modelName?` <span style='opacity:0.7;'>(${modelName})</span>`:''); let effDur = duration || (type==='error'||type==='warn'?CONFIG.NOTIFICATION_TIMEOUT_LONG:CONFIG.NOTIFICATION_TIMEOUT); let bgColor=estilo.cores.notificationBg; let titleColor=estilo.cores.texto; let borderColor=estilo.cores.borda; switch(type){ case 'success': icon='✅'; titleColor=estilo.cores.sucesso; borderColor=estilo.cores.sucesso+'80'; break; case 'error': icon='❌'; titleColor=estilo.cores.erro; borderColor=estilo.cores.erro+'80'; break; case 'warn': icon='⚠️'; titleColor=estilo.cores.warn; borderColor=estilo.cores.warn+'80'; break; case 'info': icon='ℹ️'; titleColor=estilo.cores.info; borderColor=estilo.cores.info+'80'; break; } const notification = document.createElement('div'); notification.style.cssText = ` background-color:${bgColor}; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); color:${estilo.cores.texto}; padding:9px 14px; border-radius:${estilo.radiusSmall}; box-shadow:${estilo.sombras.notification}; display:flex; align-items:center; gap:9px; min-width:170px; max-width:300px; opacity:0; transform:translateY(25px) scale(0.98); transition:opacity 0.35s ease-out, transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); border:1px solid ${estilo.cores.borda}; border-left:3px solid ${borderColor}; cursor:pointer; `; const iconSpan=document.createElement('span'); iconSpan.textContent=icon; iconSpan.style.fontSize='1.1em'; iconSpan.style.marginLeft='1px'; const textContent=document.createElement('div'); textContent.style.cssText=`flex-grow:1; font-size:0.92em; line-height:1.3; word-break:break-word;`; textContent.innerHTML=`<span style="font-weight:600; color:${titleColor};">${titleText}</span> ${detailText ? `<span style="font-size:0.85em; color:${estilo.cores.textoSecundario}; margin-left:3px; display:inline-block;">${detailText}</span>` : ''}`; let dismissTimeout; const dismiss = () => { clearTimeout(dismissTimeout); notification.style.opacity='0'; notification.style.transform='translateY(30px) scale(0.95)'; setTimeout(()=>notification.remove(), 350); }; notification.onclick=dismiss; notification.append(iconSpan, textContent); STATE.notificationContainer.appendChild(notification); requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ notification.style.opacity = '1'; notification.style.transform = 'translateY(0) scale(1)'; }); }); dismissTimeout=setTimeout(dismiss, effDur); }; const createLogModal = () => { if(STATE.logModal)return; logMessage('DEBUG','Criando modal logs...'); const modal=document.createElement('div'); modal.id='hck-log-modal'; modal.style.cssText=` position:fixed; inset:0; width:100%; height:100%; background-color:rgba(0,0,0,0.8); display:none; align-items:center; justify-content:center; z-index:10001; font-family:'Inter', sans-serif; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); opacity:0; transition:opacity 0.3s ease-out;`; const modalContent=document.createElement('div'); modalContent.style.cssText=` background-color:${estilo.cores.fundoSecundario}; color:${estilo.cores.texto}; padding:12px 18px; border-radius:${estilo.radius}; border:1px solid ${estilo.cores.borda}; width:90%; max-width:950px; height:88%; max-height:800px; display:flex; flex-direction:column; box-shadow:${estilo.sombras.menu}; transform:scale(0.95); transition:transform 0.3s ease-out;`; const modalHeader=document.createElement('div'); modalHeader.style.cssText=`display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid ${estilo.cores.borda}; padding-bottom:6px; gap:12px;`; const modalTitle=document.createElement('h3'); modalTitle.textContent='📄 Logs Detalhados'; modalTitle.style.cssText=`margin:0; color:${estilo.cores.texto}; font-weight:500; font-size:15px; flex-grow:1; font-family:'Roboto Mono', monospace;`; const copyLogBtn=document.createElement('button'); copyLogBtn.textContent='Copiar'; copyLogBtn.style.cssText=` background:${estilo.cores.copyBtnBg}; color:${estilo.cores.secondaryAccent}; border:none; font-size:10px; font-weight:500; padding:3px 7px; border-radius:${estilo.radiusSmall}; cursor:pointer; transition:all 0.2s ease; flex-shrink:0; &:hover{background:${estilo.cores.borda}; color:${estilo.cores.texto};} `; copyLogBtn.onclick=()=>{ const text=STATE.logMessages.map(log=>`[${log.timestamp} ${log.level}] ${log.message}`).join('\n'); navigator.clipboard.writeText(text).then(()=>{ copyLogBtn.textContent='Ok!'; setTimeout(()=>copyLogBtn.textContent='Copiar',1500); logMessage('INFO','Logs copiados.'); }).catch(err=>{ logMessage('ERROR','Falha copiar logs:', err); copyLogBtn.textContent='Erro!'; setTimeout(()=>copyLogBtn.textContent='Copiar',1500); }); }; const closeLogBtn=document.createElement('button'); closeLogBtn.innerHTML='×'; closeLogBtn.setAttribute('aria-label','Fechar'); closeLogBtn.style.cssText=` background:${estilo.cores.fundoTerciario}; border:none; color:${estilo.cores.textoSecundario}; font-size:18px; font-weight:bold; cursor:pointer; padding:0; line-height:1; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; transition:all 0.2s ease; flex-shrink:0; &:hover{background-color:${estilo.cores.borda}; color:${estilo.cores.texto};} `; closeLogBtn.onclick=hideLogs; modalHeader.append(modalTitle, copyLogBtn, closeLogBtn); const logArea=document.createElement('div'); logArea.id='hck-log-area'; logArea.style.cssText=` flex-grow:1; overflow-y:auto; font-size:10px; line-height:1.5; background-color:${estilo.cores.fundo}; border-radius:${estilo.radiusSmall}; padding:8px 10px; border:1px solid ${estilo.cores.borda}; white-space:pre-wrap; word-wrap:break-word; scrollbar-width:thin; scrollbar-color:${estilo.cores.fundoTerciario} ${estilo.cores.fundo}; font-family:'Roboto Mono', monospace; &::-webkit-scrollbar{width:5px;} &::-webkit-scrollbar-thumb{background-color:${estilo.cores.fundoTerciario}; border-radius:3px;} `; modalContent.append(modalHeader, logArea); modal.appendChild(modalContent); document.body.appendChild(modal); STATE.logModal = modal; };
-            const showLogs = () => { logMessage('DEBUG','showLogs'); if(!STATE.logModal)createLogModal(); const logArea=STATE.logModal?.querySelector('#hck-log-area'); if(!logArea||!STATE.logModal){logMessage('ERROR','Modal/LogArea NULL.'); return;} logMessage('INFO',`Exibindo ${STATE.logMessages.length} logs.`); updateLogAreaContent(logArea, true); STATE.logModal.style.display='flex'; requestAnimationFrame(()=>{ STATE.logModal.style.opacity='1'; STATE.logModal.querySelector('div').style.transform='scale(1)'; }); };
-            logsBtn.addEventListener('click', showLogs);
-            uiElements = { elements: { input, analyzeBtn, clearBtn, updateImagesBtn, logsBtn, imagesContainer, toggleBtn, modelSelect }, helpers: { updateImageButtons, showResponse, toggleMenu, showLogs, hideLogs } }; logMessage('INFO','setupUI concluído.'); } catch (error) { logMessage('ERROR','!!! ERRO setupUI !!!', error); console.error(`[HCK setupUI Fail]: ${error.message}. Stack: ${error.stack||'N/A'}`); } return uiElements; }
+            sendToast("Processando e formatando respostas...", 2000, 'info');
+            const respostasCorrigidasPayload = transformJson(respostasOriginaisComTarefa);
 
-    // --- FUNÇÃO PRINCIPAL DE INICIALIZAÇÃO ---
-    function init() { /* ... (lógica igual v9.2.3, com aviso CORS melhorado no catch do analyzeBtn.onclick) ... */
-        logMessage('INFO',`----- HCK BETA Bookmarklet Inicializando (v${SCRIPT_VERSION}) -----`); let ui = null; try { ui = setupUI(); if (!ui) { throw new Error("Falha crítica setupUI."); } logMessage('INFO','UI configurada.'); const { input, analyzeBtn, clearBtn, updateImagesBtn } = ui.elements; const { updateImageButtons, showResponse } = ui.helpers; window.setAnalyzeButtonState = (analyzing, rateLimited = false) => { const btn = document.getElementById('hck-beta-analyze-btn'); const tglBtn = document.getElementById('hck-beta-toggle-btn'); const sel = document.getElementById('hck-beta-model-select'); if (!btn) return; const model = CONFIG.MODELS.find(m=>m.id===STATE.selectedModelId); const baseTxt = `Analisar (${model?.name.split(' ')[0]||'?'})`; btn.disabled = analyzing || rateLimited; if(sel) sel.disabled = analyzing || rateLimited; if (rateLimited) { btn.textContent = `Limite...`; btn.style.backgroundColor = estilo.cores.erro; btn.style.color = '#FFFFFF'; if(tglBtn) tglBtn.style.borderColor = estilo.cores.erro; } else if (analyzing) { btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="${estilo.cores.spinner}" style="margin-right: 5px;"><path d="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8Z" opacity=".5"/><path d="M12 4a8 8 0 0 1 8 8 .75.75 0 0 1-1.5 0A6.5 6.5 0 1 0 12 18.5a.75.75 0 0 1 0 1.5A8 8 0 0 1 12 4Z"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></path></svg>Analisando...`; btn.style.backgroundColor = estilo.cores.accentBg; btn.style.color = estilo.cores.accent; if(tglBtn) tglBtn.style.borderColor = estilo.cores.borda; } else { btn.textContent = baseTxt; btn.style.backgroundColor = estilo.cores.accentBg; btn.style.color = estilo.cores.accent; if(tglBtn) tglBtn.style.borderColor = estilo.cores.borda; } }; analyzeBtn.onclick = async () => { const t0 = performance.now(); logMessage('INFO',"----- Analisar Click -----"); const question = input.value.trim(); const model = CONFIG.MODELS.find(m => m.id === STATE.selectedModelId); if (!model) { logMessage('ERROR',"Modelo NULL."); showResponse({answer:"Erro Config", detail:"Selecione modelo.", type:'error'}); return; } if (STATE.isAnalyzing) { logMessage('WARN',`Ignorado: Analisando.`); showResponse({answer:"Aguarde", type:'warn'}); return; } if (STATE.rateLimitActive) { logMessage('WARN',`Ignorado: Rate limit.`); showResponse({answer:"Limite", detail:"Aguarde.", type:'error'}); setAnalyzeButtonState(false, true); return; } if (!question) { logMessage('WARN',`Ignorado: Questão vazia.`); showResponse({answer:"Erro", detail:"Insira questão.", type:'error'}); input.focus(); return; } STATE.isAnalyzing = true; setAnalyzeButtonState(true); logMessage("INFO", `Analisando com ${model.name}...`); logMessage("DEBUG", `Questão (início): ${question.substring(0,100)}...`); try { const images = extractImages(); updateImageButtons(images); const payload = await buildPrompt(question, images, model); logMessage('INFO', `Consultando ${model.name}...`); const result = await fetchWithRetry( model.name, 'blackbox', () => queryBlackboxInternal(model, payload) ); logMessage('INFO', `Resposta ${model.name}. Formatando...`); const fmtAnswer = formatResponse(result); const t1 = performance.now(); const dur = ((t1 - t0)/1000).toFixed(1); if (fmtAnswer) { logMessage('INFO', `Resposta Final: ${fmtAnswer} (${dur}s)`); showResponse({ answer: fmtAnswer, detail: `~${dur}s`, type: 'success', modelName: model.name }); } else { logMessage('WARN', `Formato irreconhecível (${dur}s).`); showResponse({ answer: "Formato?", detail: `Resp não reconhecida (${result.substring(0, 20)}...) ~${dur}s`, type: 'warn', modelName: model.name }); } } catch (error) { const t1 = performance.now(); const dur = ((t1 - t0)/1000).toFixed(1); logMessage("ERROR", `Erro análise ${model.name} (${dur}s):`, error); let detMsg = `Falha: ${error.message.substring(0,80)}`; if (error.message.toLowerCase().includes('cors')) { detMsg = "Erro CORS! Extensão?"; logMessage('ERROR',"****************** ERRO DE CORS ******************"); logMessage('ERROR'," VERIFIQUE SE SUA EXTENSÃO CORS ESTÁ ATIVA!"); logMessage('ERROR'," Configure-a para permitir Origin '*'."); logMessage('ERROR',"**********************************************"); } else if (error.message.toLowerCase().includes('rate limit')) { detMsg = "Limite req."; setAnalyzeButtonState(false, true); } else if (error.message.toLowerCase().includes('cloudflare') || error.message.toLowerCase().includes('blocked')) { detMsg = "API bloqueada."; setAnalyzeButtonState(false, true); } else if (error.message.toLowerCase().includes('timeout')) detMsg = `Timeout (${CONFIG.TIMEOUT/1000}s).`; showResponse({ answer: "Erro Análise", detail: `${detMsg} ~${dur}s`, type: 'error', modelName: model.name }); } finally { STATE.isAnalyzing = false; setAnalyzeButtonState(false, STATE.rateLimitActive); logMessage("INFO", "----- Análise Finalizada -----"); } }; clearBtn.onclick = () => { logMessage('INFO',"----- Limpar -----"); input.value=''; STATE.images=[]; updateImageButtons([]); input.focus(); logMessage("INFO","Campos limpos."); showResponse({answer:"Limpado", type:'info'}, 3000); }; updateImagesBtn.onclick = () => { logMessage('INFO',"----- Update Imgs -----"); try { extractImages(); updateImageButtons(STATE.images); showResponse({answer:"Imgs (UI) OK", detail:`${STATE.images.length} detectadas.`, type:'info'}, 3000); } catch(e) { logMessage("ERROR","Erro update imgs:",e); showResponse({answer:"Erro Imgs", detail:"Falha leitura.", type:'error'}); }}; setTimeout(() => { logMessage("INFO","Extração inicial (UI)..."); try { extractImages(); updateImageButtons(STATE.images); } catch (e) { logMessage("ERROR","Erro extração inicial:", e); }}, 1500); logMessage('INFO',`----- HCK BETA Bookmarklet Inicializado (v${SCRIPT_VERSION}) -----`); ui.helpers.toggleMenu(true); } catch (error) { logMessage('ERROR','!!! ERRO CRÍTICO INICIALIZAÇÃO !!!', error); console.error(`[HCK Init Fail]: ${error.message}. Stack: ${error.stack||'N/A'}`); alert(`[HCK Init Fail]: ${error.message}. Ver console (F12).`); try { document.getElementById('hck-beta-ui-bookmarklet')?.remove(); } catch(e){} try { document.getElementById('hck-beta-notifications')?.remove(); } catch(e){} try { document.getElementById('hck-log-modal')?.remove(); } catch(e){} } }
-    init();
+            sendToast("Enviando respostas corretas...", 3000, 'info');
+            await responderCorretamente(respostasCorrigidasPayload, answerId, taskId);
+
+            sendToast("Tarefa corrigida e reenviada com sucesso!", 5000, 'success');
+            console.log("Processo de correção automática concluído com sucesso.");
+
+        } catch (error) {
+            console.error('Falha no processo de correção automática:', error);
+            sendToast('Falha na correção automática. Verifique o console.', 6000, 'error');
+        }
+    }
+
+    function setupFetchInterceptor() {
+        if (window.fetch.isCustomInterceptor) {
+            console.log("Interceptor já configurado. Ignorando reconfiguração.");
+            sendToast("Monitoramento já ativo.", 3000, 'info');
+            return; // Evita adicionar múltiplos interceptors
+        }
+
+        const originalFetch = window.fetch;
+        const targetApiRegex = new RegExp(`^${API_BASE_URL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/tms/task/\\d+/answer$`);
+
+        window.fetch = async function(input, init) {
+            let url = typeof input === 'string' ? input : input?.url;
+            let method = init?.method?.toUpperCase() || 'GET';
+            const isTargetCall = (method === 'POST' && targetApiRegex.test(url));
+
+            if (isTargetCall) {
+                 console.log("Interceptado POST para:", url);
+            }
+
+            const responsePromise = originalFetch.apply(this, arguments);
+
+             if (isTargetCall) {
+                responsePromise.then(async (response) => {
+                    const clonedResponse = response.clone();
+                    try {
+                        if (!response.ok) { // Handle API errors on initial submit
+                            console.warn(`Submissão original falhou com status ${response.status}`);
+                            // Optionally show a toast here? Depends if user gets feedback already.
+                            return; // Don't attempt correction if initial submit failed
+                        }
+
+                        const data = await clonedResponse.json();
+                        console.log("Resposta da submissão original:", data);
+
+                        if (data && data.id && data.task_id && data.status !== "draft") {
+                            sendToast("Submissão detectada! Iniciando correção...", 3000, 'info');
+                            // Use setTimeout to avoid blocking and potential race conditions
+                            setTimeout(() => {
+                                fetchAndResubmitCorrectAnswers(data.id, data.task_id).catch(err => {
+                                    console.error("Erro não capturado no fluxo principal de correção:", err);
+                                    sendToast("Erro inesperado no processo de correção.", 5000, 'error');
+                                });
+                            }, 100); // Pequeno delay
+                        } else if (data && data.status === "draft") {
+                            console.log("Submissão salva como rascunho. Nenhuma ação automática.");
+                        } else {
+                             console.warn("Resposta da submissão não continha dados esperados ou status inválido:", data);
+                        }
+                    } catch (err) {
+                        console.error('Erro ao processar JSON da submissão original:', err);
+                         try {
+                            const textData = await clonedResponse.text();
+                            console.error("Corpo da resposta (texto):", textData);
+                            sendToast('Erro ao ler resposta da submissão. Ver console.', 5000, 'error');
+                        } catch (textErr) {
+                             console.error("Não foi possível ler a resposta como JSON ou texto.", textErr);
+                             sendToast('Erro crítico ao processar resposta da submissão.', 5000, 'error');
+                        }
+                    }
+                }).catch(networkError => {
+                    console.error("Erro de rede na submissão original interceptada:", networkError);
+                    sendToast(`Erro de rede na submissão: ${networkError.message}`, 5000, 'error');
+                });
+            }
+            return responsePromise;
+        };
+
+        window.fetch.isCustomInterceptor = true; // Flag to prevent re-wrapping
+        console.log("Interceptor de fetch configurado.");
+    }
+
+    async function initialize() {
+        console.log(`Carregando Correção Automática v${SCRIPT_VERSION}...`);
+        let toastifyLoaded = false;
+        try {
+            // Tenta carregar CSS primeiro, depois JS
+            await loadCss(TOASTIFY_CSS_URL);
+            await loadScript(TOASTIFY_JS_URL);
+            toastifyLoaded = true;
+            console.log("Toastify carregado.");
+            sendToast("Recursos carregados. Monitorando envios...", 3000, 'success');
+            setupFetchInterceptor();
+        } catch (error) {
+            console.error('Falha ao carregar dependências (Toastify):', error);
+            alert(`Erro: Não foi possível carregar recursos necessários (${error.message}). Notificações visuais podem falhar.`);
+            // Tenta continuar mesmo sem Toastify visual
+            if (!toastifyLoaded) {
+                 console.warn("Tentando configurar interceptor mesmo sem Toastify...");
+                 try {
+                     setupFetchInterceptor();
+                     alert("Monitoramento iniciado, mas notificações visuais estão desativadas devido a erro de carregamento.");
+                 } catch (setupError) {
+                     console.error("Falha ao configurar interceptor após erro do Toastify:", setupError);
+                     alert("Erro crítico ao iniciar o monitoramento. Verifique o console.");
+                 }
+            }
+        }
+    }
+
+    initialize().catch(err => {
+         console.error("Erro inesperado durante a inicialização:", err);
+         alert("Ocorreu um erro inesperado ao iniciar o script. Verifique o console.");
+    });
+
 })();
