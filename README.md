@@ -11,10 +11,20 @@ javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745012111/sa
 3. Responda aleatoriamente às questões e envie
 4. O script irá colocar todas às respostas corretas.
 
-*Obs: Funciona até você não recarregar á página, depois disso terá que fazer o processo novamente.*
+*Obs: O tempo da tarefa depende unicamente de quanto tempo você ficar na página dela antes de enviar.*
 
 ```js
 javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745790408/saladofuturov2.js").then(t=>t.text()).then(eval);
 ```
 
 ### [Discord: Hackermoon](https://discord.gg/k5BFyvbj)
+
+### Créditos
+
+[Inacallep](https://github.com/inacallep)
+
+[Crackingnlearn](https://github.com/crackingnlearn)
+
+[Miturufu](https://github.com/Miturufu)
+
+
