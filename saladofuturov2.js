@@ -2,18 +2,19 @@
   const SCRIPT_NAME = "HCK TAREFAS";
   console.log(`Iniciando ${SCRIPT_NAME}...`);
 
-  function sendToast(text, duration = 3000, gravity = 'bottom', backgroundColor = "#0d6efd") {
+  function sendToast(text, duration = 3000, gravity = 'bottom', backgroundColor = 'rgba(0, 0, 0, 0.8)') {
     try {
       const toastStyle = {
         background: backgroundColor,
         fontSize: '14px',
-        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
         color: '#ffffff',
-        padding: '12px 20px',
-        borderRadius: '8px',
+        padding: '14px 22px',
+        borderRadius: '10px',
         display: 'flex',
         alignItems: 'center',
-        boxShadow: '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)'
+        boxShadow: '0 4px 10px rgba(0,0,0,0.25), 0 3px 6px rgba(0,0,0,0.22)',
+        backdropFilter: 'blur(8px)',
       };
 
       Toastify({
@@ -154,7 +155,7 @@
         novoJson.answers[questionId] = answerPayload;
       } catch (err) {
         console.error(`[HCK TAREFAS] Erro ao processar questão ID ${questionId}, tipo ${taskQuestion.type}:`, err);
-        sendToast(`Erro processando questão ${questionId}. Ver console.`, 5000, 'bottom', '#dc3545');
+        sendToast(`Erro processando questão ${questionId}. Ver console.`, 5000, 'bottom', 'rgba(0, 0, 0, 0.9)');
         continue;
       }
     }
@@ -164,7 +165,7 @@
   async function pegarRespostasCorretas(taskId, answerId, headers) {
     const url = `https://edusp-api.ip.tv/tms/task/${taskId}/answer/${answerId}?with_task=true&with_genre=true&with_questions=true&with_assessed_skills=true`;
     console.log("[HCK TAREFAS] Buscando respostas. Headers:", headers);
-    sendToast("Buscando respostas corretas...", 2000, 'bottom', '#0dcaf0');
+    sendToast("Buscando respostas corretas...", 2000, 'bottom', 'rgba(0, 0, 0, 0.8)');
     try {
       const response = await fetch(url, { method: "GET", headers: headers });
       if (!response.ok) {
@@ -176,7 +177,7 @@
       return data;
     } catch (error) {
       console.error("[HCK TAREFAS] Falha detalhada ao buscar respostas corretas:", error);
-      sendToast(`Erro ao buscar respostas: ${error.message}`, 5000, 'bottom', '#dc3545');
+      sendToast(`Erro ao buscar respostas: ${error.message}`, 5000, 'bottom', 'rgba(0, 0, 0, 0.9)');
       throw error;
     }
   }
@@ -187,7 +188,7 @@
       const novasRespostasPayload = transformJson(respostasAnteriores);
       console.log("[HCK TAREFAS] Enviando respostas. Payload:", JSON.stringify(novasRespostasPayload, null, 2));
       console.log("[HCK TAREFAS] Enviando respostas. Headers:", headers);
-      sendToast("Enviando respostas corrigidas...", 2000, 'bottom', '#0dcaf0');
+      sendToast("Enviando respostas corrigidas...", 2000, 'bottom', 'rgba(0, 0, 0, 0.8)');
 
       const response = await fetch(url, {
         method: "PUT",
@@ -203,7 +204,7 @@
       }
 
       console.log("[HCK TAREFAS] Respostas corrigidas enviadas com sucesso.");
-      sendToast("Tarefa corrigida com sucesso!", 5000, 'bottom', '#198754');
+      sendToast("Tarefa corrigida com sucesso!", 5000, 'bottom', 'rgba(40, 40, 40, 0.85)');
 
       const oldTitle = document.title;
       document.title = `${SCRIPT_NAME} Fez a Boa!`;
@@ -211,7 +212,7 @@
 
     } catch (error) {
       console.error("[HCK TAREFAS] Falha detalhada ao transformar ou enviar respostas corrigidas:", error);
-      sendToast(`Erro na correção: ${error.message}`, 5000, 'bottom', '#dc3545');
+      sendToast(`Erro na correção: ${error.message}`, 5000, 'bottom', 'rgba(0, 0, 0, 0.9)');
     }
   }
 
@@ -224,8 +225,8 @@
     await loadScript('https://cdn.jsdelivr.net/npm/toastify-js');
     isToastifyLoaded = true;
 
-    sendToast(`>> ${SCRIPT_NAME} Injetado! Aguardando login...`, 3000, 'bottom', '#0d6efd');
-    sendToast("Créditos: inacallep, miitch, crackingnlearn, hackermoon", 5000, 'bottom', '#6c757d');
+    sendToast(`>> ${SCRIPT_NAME} Injetado! Aguardando login...`, 3000, 'bottom', 'rgba(0, 0, 0, 0.8)');
+    sendToast("Créditos: inacallep, miitch, crackingnlearn, hackermoon", 5000, 'bottom', 'rgba(0, 0, 0, 0.7)');
 
   } catch (error) {
     console.error("[HCK TAREFAS] Falha ao carregar dependências (Toastify):", error);
@@ -250,21 +251,21 @@
           console.log("[HCK TAREFAS] >>> Token Capturado com Sucesso:", capturedLoginData.auth_token);
           console.log("[HCK TAREFAS] Dados completos de login capturados:", capturedLoginData);
           if (isToastifyLoaded) {
-            sendToast("Token de autenticação capturado!", 3000, 'bottom', '#198754');
+            sendToast("Token de autenticação capturado!", 3000, 'bottom', 'rgba(40, 40, 40, 0.85)');
           } else {
             alert(`${SCRIPT_NAME}: Token capturado!`);
           }
         } else {
            console.warn("[HCK TAREFAS] Resposta do token recebida, mas 'auth_token' não encontrado na estrutura esperada:", data);
            if (isToastifyLoaded) {
-               sendToast("Erro: Formato de resposta do token inesperado. Ver console.", 5000, 'bottom', '#dc3545');
+               sendToast("Erro: Formato de resposta do token inesperado. Ver console.", 5000, 'bottom', 'rgba(0, 0, 0, 0.9)');
            }
         }
         return response;
       } catch (error) {
         console.error('[HCK TAREFAS] Erro CRÍTICO ao processar resposta do token:', error);
         if (isToastifyLoaded) {
-          sendToast("Erro CRÍTICO ao capturar token. Ver console.", 5000, 'bottom', '#dc3545');
+          sendToast("Erro CRÍTICO ao capturar token. Ver console.", 5000, 'bottom', 'rgba(0, 0, 0, 0.9)');
         } else {
           alert(`${SCRIPT_NAME}: Erro CRÍTICO ao capturar token.`);
         }
@@ -282,7 +283,7 @@
       if (!capturedLoginData || !capturedLoginData.auth_token) {
         console.warn("[HCK TAREFAS] Tentativa de correção, mas o token ainda não foi capturado ou é inválido.");
         if (isToastifyLoaded) {
-          sendToast("Ops! Token não encontrado. Envie novamente após login.", 4000, 'bottom', '#ffc107');
+          sendToast("Ops! Token não encontrado. Envie novamente após login.", 4000, 'bottom', 'rgba(70, 70, 70, 0.8)');
         }
         return response;
       }
@@ -294,7 +295,7 @@
 
         if (submittedData && submittedData.status !== "draft" && submittedData.id && submittedData.task_id) {
            console.log("[HCK TAREFAS] Status OK para correção automática. Iniciando processo...");
-           sendToast("Envio detectado! Iniciando correção...", 2000, 'bottom', '#0dcaf0');
+           sendToast("Envio detectado! Iniciando correção...", 2000, 'bottom', 'rgba(0, 0, 0, 0.8)');
 
           const headers_template = {
             "x-api-realm": "edusp",
@@ -320,7 +321,7 @@
       } catch (err) {
         console.error('[HCK TAREFAS] Erro ao processar a resposta JSON do envio de tarefa POST:', err);
         if (isToastifyLoaded) {
-            sendToast("Erro ao processar envio. Ver console.", 5000, 'bottom', '#dc3545');
+            sendToast("Erro ao processar envio. Ver console.", 5000, 'bottom', 'rgba(0, 0, 0, 0.9)');
         }
       }
     }
