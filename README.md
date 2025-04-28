@@ -10,16 +10,55 @@ javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745790408/sa
 ```
 ## Instalação (TAREFAS)
 
-1. Clique nos **três pontinhos** no canto **superior direito** do navegador.
+1. Abra o navegador, clique nos três pontinhos no canto superior direito.
 
-3. Clique novamente nos **três pontinhos** e vá até **Favoritos**.
-4. Localize o **favorito que você salvou**, clique nos **três pontinhos** ao lado dele e **selecione Editar**.
-5. No **campo Nome**, coloque algo fácil de lembrar (ex: TAREFAS).
-6. No **campo URL**, apague o que estiver lá e cole o código do script que está logo acima **(HCK - TAREFAS).**
-7. **Salve as alterações**.
-8. Acesse a plataforma **[Sala do Futuro](https://saladofuturo.educacao.sp.gov.br/login-alunos)**
-9. **Antes de preencher** login e senha, apague a URL atual, **digite o nome do favorito que você salvou (ex: TAREFAS) e clique nele.**
-10. **Algumas notificações** vão aparecer no canto inferior da tela (normal), **depois disso faça o login normalmente**, entre na **tarefa que você quer fazer**, responda **tudo aleatoriamente e envie a tarefa**, após enviar o script **vai corrigir tudo automaticamente e responder todas corretamente**.
+
+2. Adicione o site atual aos favoritos (clicando na estrela ⭐).
+
+
+3. Vá novamente nos três pontinhos, entre em Favoritos e localize o favorito que você acabou de criar.
+
+
+4. Clique nos três pontinhos ao lado do favorito que você salvou e selecione Editar.
+
+
+5. No campo Nome, coloque algo fácil de lembrar (qualquer coisa).
+
+
+6. No campo URL, apague o endereço atual e cole o código correspondente ao (HCK - TAREFAS.)
+
+
+7. Salve tudo bonitinho.
+
+
+8. Agora, vá para a plataforma Sala do Futuro.
+
+
+9. Antes de fazer o login:
+
+- Apague a URL que está no navegador.
+
+- Digite o nome do favorito que você criou e clique nele.
+
+
+10. Algumas notificações vão pipocar na parte de baixo da tela (fica de boa, é normal).
+
+
+11. Depois disso, faça o login normalmente.
+
+
+12. Acesse a tarefa que você quer fazer.
+
+
+13. Responda todas de qualquer jeito (marcando qualquer alternativa) e envie.
+
+
+14. O script vai corrigir tudo automaticamente, e você vai ver mensagens de sucesso confirmando.
+
+
+15. Só esperar uns segundos... e pronto, tarefa finalizada 100% correta!
+
+---
 
 ### A questão do tempo, como fica?
 
