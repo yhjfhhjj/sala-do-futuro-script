@@ -15,7 +15,7 @@ javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745012111/sa
 ```js
 javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745790408/saladofuturov2.js").then(t=>t.text()).then(eval);
 ```
-### CONTINUAÇÃO:
+### INFORMAÇÕES ADICIONAIS:
 
 1. Execute o script antes de **efetuar o Login** no [Sala do Futuro](https://saladofuturo.educacao.sp.gov.br/login-alunos).
 2. **Depois de efetuado**, deve ir até a tarefa que você quer fazer.
