@@ -11,7 +11,7 @@ javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745790408/sa
 ## Instalação (TAREFAS)
 
 1. Clique nos **três pontinhos** no canto **superior direito** do navegador.
-2.Adicione o **site atual que estiver** aos favoritos (Ícone ⭐).
+
 3. Clique novamente nos **três pontinhos** e vá até **Favoritos**.
 4. Localize o **favorito que você salvou**, clique nos **três pontinhos** ao lado dele e **selecione Editar**.
 5. No **campo Nome**, coloque algo fácil de lembrar (ex: TAREFAS).
