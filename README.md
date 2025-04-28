@@ -19,13 +19,13 @@ javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745790408/sa
 7. **Salve as alterações**.
 8. Acesse a plataforma **[Sala do Futuro](https://saladofuturo.educacao.sp.gov.br/login-alunos)**
 9. **Antes de preencher** login e senha, apague a URL atual, **digite o nome do favorito que você salvou (ex: TAREFAS) e clique nele.**
-10. **Algumas notificações** vão aparecer no canto inferior da tela (normal), **depois disso faça o login normalmente**, entre na **tarefa que você quer fazer**, responda **tudo aleatoriamente e envie a tarefa**, após enviar o script **vai corrigir tudo automaticamente e responder todas corretamentes**.
+10. **Algumas notificações** vão aparecer no canto inferior da tela (normal), **depois disso faça o login normalmente**, entre na **tarefa que você quer fazer**, responda **tudo aleatoriamente e envie a tarefa**, após enviar o script **vai corrigir tudo automaticamente e responder todas corretamente**.
 
 ## A questão do tempo, como fica?
 
 *R: Isso depende unicamente de quanto tempo você permanecer na página da tarefa antes de enviá-la.*
 
-### [Discord: hackermoon](https://discord.gg/snWEnnWF)
+## [Discord: hackermoon](https://discord.gg/snWEnnWF)
 
 ## Créditos:
 
