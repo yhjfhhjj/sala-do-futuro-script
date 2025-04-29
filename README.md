@@ -11,7 +11,7 @@ javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745882260/sa
 
 ## TUTORIAL DE INSTALAÇÃO:
 
-## **Método PC**
+## **Método Desktop**
 1. Clique com o botão direito do mouse na **barra de favoritos** do navegador.
 2. Selecione a opção **"Adicionar página"** ou **"Adicionar favorito"**.
 3. Preencha os campos:
