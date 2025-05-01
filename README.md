@@ -38,12 +38,11 @@ javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745882260/sa
 
 ---
 ## [Discord: hackermoon](https://discord.gg/DXv46kUq)
-- Orientação & Suporte 
-- Realização de Tarefas
-- Desenvolvimento de Scripts
 
 ## Créditos:
 
 - [@inallep](https://github.com/inacallep)
+
 - [@crackingnlearn](https://github.com/crackingnlearn)
+
 - [@miturufu](https://github.com/Miturufu)
