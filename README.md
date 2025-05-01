@@ -48,7 +48,7 @@ javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745882260/sa
 ---
 ## [Discord: hackermoon](https://discord.gg/DXv46kUq)
 
-## Créditos:
+## Créditos/Base:
 
 - [@inallep](https://github.com/inacallep)
 
