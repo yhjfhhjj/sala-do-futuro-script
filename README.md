@@ -32,7 +32,7 @@ javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745882260/sa
 
 2. Vá até a **tarefa**, responda **todas questões aleatoriamente** e envie.
 
-3. O bookmarklet fará o resto, ele fará com que **todas as repostas estejam corretas.**
+3. O bookmarklet fará o resto, ele irá inserir no **todas às respostas corretas** no lugar.
 
 *Obs: A questão do tempo depende de quanto tempo você permanecer na página da tarefa antes de enviá-la.*
 
