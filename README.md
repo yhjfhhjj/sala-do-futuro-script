@@ -50,7 +50,7 @@ javascript:fetch("https://res.cloudinary.com/dctxcezsd/raw/upload/v1745882260/sa
 
 ## Créditos/Base:
 
-- [@inallep](https://github.com/inacallep)
+- [@inacallep](https://github.com/inacallep)
 
 - [@crackingnlearn](https://github.com/crackingnlearn)
 
